@@ -1,0 +1,9 @@
+{
+  "expo": {
+    "name": "work-planner",
+    "slug": "work-planner",
+    "scheme": "workplanner",
+    "version": "1.0.0",
+    "plugins": ["expo-router"]
+  }
+}
