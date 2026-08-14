@@ -1,17 +1,42 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+
+import { View } from 'react-native';
+
+import { Text } from '@/shared/ui/text';
+import { Button } from '@/shared/ui/button';
+import { Header } from '@/shared/ui/header';
+import { StatusBadge } from '@/shared/ui/status-badge';
+import { WeekSwitcher } from '@/shared/ui/week-switcher';
+import { ViewSwitcher, type ViewMode } from '@/shared/ui/view-switcher';
 
 export default function HomeScreen() {
+  const [viewMode, setViewMode] = useState<ViewMode>('week');
+
   return (
-    <View style={styles.container}>
-      <Text>Hello world</Text>
+    <View className='flex-1 bg-white'>
+      <Header title='Графік роботи' onBackPress={() => {}} />
+      <WeekSwitcher
+        period='2–8 березня 2026'
+        week='Тиждень 10'
+        className='mb-5'
+      />
+      <ViewSwitcher value={viewMode} onChange={setViewMode} />
+      <View className='flex-1 items-center justify-center'>
+        <View className='mb-4 flex-row gap-2'>
+          <StatusBadge variant='success'>Р</StatusBadge>
+          <StatusBadge variant='danger'>В</StatusBadge>
+          <StatusBadge variant='warning'>П</StatusBadge>
+          <StatusBadge variant='purple'>Л</StatusBadge>
+          <StatusBadge variant='maroon'>Б</StatusBadge>
+        </View>
+        <Text className='font-bold text-[32px]'>Hello world</Text>
+        <Button variant='warning'>warning</Button>
+        <Button variant='success'>success</Button>
+        <Button variant='danger'>danger</Button>
+        <Button variant='maroon'>maroon</Button>
+        <Button variant='purple'>purple</Button>
+        <Button>primary</Button>
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-});
