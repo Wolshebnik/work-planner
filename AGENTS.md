@@ -4,6 +4,12 @@ These rules apply to all work in this repository unless a more specific `AGENTS.
 
 Core principle: prefer correctness, simplicity, and minimal changes over speed or speculative improvements.
 
+## Session startup
+
+At the start of every new session, before handling the first task, recursively locate and read every `AGENTS.md` file and every Markdown file under any `.rules` directory in the repository, including `.rules/fsd.md`. Apply the rules relevant to the task path for the rest of the session.
+
+When explicitly asked to read `AGENTS.md` or agent instructions, do this same recursive scan and read all discovered `AGENTS.md` and `.rules/**/*.md` files before responding that the instructions were read. Do not stop after reading only the nearest or root `AGENTS.md`.
+
 ## 1. Understand before editing
 
 Do not guess when the repository can answer the question. Before changing code, read the relevant implementation and its surroundings; search for existing patterns, utilities, types, tests, conventions, configuration, and dependencies; and understand how the affected code is used.
