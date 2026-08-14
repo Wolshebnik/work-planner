@@ -19,7 +19,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <StyledSafeAreaView className='flex-1 bg-[#F2EDED]' edges={['top']}>
-        <StyledSafeAreaView className='flex-1 bg-white' edges={['bottom']}>
+        <StyledSafeAreaView className='flex-1 bg-background' edges={['bottom']}>
           <Stack screenOptions={{ headerShown: false }} />
         </StyledSafeAreaView>
       </StyledSafeAreaView>

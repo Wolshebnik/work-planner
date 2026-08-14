@@ -8,6 +8,8 @@ module.exports = {
     extend: {
       colors: {
         primary: '#004B71',
+        background: '#F8F9FC',
+        text: '#40484F',
         button: '#00658F',
         neutral: '#E7E8EB',
         border: '#C8D5E0',
@@ -22,6 +24,12 @@ module.exports = {
         6: '6px',
         8: '8px',
         12: '12px',
+      },
+      boxShadow: {
+        card: '0 6px 12px rgba(0, 0, 0, 0.7)',
+      },
+      elevation: {
+        card: '12',
       },
       fontFamily: {
         sans: ['RobotoFlex_400Regular'],

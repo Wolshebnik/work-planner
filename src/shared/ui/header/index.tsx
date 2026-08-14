@@ -14,7 +14,7 @@ export function Header({ title, onBackPress, className }: HeaderProps) {
   return (
     <View
       className={cn(
-        'h-[56px] items-center justify-center border-b border-border bg-[#F2EDED] px-16',
+        'h-[56px] items-center justify-center border-b border-border bg-[#F2EDED] px-16 shadow-card',
         className,
       )}
     >
@@ -22,7 +22,7 @@ export function Header({ title, onBackPress, className }: HeaderProps) {
         <Pressable
           accessibilityLabel='Назад'
           accessibilityRole='button'
-          className='absolute left-4 h-11 w-11 items-center justify-center rounded-6'
+          className='absolute left-4 h-11 w-11 items-center justify-center rounded-6 active:scale-110'
           hitSlop={8}
           onPress={onBackPress}
         >
@@ -32,7 +32,7 @@ export function Header({ title, onBackPress, className }: HeaderProps) {
 
       <Text
         adjustsFontSizeToFit
-        className='font-bold text-[22px] leading-[1.2em] text-primary'
+        className='font-bold text-[22px] text-primary'
         minimumFontScale={0.65}
         numberOfLines={1}
       >
