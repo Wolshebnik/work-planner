@@ -21,15 +21,22 @@ export function Button({
   children,
   className,
   variant = 'primary',
+  android_ripple: androidRipple,
+  style,
   ...props
 }: ButtonProps) {
   return (
     <Pressable
       className={cn(
-        'items-center justify-center rounded-6 px-3 py-2',
+        'items-center justify-center overflow-hidden rounded-6 px-3 py-2',
         variantClassNames[variant],
         className,
       )}
+      android_ripple={androidRipple ?? { color: 'rgba(255, 255, 255, 0.24)' }}
+      style={(state) => [
+        { transform: [{ scale: state.pressed ? 0.98 : 1 }] },
+        typeof style === 'function' ? style(state) : style,
+      ]}
       {...props}
     >
       <Text className='font-bold text-[24px] leading-[30px] text-white'>

@@ -2,16 +2,25 @@ import { useState } from 'react';
 
 import { ScrollView, View } from 'react-native';
 
-import { Text } from '@/shared/ui/text';
 import { Button } from '@/shared/ui/button';
 import { Header } from '@/shared/ui/header';
 import { StatusBadge } from '@/shared/ui/status-badge';
 import { SectionTitle } from '@/shared/ui/section-title';
 import { PeriodSwitcher } from '@/shared/ui/period-switcher';
+import { shuffleAvatarColors } from '@/shared/config/avatar-color';
+import { EmployeeSummaryCard } from '@/shared/ui/employee-summary-card';
 import { ViewSwitcher, type ViewMode } from '@/shared/ui/view-switcher';
+
+const employees = Array.from({ length: 5 }, () => ({
+  initials: 'ЧІ',
+  name: 'Чумаченко Ірина',
+  values: [0, 2, 4, 5, 4.5, 1],
+  monthTotal: 16.5,
+}));
 
 export default function HomeScreen() {
   const [viewMode, setViewMode] = useState<ViewMode>('week');
+  const shuffledAvatarColors = shuffleAvatarColors();
 
   return (
     <View className='flex-1 bg-background'>
@@ -26,6 +35,15 @@ export default function HomeScreen() {
         <ViewSwitcher value={viewMode} onChange={setViewMode} className='mb-5' />
 
         <SectionTitle text='ПІДСУМКИ ЗА БЕРЕЗЕНЬ' />
+
+        {employees.map((employee, index) => (
+          <EmployeeSummaryCard
+            {...employee}
+            key={index}
+            avatarColor={shuffledAvatarColors[index % shuffledAvatarColors.length]}
+            className='mb-5'
+          />
+        ))}
 
         <View className='items-center justify-center'>
           <View className='mb-4 flex-row gap-2'>

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 import {
   View,
@@ -17,7 +17,7 @@ interface ViewSwitcherProps {
   onChange: (value: ViewMode) => void;
 }
 
-const options: ReadonlyArray<{ label: string; value: ViewMode }> = [
+const options: readonly { label: string; value: ViewMode }[] = [
   { label: 'Тиждень', value: 'week' },
   { label: 'Місяць', value: 'month' },
   { label: 'Підсумки', value: 'summary' },
@@ -28,7 +28,7 @@ export function ViewSwitcher({
   value,
   onChange,
 }: ViewSwitcherProps) {
-  const indicatorX = useRef(new Animated.Value(0)).current;
+  const [indicatorX] = useState(() => new Animated.Value(0));
   const [containerWidth, setContainerWidth] = useState(0);
 
   const selectedIndex = options.findIndex((option) => option.value === value);
