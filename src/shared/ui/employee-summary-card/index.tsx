@@ -40,7 +40,7 @@ export function EmployeeSummaryCard({
         </Text>
       </View>
 
-      <View className='flex-1 gap-1'>
+      <View className='gap-1'>
         <Text className='font-bold text-[14px] leading-[20px]'>{name}</Text>
 
         <View className='flex-row gap-1'>
