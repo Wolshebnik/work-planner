@@ -1,7 +1,10 @@
 import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
 import { cssInterop } from 'nativewind';
+import { View } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+
+import { BottomNavigation } from '@/widgets/bottom-navigation';
 
 import '../../global.css';
 
@@ -19,8 +22,11 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <StyledSafeAreaView className='flex-1 bg-[#F2EDED]' edges={['top']}>
-        <StyledSafeAreaView className='flex-1 bg-background' edges={['bottom']}>
-          <Stack screenOptions={{ headerShown: false }} />
+        <StyledSafeAreaView className='flex-1 bg-[#E7E8EB]' edges={['bottom']}>
+          <View className='flex-1'>
+            <Stack screenOptions={{ headerShown: false }} />
+            <BottomNavigation />
+          </View>
         </StyledSafeAreaView>
       </StyledSafeAreaView>
     </SafeAreaProvider>

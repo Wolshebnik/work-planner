@@ -7,8 +7,8 @@ import type { AvatarColor } from '@/shared/config/avatar-color';
 interface EmployeeSummaryCardProps {
   name: string;
   initials: string;
-  avatarColor: AvatarColor;
   className?: string;
+  avatarColor: AvatarColor;
   monthTotal: string | number;
   values: readonly (string | number)[];
 }
@@ -24,12 +24,12 @@ export function EmployeeSummaryCard({
   return (
     <View
       className={cn(
-        'mx-2 h-[75px] flex-row items-center rounded-12 border border-border bg-white px-3 shadow-card',
+        'mx-3 h-[75px] flex-row justify-between items-center rounded-12 border border-border bg-white px-3 shadow-card',
         className,
       )}
     >
       <View
-        className='h-10 w-10 flex-shrink-0 items-center justify-center rounded-full'
+        className='items-center justify-center flex-shrink-0 w-10 h-10 rounded-full'
         style={{ backgroundColor: avatarColor.backgroundColor }}
       >
         <Text
@@ -40,8 +40,9 @@ export function EmployeeSummaryCard({
         </Text>
       </View>
 
-      <View className='ml-2 flex-1 gap-1'>
+      <View className='flex-1 gap-1'>
         <Text className='font-bold text-[14px] leading-[20px]'>{name}</Text>
+
         <View className='flex-row gap-1'>
           {values.map((value, index) => (
             <View
@@ -56,7 +57,7 @@ export function EmployeeSummaryCard({
         </View>
       </View>
 
-      <View className='my-3 ml-3 h-[49px] w-16 flex-shrink-0 items-center justify-center rounded-12 bg-blue-light'>
+      <View className='my-3 h-[49px] w-16 flex-shrink-0 items-center justify-center rounded-12 bg-blue-light'>
         <Text className='font-bold text-[9px] leading-[13.5px]'>МІСЯЦЬ</Text>
         <Text className='font-bold text-[17px] leading-[17px]'>
           {monthTotal}
