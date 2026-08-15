@@ -54,7 +54,8 @@ export function ViewSwitcher({
   return (
     <View
       className={cn(
-        'mx-4 h-10 flex-row rounded-12 bg-neutral p-1 shadow-card',
+        ' h-10 flex-row rounded-12 bg-[#DBDCDF] p-1 border border-neutral',
+
         className,
       )}
       onLayout={handleLayout}

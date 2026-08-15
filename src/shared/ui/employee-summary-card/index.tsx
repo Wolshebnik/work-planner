@@ -25,7 +25,7 @@ export function EmployeeSummaryCard({
   return (
     <View
       className={cn(
-        'mx-3 h-18.75 flex-row justify-between items-center rounded-12 border border-border bg-white px-3 shadow-card',
+        'h-18.75 flex-row justify-between items-center rounded-12 border border-border bg-white px-3 shadow-card',
         className,
       )}
     >

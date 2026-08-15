@@ -32,7 +32,7 @@ export function PeriodSwitcher({
   return (
     <View
       className={cn(
-        'relative mx-4 mt-2 rounded-8 border border-border bg-[#F5F5F5] px-2 py-2.5 shadow-card',
+        'relative rounded-8 border border-border bg-[#F5F5F5] px-2 py-2.5 shadow-card',
         className,
       )}
     >
