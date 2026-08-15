@@ -1,17 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { SchedulePage } from '@/pages/schedule';
 
-export default function HomeScreen() {
-  return (
-    <View style={styles.container}>
-      <Text>Hello world</Text>
-    </View>
-  );
+export default function HomeRoute() {
+  return <SchedulePage />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-  },
-});
