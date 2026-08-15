@@ -2,13 +2,14 @@ import { View } from 'react-native';
 
 import { cn } from '@/shared/lib/cn';
 import { Text } from '@/shared/ui/text';
+import { Avatar } from '@/shared/ui/avatar';
 import type { AvatarColor } from '@/shared/config/avatar-color';
 
 interface EmployeeSummaryCardProps {
   name: string;
   initials: string;
   className?: string;
-  avatarColor: AvatarColor;
+  avatarColor?: AvatarColor;
   monthTotal: string | number;
   values: readonly (string | number)[];
 }
@@ -24,21 +25,11 @@ export function EmployeeSummaryCard({
   return (
     <View
       className={cn(
-        'mx-3 h-[75px] flex-row justify-between items-center rounded-12 border border-border bg-white px-3 shadow-card',
+        'mx-3 h-18.75 flex-row justify-between items-center rounded-12 border border-border bg-white px-3 shadow-card',
         className,
       )}
     >
-      <View
-        className='items-center justify-center flex-shrink-0 w-10 h-10 rounded-full'
-        style={{ backgroundColor: avatarColor.backgroundColor }}
-      >
-        <Text
-          className='font-bold text-[16px] leading-[24px]'
-          style={{ color: avatarColor.textColor }}
-        >
-          {initials}
-        </Text>
-      </View>
+      <Avatar initials={initials} color={avatarColor} />
 
       <View className='gap-1'>
         <Text className='font-bold text-[14px] leading-[20px]'>{name}</Text>
@@ -47,7 +38,7 @@ export function EmployeeSummaryCard({
           {values.map((value, index) => (
             <View
               key={`${value}-${index}`}
-              className='h-6 w-[30px] items-center justify-center rounded-6 bg-neutral'
+              className='h-6 w-7.5 items-center justify-center rounded-6 bg-neutral'
             >
               <Text className='font-medium text-[11px] leading-[16px] text-primary'>
                 {value}
@@ -57,11 +48,9 @@ export function EmployeeSummaryCard({
         </View>
       </View>
 
-      <View className='my-3 h-[49px] w-16 flex-shrink-0 items-center justify-center rounded-12 bg-blue-light'>
+      <View className='my-3 h-12.25 w-16 shrink-0 items-center justify-center rounded-12 bg-blue-light'>
         <Text className='font-bold text-[9px] leading-[13.5px]'>МІСЯЦЬ</Text>
-        <Text className='font-bold text-[17px] leading-[17px]'>
-          {monthTotal}
-        </Text>
+        <Text className='font-bold text-[17px] leading-4.25'>{monthTotal}</Text>
       </View>
     </View>
   );

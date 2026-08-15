@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
-import { cssInterop } from 'nativewind';
+import { styled } from 'nativewind';
 import { View } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -8,7 +8,7 @@ import { BottomNavigation } from '@/widgets/bottom-navigation';
 
 import '../../global.css';
 
-const StyledSafeAreaView = cssInterop(SafeAreaView, { className: 'style' });
+const StyledSafeAreaView = styled(SafeAreaView, { className: 'style' });
 
 export default function RootLayout() {
   useFonts({

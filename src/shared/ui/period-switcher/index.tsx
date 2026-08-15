@@ -40,7 +40,7 @@ export function PeriodSwitcher({
         <Pressable
           accessibilityLabel='Попередній період'
           accessibilityRole='button'
-          className='h-11 w-8 items-center justify-center active:scale-110'
+          className='h-11 w-8 items-center justify-center active:scale-[1.1]'
           hitSlop={8}
           onPress={onPreviousPress}
         >
@@ -51,7 +51,7 @@ export function PeriodSwitcher({
           <Pressable
             accessibilityLabel='Обрати дату'
             accessibilityRole='button'
-            className='h-10 w-10 items-center justify-center active:scale-110'
+            className='h-10 w-10 items-center justify-center active:scale-[1.1]'
             hitSlop={8}
             onPress={onCalendarPress}
           >
@@ -85,7 +85,7 @@ export function PeriodSwitcher({
         <Pressable
           accessibilityLabel='Наступний період'
           accessibilityRole='button'
-          className='h-11 w-8 items-center justify-center active:scale-110'
+          className='h-11 w-8 items-center justify-center active:scale-[1.1]'
           hitSlop={8}
           onPress={onNextPress}
         >

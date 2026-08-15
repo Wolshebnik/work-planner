@@ -15,12 +15,7 @@ export function BottomNavigation() {
   const pathname = usePathname();
 
   return (
-    <View
-      className='relative flex-row border-t border-border bg-[#E7E8EB] px-4 py-2.5'
-      onLayout={({ nativeEvent }) => {
-        console.log('Высота:', nativeEvent.layout.height);
-      }}
-    >
+    <View className='relative flex-row border-t border-border bg-neutral'>
       {navigationItems.map(({ href, label, Icon }) => {
         const isActive = pathname === href;
 
@@ -29,16 +24,20 @@ export function BottomNavigation() {
             <Pressable
               accessibilityRole='tab'
               accessibilityState={{ selected: isActive }}
-              className={cn(
-                'flex-1 items-center rounded-[32px] py-2',
-                isActive && 'bg-blue-light',
-              )}
+              className='items-center flex-1 py-2'
             >
-              <Icon
-                className={cn('text-text', isActive && 'text-primary')}
-                height={24}
-                width={24}
-              />
+              <View
+                className={cn(
+                  'items-center justify-center overflow-hidden rounded-full px-6 py-1',
+                  isActive && 'bg-blue-light',
+                )}
+              >
+                <Icon
+                  className={cn('text-text', isActive && 'text-primary')}
+                  height={24}
+                  width={24}
+                />
+              </View>
               <Text
                 className={cn(
                   'font-medium text-[12px] leading-4',

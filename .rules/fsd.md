@@ -114,6 +114,10 @@ instead of importing internal files of another slice.
 
 Do not expose private implementation without a reason.
 
+Reusable UI components should accept an optional `className` prop and merge it
+with their default classes through `cn`. Default styles must apply without
+`className`; a passed value must extend or override them.
+
 ## Decision process
 
 Before creating code, determine:

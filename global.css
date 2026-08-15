@@ -1,3 +1,35 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css';
+
+@import 'nativewind/theme';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-background: #f8f9fc;
+  --color-blue-light: #d0e2f3;
+  --color-border: #c8d5e0;
+  --color-button: #00658f;
+  --color-danger: #ef4444;
+  --color-maroon: #8f1f2e;
+  --color-neutral: #e7e8eb;
+  --color-primary: #004b71;
+  --color-purple: #7c4ddb;
+  --color-success: #18b978;
+  --color-text: #40484f;
+  --color-warning: #f6b800;
+  --font-bold: 'RobotoFlex_700Bold';
+  --font-extrabold: 'RobotoFlex_800ExtraBold';
+  --font-medium: 'RobotoFlex_500Medium';
+  --font-regular: 'RobotoFlex_400Regular';
+  --font-sans: 'RobotoFlex_400Regular';
+  --font-semibold: 'RobotoFlex_600SemiBold';
+  --text-base: 16px;
+  --text-base--line-height: 1.2em;
+  --radius-12: 12px;
+  --radius-6: 6px;
+  --radius-8: 8px;
+  --shadow-button: 0 6px 16px rgba(0, 0, 0, 0.25);
+  --shadow-card: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
