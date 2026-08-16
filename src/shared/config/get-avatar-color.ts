@@ -16,12 +16,10 @@ const COLORS: AvatarColor[] = [
 export function getAvatarColor(name: string): AvatarColor {
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
-    // A slightly better hash for distribution
     hash = (hash << 5) - hash + name.charCodeAt(i);
-    hash |= 0; // Convert to 32bit integer
+    hash |= 0;
   }
-  
-  // Use absolute value to avoid negative indices
+
   const index = Math.abs(hash) % COLORS.length;
   return COLORS[index];
 }

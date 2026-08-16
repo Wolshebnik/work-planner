@@ -7,6 +7,9 @@ import TeamIcon from './team.svg';
 import ChevronIcon from './chevron.svg';
 import CalendarIcon from './calendar.svg';
 import ArrowLeftIcon from './arrow-left.svg';
+import ArchiveIcon from './archive.svg';
+
+export const Archive = styledSvg(ArchiveIcon);
 
 export const ArrowLeft = styledSvg(ArrowLeftIcon);
 

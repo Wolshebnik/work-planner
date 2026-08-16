@@ -13,7 +13,7 @@ import { X } from '@/assets/svg';
 import { Text } from '@/shared/ui/text';
 
 interface BottomSheetProps {
-  title: string;
+  title?: string;
   isOpen: boolean;
   onClose: () => void;
   children?: ReactNode;
@@ -82,23 +82,25 @@ export function BottomSheet({
       }}
     >
       <BottomSheetView
-        className='px-4 pt-2'
+        className='px-5'
         style={{
           paddingBottom: 16 + insets.bottom,
         }}
       >
-        <View className='mb-4 flex-row items-center justify-between'>
-          <Text
-            className='flex-1 font-bold leading-[24px] text-primary text-[18px]'
-            numberOfLines={1}
-          >
-            {title}
-          </Text>
+        <View className='mb-4 flex-row items-center'>
+          {title && (
+            <Text
+              className='min-w-0 flex-1 font-bold leading-[24px] text-primary text-[18px]'
+              numberOfLines={1}
+            >
+              {title}
+            </Text>
+          )}
 
           <Pressable
             accessibilityLabel='Закрити панель'
             accessibilityRole='button'
-            className='ml-4 h-8 w-8 items-center justify-center rounded-full bg-background active:bg-neutral/10'
+            className='ml-auto h-8 w-8 shrink-0 items-center justify-center rounded-full active:bg-neutral/10'
             onPress={handleClose}
           >
             <X className='text-primary' height={14} width={14} />
