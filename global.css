@@ -8,17 +8,21 @@
 
 @theme {
   --color-background: #f8f9fc;
-  --color-blue-light: #d0e2f3;
+  --color-blue-light: #90c2e6;
   --color-border: #c8d5e0;
   --color-button: #00658f;
   --color-danger: #ef4444;
+  --color-danger-light: #fca5a5;
   --color-maroon: #8f1f2e;
   --color-neutral: #e7e8eb;
   --color-primary: #004b71;
   --color-purple: #7c4ddb;
+  --color-purple-light: #c084fc;
+  --color-sky: #0ea5e9;
   --color-success: #18b978;
   --color-text: #40484f;
   --color-warning: #f6b800;
+  --color-grey: #64748b;
   --font-bold: 'RobotoFlex_700Bold';
   --font-extrabold: 'RobotoFlex_800ExtraBold';
   --font-medium: 'RobotoFlex_500Medium';

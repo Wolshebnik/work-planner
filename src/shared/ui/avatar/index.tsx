@@ -11,24 +11,34 @@ interface AvatarProps {
   initials: string;
   color?: AvatarColor;
   className?: string;
+  size?: number;
 }
 
 export function Avatar({
   initials,
   color = defaultAvatarColor,
   className,
+  size = 40,
 }: AvatarProps) {
   return (
     <View
       className={cn(
-        'items-center justify-center w-10 h-10 rounded-full shrink-0',
+        'items-center justify-center rounded-full shrink-0',
         className,
       )}
-      style={{ backgroundColor: color.backgroundColor }}
+      style={{
+        backgroundColor: color.backgroundColor,
+        width: size,
+        height: size,
+      }}
     >
       <Text
-        className='font-bold text-[16px] leading-[24px]'
-        style={{ color: color.textColor }}
+        className='font-bold'
+        style={{
+          color: color.textColor,
+          fontSize: size / 2.5,
+          lineHeight: size / 2.5,
+        }}
       >
         {initials}
       </Text>

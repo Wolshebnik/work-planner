@@ -14,7 +14,7 @@ export function Header({ title, onBackPress, className }: HeaderProps) {
   return (
     <View
       className={cn(
-        'h-14 items-center justify-center border-b border-border bg-[#F2EDED] px-16 shadow-card',
+        'h-14 items-center justify-center border-b border-border bg-neutral px-16 shadow-card',
         className,
       )}
     >

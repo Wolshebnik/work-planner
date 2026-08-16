@@ -1,12 +1,11 @@
+import dayjs from 'dayjs';
 import { View } from 'react-native';
-import { Text } from '@/shared/ui/text';
+import { Calendar } from './calendar';
 
-export function MonthViewPlaceholder() {
+export function MonthViewPlaceholder({ startDate = dayjs() }: { startDate?: dayjs.Dayjs }) {
   return (
-    <View className='flex-1 items-center justify-center p-10'>
-      <Text className='text-center text-text/60'>
-        Вигляд місяця скоро буде доступний
-      </Text>
+    <View className='flex-1'>
+      <Calendar startDate={startDate} />
     </View>
   );
 }

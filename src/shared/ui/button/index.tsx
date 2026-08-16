@@ -46,16 +46,20 @@ export function Button({
       }}
       {...props}
     >
-      <Text
-        className={cn(
-          'font-bold text-[14px] leading-[20px]',
-          appearance === 'solid'
-            ? 'text-white'
-            : outlineTextClassNames[variant],
-        )}
-      >
-        {children}
-      </Text>
+      {typeof children === 'string' ? (
+        <Text
+          className={cn(
+            'font-bold text-[14px] leading-[20px]',
+            appearance === 'solid'
+              ? 'text-white'
+              : outlineTextClassNames[variant],
+          )}
+        >
+          {children}
+        </Text>
+      ) : (
+        children
+      )}
     </Pressable>
   );
 }

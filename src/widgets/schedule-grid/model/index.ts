@@ -2,17 +2,25 @@ import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 
 dayjs.extend(isoWeek);
-/**
- * Значение ячейки графика.
- * 'П'  — presence (success)
- * 'В'  — absence (danger)
- * '½'  — half day (warning)
- * 'lock' — locked slot (maroon, иконка добавляется отдельно)
- */
-export type DayCell = 'П' | 'В' | '½' | 'lock';
+
+export interface DayCell {
+  short: string;
+  isLocked?: boolean;
+}
+
+export interface EmployeeValue extends DayCell {
+  date: string;
+}
+
 export interface EmployeeRow {
   name: string;
   values: DayCell[];
+}
+
+export interface EmployeeRow1 {
+  id: string;
+  name: string;
+  values: EmployeeValue[];
 }
 export interface WeekDay {
   /** dayjs-объект дня */
@@ -34,11 +42,8 @@ const WEEKDAY_LABELS: Record<string, string> = {
   Sat: 'Сб',
   Sun: 'Нд',
 };
-/**
- * Строит 7 дней недели, начиная с Пн, из недели, содержащей `date`.
- */
+
 export function getWeekDays(date: dayjs.Dayjs): WeekDay[] {
-  // startOf('isoWeek') всегда возвращает понедельник.
   const start = date.startOf('isoWeek');
   const today = dayjs();
 
@@ -46,6 +51,7 @@ export function getWeekDays(date: dayjs.Dayjs): WeekDay[] {
   for (let i = 0; i < 7; i += 1) {
     const current = start.add(i, 'day');
     const en = current.format('ddd');
+
     result.push({
       date: current,
       label: WEEKDAY_LABELS[en] ?? en,
@@ -55,23 +61,271 @@ export function getWeekDays(date: dayjs.Dayjs): WeekDay[] {
   }
   return result;
 }
-/**
- * Хардкод-данные недели (пока без бэкенда).
- * Порядок сотрудников и дней соответствует скриншоту.
- */
 
-export const scheduleData: EmployeeRow[] = [
-  { name: 'Тесленко', values: ['П', 'П', 'П', 'П', 'П', 'В', 'В'] },
-  { name: 'Чумач', values: ['½', 'П', 'В', 'П', 'В', 'lock', 'В'] },
-  { name: 'Панько', values: ['В', 'В', 'П', 'П', 'П', 'П', 'П'] },
-  { name: 'Черник', values: ['П', 'П', 'В', 'В', 'П', 'П', '½'] },
-  { name: 'Кашкар', values: ['П', 'П', 'П', 'П', 'В', 'В', 'П'] },
-  { name: 'Привал', values: ['В', 'В', 'П', 'П', 'П', 'П', 'П'] },
-  { name: 'Жукова', values: ['П', 'П', 'П', 'П', 'В', 'В', 'П'] },
+export const scheduleData: EmployeeRow1[] = [
+  {
+    id: '1',
+    name: 'Тесленко',
+    values: [
+      { date: '2026-08-01', short: '9' },
+      { date: '2026-08-02', short: '-' },
+      { date: '2026-08-03', short: '9' },
+      { date: '2026-08-04', short: '9' },
+      { date: '2026-08-05', short: '9' },
+      { date: '2026-08-06', short: '9' },
+      { date: '2026-08-07', short: '9' },
+      { date: '2026-08-08', short: 'Б' },
+      { date: '2026-08-09', short: '-' },
+      { date: '2026-08-10', short: 'Б' },
+      { date: '2026-08-11', short: '9' },
+      { date: '2026-08-12', short: '9' },
+      { date: '2026-08-13', short: '9' },
+      { date: '2026-08-14', short: '9' },
+      { date: '2026-08-15', short: '9' },
+      { date: '2026-08-16', short: '-' },
+      { date: '2026-08-17', short: '9' },
+      { date: '2026-08-18', short: '9' },
+      { date: '2026-08-19', short: '9' },
+      { date: '2026-08-20', short: '9' },
+      { date: '2026-08-21', short: '9' },
+      { date: '2026-08-22', short: '9' },
+      { date: '2026-08-23', short: '-' },
+      { date: '2026-08-24', short: '9' },
+      { date: '2026-08-25', short: 'О' },
+      { date: '2026-08-26', short: 'О' },
+      { date: '2026-08-27', short: 'О' },
+      { date: '2026-08-28', short: '9' },
+      { date: '2026-08-29', short: '9' },
+      { date: '2026-08-30', short: '-' },
+      { date: '2026-08-31', short: '9' },
+    ],
+  },
+
+  {
+    id: '2',
+    name: 'Чумаченко',
+    values: [
+      { date: '2026-08-01', short: '9' },
+      { date: '2026-08-02', short: '-' },
+      { date: '2026-08-03', short: '9' },
+      { date: '2026-08-04', short: '9' },
+      { date: '2026-08-05', short: 'О' },
+      { date: '2026-08-06', short: 'О' },
+      { date: '2026-08-07', short: '9' },
+      { date: '2026-08-08', short: '9' },
+      { date: '2026-08-09', short: '-' },
+      { date: '2026-08-10', short: '9' },
+      { date: '2026-08-11', short: '9' },
+      { date: '2026-08-12', short: '9' },
+      { date: '2026-08-13', short: 'НА' },
+      { date: '2026-08-14', short: '9' },
+      { date: '2026-08-15', short: '9' },
+      { date: '2026-08-16', short: '-' },
+      { date: '2026-08-17', short: '9' },
+      { date: '2026-08-18', short: '9' },
+      { date: '2026-08-19', short: '9' },
+      { date: '2026-08-20', short: '9' },
+      { date: '2026-08-21', short: '9' },
+      { date: '2026-08-22', short: '9' },
+      { date: '2026-08-23', short: '-', isLocked: true },
+      { date: '2026-08-24', short: '9' },
+      { date: '2026-08-25', short: 'Б' },
+      { date: '2026-08-26', short: '9' },
+      { date: '2026-08-27', short: '9' },
+      { date: '2026-08-28', short: '9' },
+      { date: '2026-08-29', short: '9' },
+      { date: '2026-08-30', short: '-' },
+      { date: '2026-08-31', short: '9' },
+    ],
+  },
+
+  {
+    id: '3',
+    name: 'Панько',
+    values: [
+      { date: '2026-08-01', short: '9' },
+      { date: '2026-08-02', short: '-' },
+      { date: '2026-08-03', short: '9' },
+      { date: '2026-08-04', short: '9' },
+      { date: '2026-08-05', short: '9' },
+      { date: '2026-08-06', short: '9' },
+      { date: '2026-08-07', short: '9' },
+      { date: '2026-08-08', short: '9' },
+      { date: '2026-08-09', short: '-' },
+      { date: '2026-08-10', short: '9' },
+      { date: '2026-08-11', short: 'Б' },
+      { date: '2026-08-12', short: 'Б' },
+      { date: '2026-08-13', short: '9' },
+      { date: '2026-08-14', short: '9' },
+      { date: '2026-08-15', short: '9' },
+      { date: '2026-08-16', short: '-' },
+      { date: '2026-08-17', short: '9' },
+      { date: '2026-08-18', short: '9' },
+      { date: '2026-08-19', short: 'НА' },
+      { date: '2026-08-20', short: '9' },
+      { date: '2026-08-21', short: '9' },
+      { date: '2026-08-22', short: '9' },
+      { date: '2026-08-23', short: '-' },
+      { date: '2026-08-24', short: '9' },
+      { date: '2026-08-25', short: '9' },
+      { date: '2026-08-26', short: '9' },
+      { date: '2026-08-27', short: '9' },
+      { date: '2026-08-28', short: '9' },
+      { date: '2026-08-29', short: '9' },
+      { date: '2026-08-30', short: '-' },
+      { date: '2026-08-31', short: '9' },
+    ],
+  },
+
+  {
+    id: '4',
+    name: 'Черник',
+    values: [
+      { date: '2026-08-01', short: '9' },
+      { date: '2026-08-02', short: '-' },
+      { date: '2026-08-03', short: '9' },
+      { date: '2026-08-04', short: 'ПР' },
+      { date: '2026-08-05', short: '9' },
+      { date: '2026-08-06', short: '9' },
+      { date: '2026-08-07', short: '9' },
+      { date: '2026-08-08', short: '9' },
+      { date: '2026-08-09', short: '-' },
+      { date: '2026-08-10', short: '9' },
+      { date: '2026-08-11', short: '9' },
+      { date: '2026-08-12', short: '9' },
+      { date: '2026-08-13', short: '9' },
+      { date: '2026-08-14', short: '9' },
+      { date: '2026-08-15', short: '9' },
+      { date: '2026-08-16', short: '-' },
+      { date: '2026-08-17', short: 'ПР' },
+      { date: '2026-08-18', short: '9' },
+      { date: '2026-08-19', short: '9' },
+      { date: '2026-08-20', short: '9' },
+      { date: '2026-08-21', short: '9' },
+      { date: '2026-08-22', short: '9' },
+      { date: '2026-08-23', short: '-' },
+      { date: '2026-08-24', short: '9' },
+      { date: '2026-08-25', short: '9' },
+      { date: '2026-08-26', short: 'Б' },
+      { date: '2026-08-27', short: '9' },
+      { date: '2026-08-28', short: '9' },
+      { date: '2026-08-29', short: '9' },
+      { date: '2026-08-30', short: '-' },
+      { date: '2026-08-31', short: '9' },
+    ],
+  },
+
+  {
+    id: '5',
+    name: 'Кашкар',
+    values: [
+      { date: '2026-08-01', short: '9' },
+      { date: '2026-08-02', short: '-' },
+      { date: '2026-08-03', short: '9' },
+      { date: '2026-08-04', short: '9' },
+      { date: '2026-08-05', short: '9' },
+      { date: '2026-08-06', short: '9' },
+      { date: '2026-08-07', short: '9' },
+      { date: '2026-08-08', short: '9' },
+      { date: '2026-08-09', short: '-' },
+      { date: '2026-08-10', short: '9' },
+      { date: '2026-08-11', short: '9' },
+      { date: '2026-08-12', short: '9' },
+      { date: '2026-08-13', short: '9' },
+      { date: '2026-08-14', short: '9' },
+      { date: '2026-08-15', short: '9' },
+      { date: '2026-08-16', short: '-' },
+      { date: '2026-08-17', short: '9' },
+      { date: '2026-08-18', short: '9' },
+      { date: '2026-08-19', short: '9' },
+      { date: '2026-08-20', short: 'УВ' },
+      { date: '2026-08-21', short: 'УВ' },
+      { date: '2026-08-22', short: 'УВ' },
+      { date: '2026-08-23', short: 'УВ' },
+      { date: '2026-08-24', short: 'УВ' },
+      { date: '2026-08-25', short: 'УВ' },
+      { date: '2026-08-26', short: 'УВ' },
+      { date: '2026-08-27', short: 'УВ' },
+      { date: '2026-08-28', short: 'УВ' },
+      { date: '2026-08-29', short: 'УВ' },
+      { date: '2026-08-30', short: 'УВ' },
+      { date: '2026-08-31', short: 'УВ' },
+    ],
+  },
+
+  {
+    id: '6',
+    name: 'Привал',
+    values: [
+      { date: '2026-08-01', short: 'О' },
+      { date: '2026-08-02', short: 'О' },
+      { date: '2026-08-03', short: 'О' },
+      { date: '2026-08-04', short: 'О' },
+      { date: '2026-08-05', short: '9' },
+      { date: '2026-08-06', short: '9' },
+      { date: '2026-08-07', short: '9' },
+      { date: '2026-08-08', short: '9' },
+      { date: '2026-08-09', short: '-' },
+      { date: '2026-08-10', short: '9' },
+      { date: '2026-08-11', short: '9' },
+      { date: '2026-08-12', short: 'Б' },
+      { date: '2026-08-13', short: '9' },
+      { date: '2026-08-14', short: '9' },
+      { date: '2026-08-15', short: '9' },
+      { date: '2026-08-16', short: '-' },
+      { date: '2026-08-17', short: '9' },
+      { date: '2026-08-18', short: '9' },
+      { date: '2026-08-19', short: '9' },
+      { date: '2026-08-20', short: '9' },
+      { date: '2026-08-21', short: '9' },
+      { date: '2026-08-22', short: '9' },
+      { date: '2026-08-23', short: '-' },
+      { date: '2026-08-24', short: '9' },
+      { date: '2026-08-25', short: '9' },
+      { date: '2026-08-26', short: '9' },
+      { date: '2026-08-27', short: 'Б' },
+      { date: '2026-08-28', short: '9' },
+      { date: '2026-08-29', short: '9' },
+      { date: '2026-08-30', short: '-' },
+      { date: '2026-08-31', short: '9' },
+    ],
+  },
+
+  {
+    id: '7',
+    name: 'Жукова',
+    values: [
+      { date: '2026-08-01', short: '9' },
+      { date: '2026-08-02', short: '-' },
+      { date: '2026-08-03', short: '9' },
+      { date: '2026-08-04', short: 'НА' },
+      { date: '2026-08-05', short: '9' },
+      { date: '2026-08-06', short: '9' },
+      { date: '2026-08-07', short: '9' },
+      { date: '2026-08-08', short: '9' },
+      { date: '2026-08-09', short: '-' },
+      { date: '2026-08-10', short: '9' },
+      { date: '2026-08-11', short: '9' },
+      { date: '2026-08-12', short: 'ПР' },
+      { date: '2026-08-13', short: '9' },
+      { date: '2026-08-14', short: '9' },
+      { date: '2026-08-15', short: 'СТ' },
+      { date: '2026-08-16', short: '-' },
+      { date: '2026-08-17', short: '9' },
+      { date: '2026-08-18', short: 'НА' },
+      { date: '2026-08-19', short: '9' },
+      { date: '2026-08-20', short: '9' },
+      { date: '2026-08-21', short: '9' },
+      { date: '2026-08-22', short: '9' },
+      { date: '2026-08-23', short: '-' },
+      { date: '2026-08-24', short: '9' },
+      { date: '2026-08-25', short: 'Б' },
+      { date: '2026-08-26', short: '9' },
+      { date: '2026-08-27', short: '9' },
+      { date: '2026-08-28', short: '9' },
+      { date: '2026-08-29', short: '9' },
+      { date: '2026-08-30', short: '-' },
+      { date: '2026-08-31', short: '9' },
+    ],
+  },
 ];
-
-/**
- * Начало недели (Пн) — хардкод.
- * 2026-08-03 соответствует неделе 3–9 августа 2026.
- */
-export const weekStart = dayjs('2026-08-03');

@@ -1,7 +1,9 @@
 import { Stack } from 'expo-router';
-import { useFonts } from 'expo-font';
 import { styled } from 'nativewind';
 import { View } from 'react-native';
+import { useFonts } from 'expo-font';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { BottomNavigation } from '@/widgets/bottom-navigation';
@@ -20,15 +22,20 @@ export default function RootLayout() {
   });
 
   return (
-    <SafeAreaProvider>
-      <StyledSafeAreaView className='flex-1 bg-[#F2EDED]' edges={['top']}>
-        <StyledSafeAreaView className='flex-1 bg-[#E7E8EB]' edges={['bottom']}>
-          <View className='flex-1'>
-            <Stack screenOptions={{ headerShown: false }} />
-            <BottomNavigation />
-          </View>
-        </StyledSafeAreaView>
-      </StyledSafeAreaView>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
+        <SafeAreaProvider>
+          <StyledSafeAreaView
+            edges={['top', 'bottom']}
+            className='flex-1 bg-neutral'
+          >
+            <View className='flex-1 bg-background'>
+              <Stack screenOptions={{ headerShown: false }} />
+              <BottomNavigation />
+            </View>
+          </StyledSafeAreaView>
+        </SafeAreaProvider>
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 }
