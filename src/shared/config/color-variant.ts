@@ -1,9 +1,14 @@
 export const colorVariantClassNames = {
-  success: 'bg-success',
-  danger: 'bg-danger',
-  warning: 'bg-warning',
+  sky: 'bg-sky',
   purple: 'bg-purple',
+  purpleLight: 'bg-purple-light',
+  danger: 'bg-danger',
+  dangerLight: 'bg-danger-light',
+  grey: 'bg-grey',
   maroon: 'bg-maroon',
+  success: 'bg-success',
+  warning: 'bg-warning',
+  blueLight: 'bg-blue-light',
 } as const;
 
 export type ColorVariant = keyof typeof colorVariantClassNames;

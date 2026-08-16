@@ -1,33 +1,52 @@
+import { View } from 'react-native';
+
+import { Lock } from '@/assets/svg';
 import { cn } from '@/shared/lib/cn';
 import { StatusBadge } from '@/shared/ui/status-badge';
-import { type ColorVariant } from '@/shared/config/color-variant';
+import { EmployeeStatus, SHORT_TO_STATUS } from '@/shared/config/employee-status';
 
 import type { DayCell } from '../model';
 
 interface ScheduleCellProps {
   value: DayCell;
   className?: string;
+  isSelected?: boolean;
   onPress?: () => void;
 }
 
-const CELL_TO_VARIANT: Record<DayCell, ColorVariant> = {
-  П: 'success',
-  В: 'danger',
-  '½': 'warning',
-  lock: 'maroon',
-};
+export function ScheduleCell({ value, className, onPress, isSelected }: ScheduleCellProps) {
+  const statusKey = SHORT_TO_STATUS[value.short];
+  const statusConfig = statusKey ? EmployeeStatus[statusKey] : undefined;
+  const isLocked = !!value.isLocked;
+  const isEmpty = !value.short || value.short === ''; // Определяем пустое состояние
 
-export function ScheduleCell({ value, className, onPress }: ScheduleCellProps) {
-  // Замок рендерим пустым StatusBadge (иконка вне ответственности этой задачи).
-  const showContent = value !== 'lock';
+  const displayShort = statusConfig?.short ?? value.short;
+  
+  // Если пусто, используем outline, иначе solid
+  const appearance = isEmpty ? 'outline' : 'solid';
+  const variant = statusConfig?.variant ?? 'primary'; 
 
   return (
     <StatusBadge
-      variant={CELL_TO_VARIANT[value]}
-      className={cn('h-8.5 w-8.5', className)}
-      onPress={onPress}
+      variant={variant}
+      appearance={appearance}
+      className={cn(
+        'h-8.5 w-8.5',
+        isSelected && 'ring-2 ring-primary ring-offset-1',
+        isEmpty && 'shadow-none', // Убираем тень для пустых ячеек
+        className,
+      )}
+      onPress={() => {
+        onPress?.();
+      }}
     >
-      {showContent ? value : undefined}
+      {isLocked ? (
+        <View className='items-center justify-center'>
+          <Lock className='h-4 w-4 text-white' />
+        </View>
+      ) : (
+        !isEmpty && displayShort
+      )}
     </StatusBadge>
   );
 }

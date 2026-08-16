@@ -54,7 +54,7 @@ export function ViewSwitcher({
   return (
     <View
       className={cn(
-        ' h-10 flex-row rounded-12 bg-[#DBDCDF] p-1 border border-neutral',
+        'h-12 flex-row rounded-12 bg-[#DBDCDF] p-1 border border-neutral',
 
         className,
       )}
