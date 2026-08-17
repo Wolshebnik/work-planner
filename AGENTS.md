@@ -94,4 +94,10 @@ Treat uncommitted changes as user work. Do not revert, overwrite, reset, or disc
 
 Complete a task only when the requested behavior is implemented, project conventions are followed, unnecessary changes are avoided, relevant verification is performed where possible, the final diff is inspected, and limitations or unverified behavior are stated.
 
-The objective is the smallest correct change that can be verified, not the most code.
+## 15. Surgical editing constraint
+
+Prioritize surgical edits using `replace`. **NEVER** use `write_file` to modify existing files unless creating a completely new file. 
+
+Before making **any** edit, you **MUST** perform a `read_file` on the target file immediately preceding the edit to ensure your understanding of the local code state is current and accurate. 
+
+Do not assume the file content based on conversation history or cached context. Failure to respect this rule resulting in loss of user-made changes is a critical failure.

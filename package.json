@@ -33,6 +33,7 @@
     "react-native-screens": "~4.26.0",
     "react-native-svg": "15.15.4",
     "react-native-web": "~0.21.0",
+    "reanimated-color-picker": "^5.1.2",
     "tailwind-merge": "^3.6.0",
     "zod": "^4.4.3"
   },

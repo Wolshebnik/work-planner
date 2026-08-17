@@ -16,12 +16,12 @@ export const EmployeeStatus = {
 } as const;
 
 export const SHORT_TO_STATUS: Record<string, EmployeeStatusType> = {
+  '9': 'WORK',
+  '-': 'OFF',
   Б: 'SICK',
   О: 'VACATION',
   НА: 'NA',
   ПР: 'ABSENT',
   УВ: 'FIRED',
-  '-': 'OFF',
-  '9': 'WORK',
-  'СТ': 'ST',
+  СТ: 'ST',
 };

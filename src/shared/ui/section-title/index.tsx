@@ -2,8 +2,8 @@ import { cn } from '@/shared/lib/cn';
 import { Text } from '@/shared/ui/text';
 
 interface SectionTitleProps {
-  text: string;
   className?: string;
+  text: string;
 }
 
 export function SectionTitle({ text, className }: SectionTitleProps) {

@@ -1,22 +1,22 @@
-import { useRef, useEffect, useCallback, type ReactNode } from 'react';
+import { type ReactNode, useCallback, useEffect, useRef } from 'react';
 
-import { View, Pressable } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
-  BottomSheetView,
-  BottomSheetModal,
   BottomSheetBackdrop,
   type BottomSheetBackdropProps,
+  BottomSheetModal,
+  BottomSheetView,
 } from '@gorhom/bottom-sheet';
+import { Pressable, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { X } from '@/assets/svg';
 import { Text } from '@/shared/ui/text';
 
 interface BottomSheetProps {
-  title?: string;
+  children?: ReactNode;
   isOpen: boolean;
   onClose: () => void;
-  children?: ReactNode;
+  title?: string;
 }
 
 export function BottomSheet({
@@ -84,7 +84,7 @@ export function BottomSheet({
       <BottomSheetView
         className='px-5'
         style={{
-          paddingBottom: 16 + insets.bottom,
+          paddingBottom: insets.bottom,
         }}
       >
         <View className='mb-4 flex-row items-center'>

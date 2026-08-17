@@ -40,7 +40,7 @@ export function EmployeeCard({
       onPress={onPress}
       activeOpacity={0.7}
       className={cn(
-        'flex-row items-center gap-3 p-3 bg-white rounded-12 border border-border',
+        'flex-row items-center gap-3 p-3 bg-white rounded-12 border border-border shadow-card',
         className,
       )}
     >

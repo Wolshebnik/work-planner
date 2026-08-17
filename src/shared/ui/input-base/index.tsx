@@ -9,12 +9,14 @@ export interface InputBaseProps extends TextInputProps {
   bottomSheet?: boolean;
   error?: string;
   label?: string;
+  labelColor?: string;
   required?: boolean;
 }
 
 export function InputBase({
   error,
   label,
+  labelColor = '#f8f9fc',
   bottomSheet = false,
   className,
   required,
@@ -37,7 +39,10 @@ export function InputBase({
     <View className={cn('w-full', className)}>
       {label ? (
         <View className={cn('relative h-14 rounded-8 border', borderClassName)}>
-          <View className='absolute -top-2.5 left-3 z-10 flex-row items-center bg-background px-1'>
+          <View
+            className='absolute -top-2.5 left-3 z-10 flex-row items-center px-1'
+            style={{ backgroundColor: labelColor }}
+          >
             <Text
               className={cn(
                 'text-[12px]',
