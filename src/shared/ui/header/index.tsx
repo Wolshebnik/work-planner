@@ -1,13 +1,13 @@
-import { View, Pressable } from 'react-native';
+import { Pressable, View } from 'react-native';
 
+import { ArrowLeft } from '@/assets/svg';
 import { cn } from '@/shared/lib/cn';
 import { Text } from '@/shared/ui/text';
-import { ArrowLeft } from '@/assets/svg';
 
 interface HeaderProps {
-  title: string;
   className?: string;
   onBackPress?: () => void;
+  title: string;
 }
 
 export function Header({ title, onBackPress, className }: HeaderProps) {

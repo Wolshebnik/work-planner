@@ -12,7 +12,7 @@ export function EmployeeAddSheet({
   if (!employee || !isOpen) return null;
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title='Працівник'>
+    <BottomSheet isOpen={isOpen} onClose={onClose} title='Додати працівника'>
       <EditView
         defaultValues={{
           lastName: employee.name.split(' ')[0] ?? '',
