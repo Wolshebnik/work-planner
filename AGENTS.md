@@ -62,7 +62,9 @@ Code generation alone is not completion.
 
 ## 8. Verify your work
 
-After a change, use the strongest practical verification available: relevant tests, type checks, linting, builds, formatting checks, targeted commands, and application-specific validation. Prefer a sufficient targeted check first.
+After a change, use the strongest practical verification available: relevant tests, type checks, linting, formatting checks, targeted commands, and application-specific validation. Prefer a sufficient targeted check first.
+
+**Run only `lint` by default.** Run `build` only when explicitly asked by the user.
 
 For bug fixes, test the failing behavior; for features, the added behavior; for refactors, behavior before and after where practical. If verification cannot run, state exactly what was not verified and why. Do not claim it works without verification.
 

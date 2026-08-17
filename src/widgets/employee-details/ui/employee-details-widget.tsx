@@ -1,25 +1,26 @@
 import { View } from 'react-native';
 
-import { cn } from '@/shared/lib/cn';
 import { Archive } from '@/assets/svg';
-import { Text } from '@/shared/ui/text';
-import { Avatar } from '@/shared/ui/avatar';
-import { Button } from '@/shared/ui/button';
-import { BottomSheet } from '@/shared/ui/bottom-sheet';
 import { getAvatarColor } from '@/shared/config/get-avatar-color';
+import { cn } from '@/shared/lib/cn';
+import { Avatar } from '@/shared/ui/avatar';
+import { BottomSheet } from '@/shared/ui/bottom-sheet';
+import { ButtonBase } from '@/shared/ui/button-base';
+import { Text } from '@/shared/ui/text';
 
 interface Employee {
   id: string;
-  name: string;
   isActive: boolean;
+  name: string;
 }
 interface EmployeeDetailsWidgetProps {
-  isOpen: boolean;
   actionLabel: string;
-  onClose: () => void;
   employee: Employee | null;
   isArchiveAction?: boolean;
+  isOpen: boolean;
   onAction: (id: string) => void;
+  onClose: () => void;
+  onEditNamePress?: () => void;
 }
 
 export function EmployeeDetailsWidget({
@@ -29,6 +30,7 @@ export function EmployeeDetailsWidget({
   onAction,
   actionLabel,
   isArchiveAction = false,
+  onEditNamePress,
 }: EmployeeDetailsWidgetProps) {
   if (!employee) return null;
 
@@ -49,7 +51,7 @@ export function EmployeeDetailsWidget({
           {employee.name}
         </Text>
 
-        <Button
+        <ButtonBase
           variant='grey'
           appearance='outline'
           className='mb-3 flex-row gap-2 py-1'
@@ -63,13 +65,18 @@ export function EmployeeDetailsWidget({
           <Text className='font-bold text-grey text-[12px]'>
             {employee.isActive ? 'Активний' : 'Неактивний'}
           </Text>
-        </Button>
+        </ButtonBase>
 
-        <Button variant='primary' appearance='outline' className='mb-3 w-40'>
+        <ButtonBase
+          variant='primary'
+          appearance='outline'
+          className='mb-3 w-40'
+          onPress={onEditNamePress}
+        >
           Редагувати ім’я
-        </Button>
+        </ButtonBase>
 
-        <Button
+        <ButtonBase
           variant={isArchiveAction ? 'danger' : 'primary'}
           appearance='outline'
           className='mb-5 flex-row gap-2'
@@ -86,7 +93,7 @@ export function EmployeeDetailsWidget({
           >
             {actionLabel}
           </Text>
-        </Button>
+        </ButtonBase>
       </View>
     </BottomSheet>
   );

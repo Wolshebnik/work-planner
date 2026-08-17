@@ -1,13 +1,13 @@
 import { useState } from 'react';
 
 import { useRouter } from 'expo-router';
-import { View, ScrollView } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
-import { Button } from '@/shared/ui/button';
-import { Header } from '@/shared/ui/header';
+import { EmployeeCard, employees } from '@/entities/employee';
 import { ROUTES } from '@/shared/config/routes';
+import { ButtonBase } from '@/shared/ui/button-base';
+import { Header } from '@/shared/ui/header';
 import { SectionTitle } from '@/shared/ui/section-title';
-import { employees, EmployeeCard } from '@/entities/employee';
 
 export function TeamArchivedPage() {
   const router = useRouter();
@@ -35,17 +35,18 @@ export function TeamArchivedPage() {
       <ScrollView className='px-4' contentContainerClassName='gap-3 pb-6'>
         {archivedEmployees.map((employee) => (
           <EmployeeCard
+            isArchived
             key={employee.id}
             employee={employee}
             rightElement={
-              <Button
+              <ButtonBase
                 variant='grey'
                 appearance='outline'
                 className='border-grey py-1'
                 onPress={() => handleUnarchive(employee.id)}
               >
                 Видалити
-              </Button>
+              </ButtonBase>
             }
           />
         ))}
