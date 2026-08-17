@@ -1,17 +1,18 @@
-import { View, TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 
-import { cn } from '@/shared/lib/cn';
-import { Text } from '@/shared/ui/text';
-import { Avatar } from '@/shared/ui/avatar';
 import { getAvatarColor } from '@/shared/config/get-avatar-color';
+import { cn } from '@/shared/lib/cn';
+import { Avatar } from '@/shared/ui/avatar';
+import { Text } from '@/shared/ui/text';
 
 interface Employee {
-  name: string;
   isActive: boolean;
+  name: string;
 }
 interface EmployeeCardProps {
   className?: string;
   employee: Employee;
+  isArchived?: boolean;
   onPress?: () => void;
   rightElement?: React.ReactNode;
 }
@@ -20,6 +21,7 @@ export function EmployeeCard({
   employee,
   className,
   onPress,
+  isArchived,
   rightElement,
 }: EmployeeCardProps) {
   const { name, isActive } = employee;
@@ -42,7 +44,10 @@ export function EmployeeCard({
         className,
       )}
     >
-      <Avatar initials={initials} color={avatarColor} />
+      <Avatar
+        initials={initials}
+        color={isArchived ? undefined : avatarColor}
+      />
 
       <View className='flex-1'>
         <Text className='font-bold text-[14px]'>{name}</Text>

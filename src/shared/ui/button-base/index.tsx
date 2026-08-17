@@ -14,19 +14,19 @@ import {
   outlineVariantClassNames,
 } from './button-appearance';
 
-interface ButtonProps extends Omit<PressableProps, 'android_ripple' | 'style'> {
-  children: ReactNode;
+export interface ButtonBaseProps extends Omit<PressableProps, 'android_ripple' | 'style'> {
+  children?: ReactNode;
   variant?: ButtonVariant;
   appearance?: ButtonAppearance;
 }
 
-export function Button({
+export function ButtonBase({
   children,
   className,
   variant = 'primary',
   appearance = 'solid',
   ...props
-}: ButtonProps) {
+}: ButtonBaseProps) {
   return (
     <Pressable
       className={cn(

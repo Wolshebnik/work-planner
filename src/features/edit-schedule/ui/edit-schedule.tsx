@@ -1,13 +1,14 @@
 import { View } from 'react-native';
+
 import { Lock } from '@/assets/svg';
-import { Text } from '@/shared/ui/text';
-import { Button } from '@/shared/ui/button';
 import { EmployeeStatus } from '@/shared/config/employee-status';
-import type { ButtonVariant } from '@/shared/ui/button/button-appearance';
+import { ButtonBase } from '@/shared/ui/button-base';
+import type { ButtonVariant } from '@/shared/ui/button-base/button-appearance';
+import { Text } from '@/shared/ui/text';
 
 interface EditScheduleProps {
-  onStatusChange: (statusKey: string) => void;
   onLock: () => void;
+  onStatusChange: (statusKey: string) => void;
 }
 
 export function EditSchedule({ onStatusChange, onLock }: EditScheduleProps) {
@@ -16,7 +17,7 @@ export function EditSchedule({ onStatusChange, onLock }: EditScheduleProps) {
       {(['WORK', 'OFF'] as const).map((key) => {
         const config = EmployeeStatus[key];
         return (
-          <Button
+          <ButtonBase
             key={key}
             appearance='solid'
             variant={config.variant as ButtonVariant}
@@ -24,11 +25,11 @@ export function EditSchedule({ onStatusChange, onLock }: EditScheduleProps) {
             onPress={() => onStatusChange(key)}
           >
             {config.label}
-          </Button>
+          </ButtonBase>
         );
       })}
 
-      <Button
+      <ButtonBase
         appearance='solid'
         variant='danger'
         className='grow flex-row items-center justify-center gap-2'
@@ -38,12 +39,12 @@ export function EditSchedule({ onStatusChange, onLock }: EditScheduleProps) {
         <Text className='text-white font-bold text-[14px] leading-[20px]'>
           Вихідний
         </Text>
-      </Button>
+      </ButtonBase>
 
       {(['SICK', 'VACATION', 'ABSENT', 'ST'] as const).map((key) => {
         const config = EmployeeStatus[key];
         return (
-          <Button
+          <ButtonBase
             key={key}
             appearance='solid'
             variant={config.variant as ButtonVariant}
@@ -51,27 +52,27 @@ export function EditSchedule({ onStatusChange, onLock }: EditScheduleProps) {
             onPress={() => onStatusChange(key)}
           >
             {config.label}
-          </Button>
+          </ButtonBase>
         );
       })}
 
       <View className='flex-row gap-2 w-full'>
-        <Button
+        <ButtonBase
           appearance='solid'
           variant={EmployeeStatus.FIRED.variant as ButtonVariant}
           className='flex-1'
           onPress={() => onStatusChange('FIRED')}
         >
           {EmployeeStatus.FIRED.label}
-        </Button>
-        <Button
+        </ButtonBase>
+        <ButtonBase
           appearance='solid'
           variant={EmployeeStatus.NA.variant as ButtonVariant}
           className='flex-2'
           onPress={() => onStatusChange('NA')}
         >
           {EmployeeStatus.NA.label}
-        </Button>
+        </ButtonBase>
       </View>
     </View>
   );

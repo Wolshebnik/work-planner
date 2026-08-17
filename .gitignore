@@ -3,3 +3,4 @@ node_modules/
 dist/
 expo-env.d.ts
 node_modules
+.claude/
