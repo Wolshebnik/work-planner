@@ -4,3 +4,5 @@ dist/
 expo-env.d.ts
 node_modules
 .claude/
+*.env*
+!.env.example

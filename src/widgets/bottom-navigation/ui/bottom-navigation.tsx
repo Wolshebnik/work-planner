@@ -1,10 +1,10 @@
-import { View, Pressable } from 'react-native';
 import { Link, usePathname } from 'expo-router';
+import { Pressable, View } from 'react-native';
 
+import { Calendar, Dots, Team } from '@/assets/svg';
+import { ROUTES } from '@/shared/config/routes';
 import { cn } from '@/shared/lib/cn';
 import { Text } from '@/shared/ui/text';
-import { Dots, Team, Calendar } from '@/assets/svg';
-import { ROUTES } from '@/shared/config/routes';
 
 const navigationItems = [
   { href: ROUTES.HOME, label: 'Графік', Icon: Calendar },
@@ -33,7 +33,7 @@ export function BottomNavigation() {
               <View
                 className={cn(
                   'items-center justify-center overflow-hidden rounded-full px-6 py-1',
-                  isActive && 'bg-blue-light',
+                  isActive && 'bg-blue-light/40',
                 )}
               >
                 <Icon

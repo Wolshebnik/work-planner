@@ -14,6 +14,8 @@ interface DeleteConfirmationSheetProps {
   onClose: () => void;
   onConfirm: () => void;
   title: string;
+  confirmText?: string;
+  confirmVariant?: 'danger' | 'success' | 'primary';
 }
 
 export function DeleteConfirmationSheet({
@@ -23,6 +25,8 @@ export function DeleteConfirmationSheet({
   isLoading,
   title,
   description,
+  confirmText = 'Видалити',
+  confirmVariant = 'danger',
 }: DeleteConfirmationSheetProps) {
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} title={title}>
@@ -43,15 +47,16 @@ export function DeleteConfirmationSheet({
           >
             Скасувати
           </ButtonBase>
+
           <ButtonLoader
-            variant='danger'
+            variant={confirmVariant}
             appearance='solid'
             className='w-30'
             loaderColor='#fff'
             loading={isLoading}
             onPress={onConfirm}
           >
-            Видалити
+            {confirmText}
           </ButtonLoader>
         </View>
       </View>

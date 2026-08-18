@@ -1,25 +1,29 @@
 import { View } from 'react-native';
 
 import { Archive } from '@/assets/svg';
+import { useArchiveEmployee } from '@/features/archive-employee';
 import { getAvatarColor } from '@/shared/config/get-avatar-color';
 import { cn } from '@/shared/lib/cn';
 import { Avatar } from '@/shared/ui/avatar';
 import { ButtonBase } from '@/shared/ui/button-base';
+import { ButtonLoader } from '@/shared/ui/button-loader';
 import { Text } from '@/shared/ui/text';
 
 import { type EmployeeData } from '../model/schema';
 
 interface DetailsViewProps {
   employee: EmployeeData;
+  onClose: () => void;
   onEditPress: () => void;
-  onArchive: (id: string) => void;
 }
 
 export function DetailsView({
   employee,
   onEditPress,
-  onArchive,
+  onClose,
 }: DetailsViewProps) {
+  const { mutateAsync, isPending } = useArchiveEmployee();
+
   const initials = employee.name
     .split(' ')
     .map((n) => n[0])
@@ -28,6 +32,11 @@ export function DetailsView({
     .slice(0, 2);
 
   const avatarColor = getAvatarColor(employee.name || ' ');
+
+  const handleArchive = async () => {
+    await mutateAsync(employee.id);
+    onClose();
+  };
 
   return (
     <View className='items-center'>
@@ -55,23 +64,25 @@ export function DetailsView({
       <ButtonBase
         variant='primary'
         appearance='outline'
-        className='mb-3 w-40'
+        className='mb-3 '
         onPress={onEditPress}
       >
         Редагувати ім’я
       </ButtonBase>
 
-      <ButtonBase
+      <ButtonLoader
         variant='danger'
         appearance='outline'
         className='mb-5 flex-row gap-2'
-        onPress={() => onArchive(employee.id)}
+        loading={isPending}
+        onPress={handleArchive}
       >
         <Archive className='text-danger' height={24} width={24} />
+
         <Text className='font-bold text-[16px] text-danger'>
           Архівувати працівника
         </Text>
-      </ButtonBase>
+      </ButtonLoader>
     </View>
   );
 }

@@ -1,13 +1,14 @@
-import { View, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import { TouchableOpacity, View } from 'react-native';
 
 import { Archive } from '@/assets/svg';
-import { Text } from '@/shared/ui/text';
 import { ROUTES } from '@/shared/config/routes';
+import { cn } from '@/shared/lib/cn';
+import { Text } from '@/shared/ui/text';
 
 interface ArchivedEmployeesCardProps {
-  count: number;
   className?: string;
+  count: number;
 }
 
 export function ArchivedEmployeesCard({
@@ -19,7 +20,10 @@ export function ArchivedEmployeesCard({
   return (
     <TouchableOpacity
       onPress={() => router.push(ROUTES.TEAM_ARCHIVED)}
-      className={`p-3 bg-[#D0E2F3]/30 rounded-12 border border-border gap-2 ${className}`}
+      className={cn(
+        'p-3 bg-[#D0E2F3]/30 rounded-12 border border-border gap-2 shadow-card',
+        className,
+      )}
     >
       <View className='flex-row items-center justify-between gap-3'>
         <View className='items-center justify-center w-10 h-10 rounded-full bg-[#D0E2F3]'>

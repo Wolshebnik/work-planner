@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { Modal, View } from 'react-native';
 import ColorPicker, {
+  BrightnessSlider,
   colorKit,
   HueSlider,
   OpacitySlider,
@@ -18,7 +19,7 @@ interface ColorPickerDialogProps {
   onSelect: (color: string) => void;
 }
 
-const COLOR_PREVIEW_SIZE = 100;
+const COLOR_PREVIEW_SIZE = 80;
 
 export function ColorPickerDialog({
   initialColor,
@@ -56,7 +57,7 @@ export function ColorPickerDialog({
               }}
             />
 
-            <View className='h-6' />
+            <View className='h-3' />
 
             <HueSlider
               sliderThickness={32}
@@ -66,7 +67,17 @@ export function ColorPickerDialog({
               }}
             />
 
-            <View className='h-4' />
+            <View className='h-3' />
+
+            <BrightnessSlider
+              sliderThickness={32}
+              thumbSize={40}
+              style={{
+                borderRadius: 16,
+              }}
+            />
+
+            <View className='h-3' />
 
             <OpacitySlider
               sliderThickness={32}
@@ -76,9 +87,9 @@ export function ColorPickerDialog({
               }}
             />
 
-            <View className='h-5' />
+            <View className='h-3' />
 
-            <View className='items-center gap-2'>
+            <View className='items-center gap-1'>
               <View
                 style={{
                   width: COLOR_PREVIEW_SIZE,

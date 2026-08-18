@@ -2,73 +2,75 @@ import { useState } from 'react';
 
 import { ScrollView, View } from 'react-native';
 
-import {
-  ArchivedEmployeesCard,
-  EmployeeCard,
-  employees,
-} from '@/entities/employee';
+import { ArchivedEmployeesCard, EmployeeCard } from '@/entities/employee';
+import { useAddEmployee } from '@/features/add-employee';
 import {
   EmployeeAddSheet,
   type EmployeeData,
   EmployeeDetailsSheet,
 } from '@/features/employee-details';
+import { useGetEmployees } from '@/features/get-employees';
+import { useUpdateEmployee } from '@/features/update-employee';
 import { ButtonBase } from '@/shared/ui/button-base';
+import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import { Header } from '@/shared/ui/header';
 import { SectionTitle } from '@/shared/ui/section-title';
 
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export function TeamPage() {
-  const [employeesList, setEmployeesList] = useState(employees);
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeData | null>(
     null,
   );
   const [isAddOpen, setIsAddOpen] = useState(false);
 
-  const activeEmployees = employeesList.filter((e) => e.isActive);
-  const archivedEmployeesCount = employeesList.length - activeEmployees.length;
+  const { data: employees = [], isLoading } = useGetEmployees();
+  const addEmployeeMutation = useAddEmployee();
+  const updateEmployeeMutation = useUpdateEmployee();
 
-  const handleArchive = (id: string) => {
-    setEmployeesList((prev) =>
-      prev.map((e) => (e.id === id ? { ...e, isActive: false } : e)),
-    );
-    setSelectedEmployee(null);
-  };
+  const mappedEmployees: EmployeeData[] = employees.map((e) => ({
+    id: e.id,
+    name: [e.last_name, e.first_name, e.patronymic].filter(Boolean).join(' '),
+    isActive: e.is_active,
+  }));
 
-  const handleSaveEmployee = async (data: {
-    lastName: string;
-    firstName: string;
-    middleName?: string;
-  }) => {
-    await delay(2000);
-    if (!selectedEmployee) return;
-    const fullName = [data.lastName, data.firstName, data.middleName]
-      .filter(Boolean)
-      .join(' ');
-    setEmployeesList((prev) =>
-      prev.map((e) =>
-        e.id === selectedEmployee.id ? { ...e, name: fullName } : e,
-      ),
-    );
-  };
+  const activeEmployees = mappedEmployees.filter((e) => e.isActive);
+  const archivedEmployeesCount =
+    mappedEmployees.length - activeEmployees.length;
 
   const handleAddEmployee = async (data: {
     lastName: string;
     firstName: string;
     middleName?: string;
   }) => {
-    await delay(2000);
-    const fullName = [data.lastName, data.firstName, data.middleName]
-      .filter(Boolean)
-      .join(' ');
-    const newEmployee = {
-      id: String(employeesList.length + 1),
-      name: fullName,
-      isActive: true,
-    };
-    setEmployeesList((prev) => [...prev, newEmployee]);
+    await addEmployeeMutation.mutateAsync({
+      lastName: data.lastName,
+      firstName: data.firstName,
+      patronymic: data.middleName,
+    });
     setIsAddOpen(false);
   };
+
+  const handleUpdateEmployee = async (data: {
+    lastName: string;
+    firstName: string;
+    middleName?: string;
+  }) => {
+    if (!selectedEmployee) return;
+    await updateEmployeeMutation.mutateAsync({
+      id: selectedEmployee.id,
+      lastName: data.lastName,
+      firstName: data.firstName,
+      patronymic: data.middleName,
+    });
+    setSelectedEmployee(null);
+  };
+
+  if (isLoading) {
+    return (
+      <View className='flex-1 items-center justify-center'>
+        <CircularProgressLoader size='large' />
+      </View>
+    );
+  }
 
   return (
     <View className='flex-1'>
@@ -91,7 +93,7 @@ export function TeamPage() {
       <ScrollView className='px-4' contentContainerClassName='gap-3 pb-6'>
         {activeEmployees.map((employee) => (
           <EmployeeCard
-            key={employee.name}
+            key={employee.id}
             employee={employee}
             onPress={() => setSelectedEmployee(employee)}
           />
@@ -106,8 +108,7 @@ export function TeamPage() {
         employee={selectedEmployee}
         isOpen={!!selectedEmployee}
         onClose={() => setSelectedEmployee(null)}
-        onArchive={handleArchive}
-        onSave={handleSaveEmployee}
+        onSave={handleUpdateEmployee}
       />
 
       <EmployeeAddSheet
@@ -115,7 +116,6 @@ export function TeamPage() {
         isOpen={isAddOpen}
         initialMode='edit'
         onClose={() => setIsAddOpen(false)}
-        onArchive={() => {}}
         onSave={handleAddEmployee}
       />
     </View>

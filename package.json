@@ -12,6 +12,9 @@
   "dependencies": {
     "@gorhom/bottom-sheet": "^5.2.14",
     "@hookform/resolvers": "^5.9.0",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@supabase/supabase-js": "^2.112.3",
+    "@tanstack/react-query": "^5.101.4",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.21",
     "expo": "~57.0.12",
@@ -32,6 +35,7 @@
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
     "react-native-svg": "15.15.4",
+    "react-native-toast-message": "^2.4.0",
     "react-native-web": "~0.21.0",
     "reanimated-color-picker": "^5.1.2",
     "tailwind-merge": "^3.6.0",
