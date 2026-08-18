@@ -5,7 +5,6 @@ export const getScheduleStatuses = async (): Promise<ScheduleStatus[]> => {
   const { data, error } = await supabase
     .from('statuses')
     .select('*')
-    .eq('is_active', true)
     .order('sort_order', { ascending: true });
 
   if (error) {

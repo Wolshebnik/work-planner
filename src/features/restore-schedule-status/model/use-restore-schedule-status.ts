@@ -2,13 +2,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { scheduleStatusesQueryKey } from '@/features/get-schedule-statuses';
 
-import { addScheduleStatus, type AddScheduleStatusInput } from '../api/add-schedule-status';
+import { restoreScheduleStatus } from '../api/restore-schedule-status';
 
-export function useAddScheduleStatus() {
+export function useRestoreScheduleStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: AddScheduleStatusInput) => addScheduleStatus(input),
+    mutationFn: (id: string) => restoreScheduleStatus(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: scheduleStatusesQueryKey });
     },

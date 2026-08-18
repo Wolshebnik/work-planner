@@ -1,6 +1,7 @@
 import { ScrollView, View } from 'react-native';
 
 import {
+  ArchivedScheduleStatusesCard,
   type ScheduleStatus,
   ScheduleStatusItem,
 } from '@/entities/schedule-status';
@@ -35,9 +36,12 @@ export const ScheduleStatusesList = ({
     );
   }
 
+  const activeStatuses = statuses.filter((s) => s.is_active);
+  const archivedStatusesCount = statuses.length - activeStatuses.length;
+
   return (
-    <ScrollView className='flex-1 mb-5'>
-      {statuses.map((status) => (
+    <ScrollView className='flex-1 mb-5' contentContainerClassName='pb-6'>
+      {activeStatuses.map((status) => (
         <ScheduleStatusItem
           key={status.id}
           title={status.name}
@@ -49,6 +53,10 @@ export const ScheduleStatusesList = ({
           onDelete={() => onDeleteStatus(status)}
         />
       ))}
+
+      {archivedStatusesCount > 0 && (
+        <ArchivedScheduleStatusesCard count={archivedStatusesCount} />
+      )}
     </ScrollView>
   );
 };

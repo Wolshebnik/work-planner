@@ -5,7 +5,11 @@ import { View } from 'react-native';
 
 import { type ScheduleStatus } from '@/entities/schedule-status';
 import { useAddScheduleStatus } from '@/features/add-schedule-status';
-import { EditScheduleStatusSheet, type FormValues } from '@/features/edit-schedule-status';
+import { useArchiveScheduleStatus } from '@/features/archive-schedule-status';
+import {
+  EditScheduleStatusSheet,
+  type FormValues,
+} from '@/features/edit-schedule-status';
 import { useUpdateScheduleStatus } from '@/features/update-schedule-status';
 import { ROUTES } from '@/shared/config/routes';
 import { ButtonBase } from '@/shared/ui/button-base';
@@ -20,6 +24,7 @@ export function ScheduleStatusesPage() {
 
   const addStatus = useAddScheduleStatus();
   const updateStatus = useUpdateScheduleStatus();
+  const archiveStatus = useArchiveScheduleStatus();
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
@@ -64,10 +69,7 @@ export function ScheduleStatusesPage() {
 
   const handleDelete = async (): Promise<void> => {
     if (deletingStatus) {
-      await updateStatus.mutateAsync({
-        id: deletingStatus.id,
-        isActive: false,
-      });
+      await archiveStatus.mutateAsync(deletingStatus.id);
     }
     handleClose();
   };
@@ -130,19 +132,20 @@ export function ScheduleStatusesPage() {
           isOpen={!!deletingStatus}
           onClose={handleClose}
           onConfirm={handleDelete}
-          isLoading={updateStatus.isPending}
-          title='Видалення статусу'
+          isLoading={archiveStatus.isPending}
+          title='Архівування статусу'
+          confirmText='В архів'
           description={
             <View className='gap-2'>
               <Text className='text-[16px] text-text text-center'>
-                Ви впевнені, що хочете видалити статус &nbsp;
+                Ви впевнені, що хочете перевести в архів статус &nbsp;
                 <Text className='text-[18px] text-danger'>
                   {`"${deletingStatus.name}"`}
                 </Text>
                 ?
               </Text>
               <Text className='text-[14px] text-placeholder text-center'>
-                Видалення статусу приховає його для нових графіків. Історія
+                Архівування статусу приховає його для нових графіків. Історія
                 старих графіків залишиться незмінною.
               </Text>
             </View>
