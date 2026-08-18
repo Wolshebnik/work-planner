@@ -7,7 +7,6 @@ export type UpdateStatusDto = {
   scheduleMark?: string | null;
   excelMark?: string | null;
   color?: string | null;
-  hours?: number | null;
   isLocked?: boolean;
   isActive?: boolean;
   sortOrder?: number;
@@ -20,7 +19,6 @@ export const updateStatus = async ({
   scheduleMark,
   excelMark,
   color,
-  hours,
   isLocked,
   isActive,
   sortOrder,
@@ -39,7 +37,6 @@ export const updateStatus = async ({
         excel_mark: excelMark?.trim() || null,
       }),
       ...(color !== undefined && { color }),
-      ...(hours !== undefined && { hours }),
       ...(isLocked !== undefined && { is_locked: isLocked }),
       ...(isActive !== undefined && { is_active: isActive }),
       ...(sortOrder !== undefined && { sort_order: sortOrder }),

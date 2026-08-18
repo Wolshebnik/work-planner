@@ -4,7 +4,6 @@ export type AddScheduleStatusInput = {
   color?: string | null;
   description?: string | null;
   excelMark?: string | null;
-  hours?: number | null;
   isActive?: boolean;
   isLocked?: boolean;
   name: string;
@@ -31,7 +30,6 @@ export async function addScheduleStatus(input: AddScheduleStatusInput) {
     schedule_mark: input.scheduleMark?.trim() ?? null,
     excel_mark: input.excelMark?.trim() ?? null,
     color: input.color ?? '#E1E2E5',
-    hours: input.hours ?? null,
     is_locked: input.isLocked ?? false,
     is_active: input.isActive ?? true,
     sort_order: nextSortOrder,

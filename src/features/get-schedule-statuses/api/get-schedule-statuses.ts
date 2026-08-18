@@ -1,4 +1,7 @@
-import { type ScheduleStatus } from '@/entities/schedule-status';
+import {
+  type ScheduleStatus,
+  scheduleStatusesSchema,
+} from '@/entities/schedule-status';
 import { supabase } from '@/shared/api/supabase';
 
 export const getScheduleStatuses = async (): Promise<ScheduleStatus[]> => {
@@ -11,5 +14,5 @@ export const getScheduleStatuses = async (): Promise<ScheduleStatus[]> => {
     throw error;
   }
 
-  return data ?? [];
+  return scheduleStatusesSchema.parse(data ?? []);
 };

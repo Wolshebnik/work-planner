@@ -1,14 +1,5 @@
+import { type Employee, employeesSchema } from '@/entities/employee';
 import { supabase } from '@/shared/api/supabase';
-
-export type Employee = {
-  created_at: string;
-  first_name: string;
-  id: string;
-  is_active: boolean;
-  last_name: string;
-  patronymic: string | null;
-  sort_order: number;
-};
 
 export async function getEmployees(): Promise<Employee[]> {
   const { data, error } = await supabase
@@ -20,5 +11,5 @@ export async function getEmployees(): Promise<Employee[]> {
     throw error;
   }
 
-  return data ?? [];
+  return employeesSchema.parse(data ?? []);
 }
