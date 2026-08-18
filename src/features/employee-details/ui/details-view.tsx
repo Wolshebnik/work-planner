@@ -2,7 +2,6 @@ import { View } from 'react-native';
 
 import { Archive } from '@/assets/svg';
 import { useArchiveEmployee } from '@/features/archive-employee';
-import { getAvatarColor } from '@/shared/config/get-avatar-color';
 import { cn } from '@/shared/lib/cn';
 import { Avatar } from '@/shared/ui/avatar';
 import { ButtonBase } from '@/shared/ui/button-base';
@@ -31,8 +30,6 @@ export function DetailsView({
     .toUpperCase()
     .slice(0, 2);
 
-  const avatarColor = getAvatarColor(employee.name || ' ');
-
   const handleArchive = async () => {
     await mutateAsync(employee.id);
     onClose();
@@ -40,7 +37,8 @@ export function DetailsView({
 
   return (
     <View className='items-center'>
-      <Avatar initials={initials} color={avatarColor} size={72} />
+      <Avatar initials={initials} color={employee.color} size={72} />
+
       <Text className='font-bold text-primary mb-3 text-[24px] leading-[32px]'>
         {employee.name || 'Новий працівник'}
       </Text>

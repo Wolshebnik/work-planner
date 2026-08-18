@@ -2,51 +2,44 @@ import { View } from 'react-native';
 
 import { Lock } from '@/assets/svg';
 import { cn } from '@/shared/lib/cn';
-import { StatusBadge } from '@/shared/ui/status-badge';
-import { EmployeeStatus, SHORT_TO_STATUS } from '@/shared/config/employee-status';
+import { HexStatusBadge } from '@/shared/ui/hex-status-badge';
 
 import type { DayCell } from '../model/types';
 
 interface ScheduleCellProps {
-  value: DayCell;
   className?: string;
   isSelected?: boolean;
   onPress?: () => void;
+  value?: DayCell | null;
 }
 
-export function ScheduleCell({ value, className, onPress, isSelected }: ScheduleCellProps) {
-  const statusKey = SHORT_TO_STATUS[value.short];
-  const statusConfig = statusKey ? EmployeeStatus[statusKey] : undefined;
-  const isLocked = !!value.isLocked;
-  const isEmpty = !value.short || value.short === ''; // Определяем пустое состояние
-
-  const displayShort = statusConfig?.short ?? value.short;
-  
-  // Если пусто, используем outline, иначе solid
-  const appearance = isEmpty ? 'outline' : 'solid';
-  const variant = statusConfig?.variant ?? 'primary'; 
+export function ScheduleCell({
+  value,
+  className,
+  onPress,
+  isSelected,
+}: ScheduleCellProps) {
+  const isEmpty = !value || !value.color;
+  const isLocked = !isEmpty && !!value.isLocked;
 
   return (
-    <StatusBadge
-      variant={variant}
-      appearance={appearance}
+    <HexStatusBadge
+      color={isEmpty ? 'transparent' : value.color}
       className={cn(
         'h-8.5 w-8.5',
         isSelected && 'ring-2 ring-primary ring-offset-1',
-        isEmpty && 'shadow-none', // Убираем тень для пустых ячеек
+        isEmpty && 'shadow-none border border-primary',
         className,
       )}
-      onPress={() => {
-        onPress?.();
-      }}
+      onPress={onPress}
     >
       {isLocked ? (
         <View className='items-center justify-center'>
           <Lock className='h-4 w-4 text-white' />
         </View>
       ) : (
-        !isEmpty && displayShort
+        !isEmpty && value.scheduleMark
       )}
-    </StatusBadge>
+    </HexStatusBadge>
   );
 }
