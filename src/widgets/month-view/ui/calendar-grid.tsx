@@ -1,10 +1,12 @@
 import dayjs from 'dayjs';
 import { View } from 'react-native';
 
-import { CalendarCell } from './calendar-cell/calendar-cell';
+import { type CalendarDay } from '@/entities/calendar';
+
+import { CalendarCell } from './calendar-cell';
 
 interface CalendarGridProps {
-  days: any[]; // Consider defining a proper type for 'day'
+  days: CalendarDay[];
   selectedDate: dayjs.Dayjs | null;
   onDayPress: (day: dayjs.Dayjs) => void;
 }

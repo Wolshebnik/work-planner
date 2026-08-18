@@ -3,6 +3,7 @@ import { styledSvg } from '@/shared/lib/styled-svg';
 import ArchiveIcon from './archive.svg';
 import ArrowLeftIcon from './arrow-left.svg';
 import CalendarIcon from './calendar.svg';
+import CheckIcon from './check.svg';
 import ChevronIcon from './chevron.svg';
 import DotsIcon from './dots.svg';
 import LockIcon from './lock.svg';
@@ -16,6 +17,8 @@ export const Archive = styledSvg(ArchiveIcon);
 export const ArrowLeft = styledSvg(ArrowLeftIcon);
 
 export const Calendar = styledSvg(CalendarIcon);
+
+export const Check = styledSvg(CheckIcon);
 
 export const Chevron = styledSvg(ChevronIcon);
 

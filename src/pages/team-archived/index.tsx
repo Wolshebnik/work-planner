@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { ScrollView, View } from 'react-native';
 
 import { EmployeeCard } from '@/entities/employee';
-import { DeleteConfirmationSheet } from '@/features/delete-employee/ui/delete-confirmation-sheet';
+import { DeleteConfirmationSheet } from '@/shared/ui/delete-confirmation-sheet';
 import { useGetEmployees } from '@/features/get-employees';
 import { useRestoreEmployee } from '@/features/restore-employee';
 import { ROUTES } from '@/shared/config/routes';

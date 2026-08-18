@@ -1,7 +1,8 @@
 import { Pressable } from 'react-native';
+
+import { type CalendarDay } from '@/entities/calendar';
 import { cn } from '@/shared/lib/cn';
 import { Text } from '@/shared/ui/text';
-import { type CalendarDay } from '@/entities/calendar/model';
 
 interface CalendarCellProps {
   day: CalendarDay;

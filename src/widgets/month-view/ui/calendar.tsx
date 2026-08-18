@@ -6,7 +6,7 @@ import { View } from 'react-native';
 import { cn } from '@/shared/lib/cn';
 import { Text } from '@/shared/ui/text';
 import { BottomSheet } from '@/shared/ui/bottom-sheet';
-import { generateCalendarDays } from '@/entities/calendar/model';
+import { generateCalendarDays } from '@/entities/calendar';
 
 import { CalendarHeader } from './calendar-header';
 import { CalendarGrid } from './calendar-grid';

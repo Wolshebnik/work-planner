@@ -1,1 +1,1 @@
-export * from './ui/edit-schedule';
+export { EditSchedule } from './ui/edit-schedule';

@@ -1,1 +1,1 @@
-export * from './ui/schedule-statuses-list';
+export { ScheduleStatusesList } from './ui/schedule-statuses-list';

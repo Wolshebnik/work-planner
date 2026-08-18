@@ -1,7 +1,7 @@
 import { ScrollView, View } from 'react-native';
 
 import { Header } from '@/shared/ui/header';
-import { ScheduleStatusesCard } from '@/shared/ui/schedule-statuses-card';
+import { ScheduleStatusesCard } from '@/entities/schedule-status';
 import { SectionTitle } from '@/shared/ui/section-title';
 
 export function MorePage() {

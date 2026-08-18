@@ -1,6 +1,6 @@
 import { TouchableOpacity, View } from 'react-native';
 
-import { Trash } from '@/assets/svg';
+import { Lock, Trash } from '@/assets/svg';
 import { cn } from '@/shared/lib/cn';
 import { HexStatusBadge } from '@/shared/ui/hex-status-badge';
 import { Text } from '@/shared/ui/text';
@@ -8,6 +8,7 @@ import { Text } from '@/shared/ui/text';
 interface ScheduleStatusItemProps {
   color?: string | null;
   description: string;
+  isLocked?: boolean;
   onDelete?: () => void;
   onPress?: () => void;
   status: string;
@@ -19,6 +20,7 @@ export function ScheduleStatusItem({
   description,
   status,
   color,
+  isLocked,
   onPress,
   onDelete,
 }: ScheduleStatusItemProps) {
@@ -31,7 +33,7 @@ export function ScheduleStatusItem({
       )}
     >
       <HexStatusBadge color={color} className='w-10 h-10'>
-        {status}
+        {isLocked ? <Lock className='text-white' /> : status}
       </HexStatusBadge>
 
       <View className='flex-1 gap-1'>

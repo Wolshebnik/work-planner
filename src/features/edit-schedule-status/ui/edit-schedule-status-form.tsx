@@ -1,13 +1,23 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { View } from 'react-native';
 
 import { ButtonBase } from '@/shared/ui/button-base';
 import { ButtonLoader } from '@/shared/ui/button-loader';
+import { Checkbox } from '@/shared/ui/checkbox';
 import { ColorPickerInput } from '@/shared/ui/color-picker-input';
 import { InputBase } from '@/shared/ui/input-base';
 
 import { type FormValues, schema } from '../model/schema';
+
+const DEFAULT_VALUES: FormValues = {
+  name: '',
+  description: '',
+  scheduleMark: '',
+  excelMark: '',
+  color: '#E1E2E5',
+  isLocked: false,
+};
 
 interface Props {
   initialValues?: FormValues | undefined;
@@ -24,16 +34,13 @@ export const EditScheduleStatusForm = ({
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
+    setValue,
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: initialValues ?? {
-      name: '',
-      description: '',
-      scheduleMark: '',
-      excelMark: '',
-      color: '#E1E2E5',
-    },
+    values: initialValues ?? DEFAULT_VALUES,
   });
+
+  const isLocked = useWatch({ control, name: 'isLocked' });
 
   return (
     <View className='flex-1 gap-4'>
@@ -84,6 +91,7 @@ export const EditScheduleStatusForm = ({
             value={value}
             onChangeText={onChange}
             error={errors.scheduleMark?.message}
+            editable={!isLocked}
           />
         )}
       />
@@ -101,6 +109,7 @@ export const EditScheduleStatusForm = ({
             value={value}
             onChangeText={onChange}
             error={errors.excelMark?.message}
+            editable={!isLocked}
           />
         )}
       />
@@ -118,23 +127,25 @@ export const EditScheduleStatusForm = ({
           />
         )}
       />
-      {/*
+
       <Controller
         control={control}
-        name='workingHours'
+        name='isLocked'
         render={({ field: { onChange, value } }) => (
-          <InputBase
-            bottomSheet
-            label='Рахується як робочий день'
-            placeholder='Введіть кількість робочих годин'
-            labelColor='#fff'
-            required
-            value={value}
-            onChangeText={onChange}
-            error={errors.workingHours?.message}
+          <Checkbox
+            checked={value}
+            className='mb-4'
+            label='Забронювати вихідний'
+            onCheckedChange={(checked) => {
+              onChange(checked);
+              if (checked) {
+                setValue('scheduleMark', '-', { shouldValidate: true });
+                setValue('excelMark', '-', { shouldValidate: true });
+              }
+            }}
           />
         )}
-      /> */}
+      />
 
       <View className='flex-row gap-3 justify-end'>
         <ButtonBase

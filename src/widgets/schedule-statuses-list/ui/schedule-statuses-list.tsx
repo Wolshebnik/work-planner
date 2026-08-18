@@ -1,11 +1,12 @@
 import { ScrollView, View } from 'react-native';
 
 import {
+  ArchivedScheduleStatusesCard,
   type ScheduleStatus,
-  useGetScheduleStatuses,
-} from '@/features/get-schedule-statuses';
+  ScheduleStatusItem,
+} from '@/entities/schedule-status';
+import { useGetScheduleStatuses } from '@/features/get-schedule-statuses';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
-import { ScheduleStatusItem } from '@/shared/ui/schedule-status-item';
 import { Text } from '@/shared/ui/text';
 
 interface Props {
@@ -35,19 +36,27 @@ export const ScheduleStatusesList = ({
     );
   }
 
+  const activeStatuses = statuses.filter((s) => s.is_active);
+  const archivedStatusesCount = statuses.length - activeStatuses.length;
+
   return (
-    <ScrollView className='flex-1 mb-5'>
-      {statuses.map((status) => (
+    <ScrollView className='flex-1 mb-5' contentContainerClassName='pb-6'>
+      {activeStatuses.map((status) => (
         <ScheduleStatusItem
           key={status.id}
           title={status.name}
           description={status.description ?? ''}
-          status={status.schedule_mark ?? status.code ?? ''}
+          status={status.schedule_mark ?? ''}
           color={status.color}
+          isLocked={status.is_locked}
           onPress={() => onStatusPress(status)}
           onDelete={() => onDeleteStatus(status)}
         />
       ))}
+
+      {archivedStatusesCount > 0 && (
+        <ArchivedScheduleStatusesCard count={archivedStatusesCount} />
+      )}
     </ScrollView>
   );
 };

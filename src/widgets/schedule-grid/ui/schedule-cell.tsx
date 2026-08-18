@@ -5,7 +5,7 @@ import { cn } from '@/shared/lib/cn';
 import { StatusBadge } from '@/shared/ui/status-badge';
 import { EmployeeStatus, SHORT_TO_STATUS } from '@/shared/config/employee-status';
 
-import type { DayCell } from '../model';
+import type { DayCell } from '../model/types';
 
 interface ScheduleCellProps {
   value: DayCell;
