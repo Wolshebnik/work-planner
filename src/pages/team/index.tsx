@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { ScrollView, View } from 'react-native';
 
@@ -11,6 +11,10 @@ import {
 } from '@/features/employee-details';
 import { useGetEmployees } from '@/features/get-employees';
 import { useUpdateEmployee } from '@/features/update-employee';
+import {
+  createEmployeeColorMap,
+  getEmployeeAvatarColor,
+} from '@/shared/config/get-avatar-color';
 import { ButtonBase } from '@/shared/ui/button-base';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import { Header } from '@/shared/ui/header';
@@ -26,10 +30,16 @@ export function TeamPage() {
   const addEmployeeMutation = useAddEmployee();
   const updateEmployeeMutation = useUpdateEmployee();
 
+  const colorMap = useMemo(
+    () => createEmployeeColorMap(employees),
+    [employees],
+  );
+
   const mappedEmployees: EmployeeData[] = employees.map((e) => ({
     id: e.id,
     name: [e.last_name, e.first_name, e.patronymic].filter(Boolean).join(' '),
     isActive: e.is_active,
+    color: getEmployeeAvatarColor(e.id, colorMap),
   }));
 
   const activeEmployees = mappedEmployees.filter((e) => e.isActive);
@@ -64,14 +74,6 @@ export function TeamPage() {
     setSelectedEmployee(null);
   };
 
-  if (isLoading) {
-    return (
-      <View className='flex-1 items-center justify-center'>
-        <CircularProgressLoader size='large' />
-      </View>
-    );
-  }
-
   return (
     <View className='flex-1'>
       <Header title='Команда' />
@@ -90,19 +92,25 @@ export function TeamPage() {
         </ButtonBase>
       </View>
 
-      <ScrollView className='px-4' contentContainerClassName='gap-3 pb-6'>
-        {activeEmployees.map((employee) => (
-          <EmployeeCard
-            key={employee.id}
-            employee={employee}
-            onPress={() => setSelectedEmployee(employee)}
-          />
-        ))}
+      {isLoading ? (
+        <View className='flex-1 items-center justify-center'>
+          <CircularProgressLoader size='large' />
+        </View>
+      ) : (
+        <ScrollView className='px-4' contentContainerClassName='gap-3 pb-6'>
+          {activeEmployees.map((employee) => (
+            <EmployeeCard
+              key={employee.id}
+              employee={employee}
+              onPress={() => setSelectedEmployee(employee)}
+            />
+          ))}
 
-        {archivedEmployeesCount > 0 && (
-          <ArchivedEmployeesCard count={archivedEmployeesCount} />
-        )}
-      </ScrollView>
+          {archivedEmployeesCount > 0 && (
+            <ArchivedEmployeesCard count={archivedEmployeesCount} />
+          )}
+        </ScrollView>
+      )}
 
       <EmployeeDetailsSheet
         employee={selectedEmployee}

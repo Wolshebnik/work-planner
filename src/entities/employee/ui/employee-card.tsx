@@ -1,11 +1,13 @@
 import { TouchableOpacity, View } from 'react-native';
 
-import { getAvatarColor } from '@/shared/config/get-avatar-color';
+import type { AvatarColor } from '@/shared/config/get-avatar-color';
 import { cn } from '@/shared/lib/cn';
 import { Avatar } from '@/shared/ui/avatar';
 import { Text } from '@/shared/ui/text';
 
 interface Employee {
+  color?: AvatarColor;
+  id?: string;
   isActive: boolean;
   name: string;
 }
@@ -24,7 +26,7 @@ export function EmployeeCard({
   isArchived,
   rightElement,
 }: EmployeeCardProps) {
-  const { name, isActive } = employee;
+  const { name, isActive, color } = employee;
 
   const initials = name
     .split(' ')
@@ -32,8 +34,6 @@ export function EmployeeCard({
     .join('')
     .toUpperCase()
     .slice(0, 2);
-
-  const avatarColor = getAvatarColor(name);
 
   return (
     <TouchableOpacity
@@ -46,7 +46,7 @@ export function EmployeeCard({
     >
       <Avatar
         initials={initials}
-        color={isArchived ? undefined : avatarColor}
+        color={isArchived ? undefined : color}
       />
 
       <View className='flex-1'>

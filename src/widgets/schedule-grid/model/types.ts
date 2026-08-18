@@ -1,21 +1,17 @@
 import type dayjs from 'dayjs';
 
 export interface DayCell {
+  color?: string | null;
   isLocked?: boolean;
-  short: string;
+  scheduleMark?: string | null;
 }
-export interface EmployeeValue extends DayCell {
-  date: string;
-}
+
 export interface EmployeeRow {
+  id?: string;
   name: string;
-  values: DayCell[];
+  values: (DayCell | null)[];
 }
-export interface EmployeeRow1 {
-  id: string;
-  name: string;
-  values: EmployeeValue[];
-}
+
 export interface WeekDay {
   date: dayjs.Dayjs;
   isToday: boolean;

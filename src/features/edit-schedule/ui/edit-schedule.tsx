@@ -1,79 +1,76 @@
 import { View } from 'react-native';
 
 import { Lock } from '@/assets/svg';
-import { EmployeeStatus } from '@/shared/config/employee-status';
-import { ButtonBase } from '@/shared/ui/button-base';
-import type { ButtonVariant } from '@/shared/ui/button-base/button-appearance';
+import { type ScheduleStatus } from '@/entities/schedule-status';
+import { useGetScheduleStatuses } from '@/features/get-schedule-statuses';
+import { ButtonLoader } from '@/shared/ui/button-loader';
+import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
+import { HexStatusButton } from '@/shared/ui/hex-status-button';
 import { Text } from '@/shared/ui/text';
 
 interface EditScheduleProps {
-  onLock: () => void;
-  onStatusChange: (statusKey: string) => void;
+  isClearing?: boolean;
+  loadingStatusId?: string | null;
+  onClear?: () => void;
+  onSelectStatus?: (status: ScheduleStatus) => void;
 }
 
-export function EditSchedule({ onStatusChange, onLock }: EditScheduleProps) {
-  return (
-    <View className='flex-row flex-wrap gap-2'>
-      {(['WORK', 'OFF'] as const).map((key) => {
-        const config = EmployeeStatus[key];
-        return (
-          <ButtonBase
-            key={key}
-            appearance='solid'
-            variant={config.variant as ButtonVariant}
-            className='grow'
-            onPress={() => onStatusChange(key)}
-          >
-            {config.label}
-          </ButtonBase>
-        );
-      })}
+export function EditSchedule({
+  onSelectStatus,
+  loadingStatusId,
+  isClearing = false,
+  onClear,
+}: EditScheduleProps) {
+  const { data: statuses = [], isLoading, error } = useGetScheduleStatuses();
 
-      <ButtonBase
-        appearance='solid'
-        variant='danger'
-        className='grow flex-row items-center justify-center gap-2'
-        onPress={onLock}
-      >
-        <Lock className='h-4 w-4 text-white' />
-        <Text className='text-white font-bold text-[14px] leading-[20px]'>
-          Вихідний
-        </Text>
-      </ButtonBase>
-
-      {(['SICK', 'VACATION', 'ABSENT', 'ST'] as const).map((key) => {
-        const config = EmployeeStatus[key];
-        return (
-          <ButtonBase
-            key={key}
-            appearance='solid'
-            variant={config.variant as ButtonVariant}
-            className='grow'
-            onPress={() => onStatusChange(key)}
-          >
-            {config.label}
-          </ButtonBase>
-        );
-      })}
-
-      <View className='flex-row gap-2 w-full'>
-        <ButtonBase
-          appearance='solid'
-          variant={EmployeeStatus.FIRED.variant as ButtonVariant}
-          className='flex-1'
-          onPress={() => onStatusChange('FIRED')}
-        >
-          {EmployeeStatus.FIRED.label}
-        </ButtonBase>
-        <ButtonBase
-          appearance='solid'
-          variant={EmployeeStatus.NA.variant as ButtonVariant}
-          className='flex-2'
-          onPress={() => onStatusChange('NA')}
-        >
-          {EmployeeStatus.NA.label}
-        </ButtonBase>
+  if (isLoading) {
+    return (
+      <View className='h-32 items-center justify-center'>
+        <CircularProgressLoader size='large' />
       </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View className='h-32 items-center justify-center'>
+        <Text className='text-danger'>Помилка завантаження статусів</Text>
+      </View>
+    );
+  }
+
+  const activeStatuses = statuses.filter((status) => status.is_active);
+
+  return (
+    <View className='gap-4'>
+      <View className='flex-row flex-wrap gap-2'>
+        {activeStatuses.map((status) => (
+          <HexStatusButton
+            key={status.id}
+            color={status.color}
+            className='grow'
+            loading={loadingStatusId === status.id}
+            icon={
+              status.is_locked ? (
+                <Lock className='h-4 w-4 text-white' />
+              ) : undefined
+            }
+            onPress={() => onSelectStatus?.(status)}
+          >
+            {status.name}
+          </HexStatusButton>
+        ))}
+      </View>
+
+      <ButtonLoader
+        variant='primary'
+        appearance='outline'
+        className='w-full py-2.5 mt-3'
+        loading={isClearing}
+        onPress={onClear}
+      >
+        Очистити поле
+      </ButtonLoader>
     </View>
   );
 }

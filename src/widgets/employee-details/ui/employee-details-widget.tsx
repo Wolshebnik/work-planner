@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 
 import { Archive } from '@/assets/svg';
-import { getAvatarColor } from '@/shared/config/get-avatar-color';
+import type { AvatarColor } from '@/shared/config/get-avatar-color';
 import { cn } from '@/shared/lib/cn';
 import { Avatar } from '@/shared/ui/avatar';
 import { BottomSheet } from '@/shared/ui/bottom-sheet';
@@ -9,6 +9,7 @@ import { ButtonBase } from '@/shared/ui/button-base';
 import { Text } from '@/shared/ui/text';
 
 interface Employee {
+  color?: AvatarColor;
   id: string;
   isActive: boolean;
   name: string;
@@ -41,12 +42,11 @@ export function EmployeeDetailsWidget({
     .toUpperCase()
     .slice(0, 2);
 
-  const avatarColor = getAvatarColor(employee.name);
-
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
       <View className='items-center'>
-        <Avatar initials={initials} color={avatarColor} size={72} />
+        <Avatar initials={initials} color={employee.color} size={72} />
+
         <Text className='font-bold text-primary mb-3 text-[24px] leading-[32px]'>
           {employee.name}
         </Text>

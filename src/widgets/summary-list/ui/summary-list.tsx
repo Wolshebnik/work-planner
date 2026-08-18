@@ -1,19 +1,20 @@
 import { View } from 'react-native';
 
-import { SectionTitle } from '@/shared/ui/section-title';
-import { getAvatarColor } from '@/shared/config/get-avatar-color';
+import type { AvatarColor } from '@/shared/config/get-avatar-color';
 import { EmployeeSummaryCard } from '@/shared/ui/employee-summary-card';
+import { SectionTitle } from '@/shared/ui/section-title';
 
 interface Employee {
-  name: string;
+  avatarColor?: AvatarColor;
   initials: string;
   monthTotal: number;
+  name: string;
   values: string[] | number[];
 }
 interface SummaryListProps {
   className?: string;
-  monthLabel: string;
   employees: Employee[];
+  monthLabel: string;
 }
 
 export function SummaryList({
@@ -32,7 +33,7 @@ export function SummaryList({
         <EmployeeSummaryCard
           {...employee}
           key={`employee-${index}`}
-          avatarColor={getAvatarColor(employee.name)}
+          avatarColor={employee.avatarColor}
           className='mb-2'
         />
       ))}

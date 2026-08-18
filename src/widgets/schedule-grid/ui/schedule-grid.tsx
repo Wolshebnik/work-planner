@@ -4,23 +4,22 @@ import { View } from 'react-native';
 import { cn } from '@/shared/lib/cn';
 import { Text } from '@/shared/ui/text';
 
-import { ScheduleDay } from './schedule-day';
 import { ScheduleCell } from './schedule-cell';
+import { ScheduleDay } from './schedule-day';
 import { getWeekDays } from '../model/get-week-days';
-import { scheduleData } from '../model/schedule-data';
 import { type EmployeeRow } from '../model/types';
 
 interface ScheduleGridProps {
   className?: string;
-  daysCount?: number;
   data?: EmployeeRow[];
-  weekStartDay?: number;
-  startDate?: dayjs.Dayjs;
+  daysCount?: number;
   onCellPress?: (employeeIndex: number, dayIndex: number) => void;
   selectedCell?: {
     dayIndex: number;
     employeeIndex: number;
   } | null;
+  startDate?: dayjs.Dayjs;
+  weekStartDay?: number;
 }
 
 export function ScheduleGrid({
@@ -29,7 +28,7 @@ export function ScheduleGrid({
   daysCount = 7,
   weekStartDay = 0,
   onCellPress,
-  data = scheduleData,
+  data = [],
   selectedCell,
 }: ScheduleGridProps) {
   const week = getWeekDays(startDate);
@@ -57,7 +56,7 @@ export function ScheduleGrid({
 
       {data.map((row, employeeIndex) => (
         <View
-          key={row.name}
+          key={row.id ?? `${row.name}-${employeeIndex}`}
           className='flex-row items-stretch border-b border-border/40 last:border-b-0 py-2'
         >
           <View className='items-start justify-center pl-2 py-2 w-[96px]'>
@@ -73,7 +72,7 @@ export function ScheduleGrid({
           <View className='flex-1 flex-row justify-between pr-1'>
             {row.values.map((value, dayIndex) => (
               <ScheduleCell
-                key={`-${employeeIndex}-${dayIndex}`}
+                key={`-${row.id ?? employeeIndex}-${dayIndex}`}
                 value={value}
                 isSelected={
                   selectedCell?.employeeIndex === employeeIndex &&
