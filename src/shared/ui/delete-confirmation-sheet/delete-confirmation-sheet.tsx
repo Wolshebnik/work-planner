@@ -1,5 +1,4 @@
-import { ReactNode } from 'react';
-
+import { type ReactNode } from 'react';
 import { View } from 'react-native';
 
 import { BottomSheet } from '@/shared/ui/bottom-sheet';
@@ -7,7 +6,7 @@ import { ButtonBase } from '@/shared/ui/button-base';
 import { ButtonLoader } from '@/shared/ui/button-loader';
 import { Text } from '@/shared/ui/text';
 
-interface DeleteConfirmationSheetProps {
+export interface DeleteConfirmationSheetProps {
   description: ReactNode;
   isLoading: boolean;
   isOpen: boolean;
@@ -30,9 +29,9 @@ export function DeleteConfirmationSheet({
 }: DeleteConfirmationSheetProps) {
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} title={title}>
-      <View className='gap-4'>
+      <View className='gap-6'>
         {typeof description === 'string' ? (
-          <Text className='text-[16px] text-text'>{description}</Text>
+          <Text className='text-[16px] text-text text-center'>{description}</Text>
         ) : (
           description
         )}
@@ -41,9 +40,8 @@ export function DeleteConfirmationSheet({
           <ButtonBase
             variant='primary'
             appearance='outline'
-            className='w-30'
-            disabled={isLoading}
             onPress={onClose}
+            disabled={isLoading}
           >
             Скасувати
           </ButtonBase>
@@ -51,10 +49,10 @@ export function DeleteConfirmationSheet({
           <ButtonLoader
             variant={confirmVariant}
             appearance='solid'
-            className='w-30'
-            loaderColor='#fff'
-            loading={isLoading}
             onPress={onConfirm}
+            loading={isLoading}
+            className='w-35'
+            loaderColor='#fff'
           >
             {confirmText}
           </ButtonLoader>

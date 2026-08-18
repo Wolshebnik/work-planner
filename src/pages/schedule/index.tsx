@@ -7,14 +7,16 @@ import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { Header } from '@/shared/ui/header';
 import { SummaryList } from '@/widgets/summary-list';
 import { BottomSheet } from '@/shared/ui/bottom-sheet';
-import { ScheduleGrid } from '@/widgets/schedule-grid';
+import {
+  ScheduleGrid,
+  prepareWeeklyData,
+  scheduleData,
+} from '@/widgets/schedule-grid';
 import { EditSchedule } from '@/features/edit-schedule';
 import { MonthViewPlaceholder } from '@/widgets/month-view';
 import { PeriodSwitcher } from '@/shared/ui/period-switcher';
-import { scheduleData } from '@/widgets/schedule-grid/model';
 import { EmployeeStatus } from '@/shared/config/employee-status';
 import { ViewSwitcher, type ViewMode } from '@/shared/ui/view-switcher';
-import { prepareWeeklyData } from '@/widgets/schedule-grid/lib/prepare-weekly-data';
 
 import 'dayjs/locale/uk';
 

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { View } from 'react-native';
 
 import { ButtonBase } from '@/shared/ui/button-base';
@@ -9,6 +9,15 @@ import { ColorPickerInput } from '@/shared/ui/color-picker-input';
 import { InputBase } from '@/shared/ui/input-base';
 
 import { type FormValues, schema } from '../model/schema';
+
+const DEFAULT_VALUES: FormValues = {
+  name: '',
+  description: '',
+  scheduleMark: '',
+  excelMark: '',
+  color: '#E1E2E5',
+  isLocked: false,
+};
 
 interface Props {
   initialValues?: FormValues | undefined;
@@ -25,17 +34,13 @@ export const EditScheduleStatusForm = ({
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
+    setValue,
   } = useForm<FormValues>({
-    resolver: zodResolver(schema) as any,
-    defaultValues: initialValues ?? {
-      name: '',
-      description: '',
-      scheduleMark: '',
-      excelMark: '',
-      color: '#E1E2E5',
-      isLocked: false,
-    },
+    resolver: zodResolver(schema),
+    values: initialValues ?? DEFAULT_VALUES,
   });
+
+  const isLocked = useWatch({ control, name: 'isLocked' });
 
   return (
     <View className='flex-1 gap-4'>
@@ -86,6 +91,7 @@ export const EditScheduleStatusForm = ({
             value={value}
             onChangeText={onChange}
             error={errors.scheduleMark?.message}
+            editable={!isLocked}
           />
         )}
       />
@@ -103,6 +109,7 @@ export const EditScheduleStatusForm = ({
             value={value}
             onChangeText={onChange}
             error={errors.excelMark?.message}
+            editable={!isLocked}
           />
         )}
       />
@@ -129,7 +136,13 @@ export const EditScheduleStatusForm = ({
             checked={value}
             className='mb-4'
             label='Забронювати вихідний'
-            onCheckedChange={onChange}
+            onCheckedChange={(checked) => {
+              onChange(checked);
+              if (checked) {
+                setValue('scheduleMark', '-', { shouldValidate: true });
+                setValue('excelMark', '-', { shouldValidate: true });
+              }
+            }}
           />
         )}
       />

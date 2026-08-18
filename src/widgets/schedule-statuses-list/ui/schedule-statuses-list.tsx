@@ -2,10 +2,10 @@ import { ScrollView, View } from 'react-native';
 
 import {
   type ScheduleStatus,
-  useGetScheduleStatuses,
-} from '@/features/get-schedule-statuses';
+  ScheduleStatusItem,
+} from '@/entities/schedule-status';
+import { useGetScheduleStatuses } from '@/features/get-schedule-statuses';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
-import { ScheduleStatusItem } from '@/shared/ui/schedule-status-item';
 import { Text } from '@/shared/ui/text';
 
 interface Props {

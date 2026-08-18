@@ -33,6 +33,7 @@ export function InputBase({
     'text-[16px] text-text',
     'outline-none',
     'placeholder:text-placeholder',
+    props.editable === false && 'bg-grey/10 text-placeholder',
   );
 
   return (

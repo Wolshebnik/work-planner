@@ -101,3 +101,12 @@ Prioritize surgical edits using `replace`. **NEVER** use `write_file` to modify 
 Before making **any** edit, you **MUST** perform a `read_file` on the target file immediately preceding the edit to ensure your understanding of the local code state is current and accurate. 
 
 Do not assume the file content based on conversation history or cached context. Failure to respect this rule resulting in loss of user-made changes is a critical failure.
+
+## 16. FSD Slices, Naming & Public API (`index.ts`)
+
+- **Component & File naming**: Files inside `ui/` must match their component name in `kebab-case` (e.g. `EmployeeDetailsSheet` in `employee-details-sheet.tsx`). Files inside `model/` must have descriptive names (`use-xxx.ts`, `schema.ts`, `types.ts`, `mock-xxx.ts`).
+- **No `index.ts` in internal segments**: NEVER create `index.ts` inside `model/`, `ui/`, `api/`, or `lib/`. `index.ts` exists ONLY at the root of a slice (`entities/x/index.ts`, `features/x/index.ts`, `widgets/x/index.ts`, `pages/x/index.ts`).
+- **Root `index.ts` for every slice**: Every slice must have a root `index.ts` re-exporting only what is public from `ui/`, `model/`, `api/`, `lib/`.
+- **Explicit named exports**: Use explicit `export { ... }` in `index.ts`. Never use `export * from ...`.
+- **No deep internal imports**: External code must import from the slice root (e.g. `@/features/employee-details`), never directly from inner folders (`@/features/employee-details/ui/...`).
+- **Strict typing (No `any`)**: Never use `any` or `as any`. Always use explicit domain types, interfaces, and strict TypeScript types.

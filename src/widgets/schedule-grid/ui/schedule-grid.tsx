@@ -6,7 +6,9 @@ import { Text } from '@/shared/ui/text';
 
 import { ScheduleDay } from './schedule-day';
 import { ScheduleCell } from './schedule-cell';
-import { EmployeeRow, getWeekDays, scheduleData } from '../model';
+import { getWeekDays } from '../model/get-week-days';
+import { scheduleData } from '../model/schedule-data';
+import { type EmployeeRow } from '../model/types';
 
 interface ScheduleGridProps {
   className?: string;

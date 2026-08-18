@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { type EmployeeRow, type EmployeeRow1 } from '../model';
+import { type EmployeeRow, type EmployeeRow1 } from '../model/types';
 
 export function prepareWeeklyData(
   data: EmployeeRow1[],

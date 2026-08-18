@@ -1,4 +1,4 @@
-import { ScheduleStatusesPage } from '@/pages/schedule-statuses/ui/schedule-statuses-page';
+import { ScheduleStatusesPage } from '@/pages/schedule-statuses';
 
 export default function ScheduleStatusesRoute() {
   return <ScheduleStatusesPage />;

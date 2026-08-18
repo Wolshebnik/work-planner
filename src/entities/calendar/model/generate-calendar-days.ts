@@ -1,18 +1,11 @@
 import dayjs from 'dayjs';
 
-export interface CalendarDay {
-  date: dayjs.Dayjs;
-  label: string;
-  number: string;
-  isToday: boolean;
-  isWeekend: boolean;
-  isCurrentMonth: boolean;
-}
+import { type CalendarDay } from './types';
 
 export function generateCalendarDays(startDate: dayjs.Dayjs): CalendarDay[] {
   const startOfMonth = startDate.startOf('month').startOf('isoWeek');
-  const days = [];
-  
+  const days: CalendarDay[] = [];
+
   for (let i = 0; i < 42; i++) {
     const day = startOfMonth.add(i, 'day');
     days.push({
@@ -24,6 +17,6 @@ export function generateCalendarDays(startDate: dayjs.Dayjs): CalendarDay[] {
       isCurrentMonth: day.isSame(startDate, 'month'),
     });
   }
-  
+
   return days;
 }

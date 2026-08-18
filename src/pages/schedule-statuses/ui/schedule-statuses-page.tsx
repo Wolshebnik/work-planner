@@ -3,17 +3,13 @@ import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 
-import { DeleteConfirmationSheet } from '@/features/delete-employee/ui/delete-confirmation-sheet';
-import {
-  EditScheduleStatusForm,
-  type FormValues,
-} from '@/features/edit-schedule-status';
-import { ScheduleStatus } from '@/features/get-schedule-statuses';
+import { type ScheduleStatus } from '@/entities/schedule-status';
 import { useAddScheduleStatus } from '@/features/add-schedule-status';
+import { EditScheduleStatusSheet, type FormValues } from '@/features/edit-schedule-status';
 import { useUpdateScheduleStatus } from '@/features/update-schedule-status';
 import { ROUTES } from '@/shared/config/routes';
-import { BottomSheet } from '@/shared/ui/bottom-sheet';
 import { ButtonBase } from '@/shared/ui/button-base';
+import { DeleteConfirmationSheet } from '@/shared/ui/delete-confirmation-sheet';
 import { Header } from '@/shared/ui/header';
 import { SectionTitle } from '@/shared/ui/section-title';
 import { Text } from '@/shared/ui/text';
@@ -22,15 +18,15 @@ import { ScheduleStatusesList } from '@/widgets/schedule-statuses-list';
 export function ScheduleStatusesPage() {
   const router = useRouter();
 
+  const addStatus = useAddScheduleStatus();
+  const updateStatus = useUpdateScheduleStatus();
+
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [editingStatus, setEditingStatus] = useState<FormValues | null>(null);
   const [deletingStatus, setDeletingStatus] = useState<ScheduleStatus | null>(
     null,
   );
-
-  const addStatus = useAddScheduleStatus();
-  const updateStatus = useUpdateScheduleStatus();
 
   const handleClose = (): void => {
     setEditingId(null);
@@ -48,6 +44,7 @@ export function ScheduleStatusesPage() {
         scheduleMark: data.scheduleMark,
         excelMark: data.excelMark,
         color: data.color,
+        isLocked: data.isLocked,
         isActive: true,
       });
     } else {
@@ -57,6 +54,7 @@ export function ScheduleStatusesPage() {
         scheduleMark: data.scheduleMark,
         excelMark: data.excelMark,
         color: data.color,
+        isLocked: data.isLocked,
         isActive: true,
       });
     }
@@ -65,6 +63,12 @@ export function ScheduleStatusesPage() {
   };
 
   const handleDelete = async (): Promise<void> => {
+    if (deletingStatus) {
+      await updateStatus.mutateAsync({
+        id: deletingStatus.id,
+        isActive: false,
+      });
+    }
     handleClose();
   };
 
@@ -77,7 +81,7 @@ export function ScheduleStatusesPage() {
       scheduleMark: status.schedule_mark ?? '',
       excelMark: status.excel_mark ?? '',
       color: status.color ?? '#E1E2E5',
-      isLocked: false,
+      isLocked: status.is_locked ?? false,
     });
   };
 
@@ -112,24 +116,21 @@ export function ScheduleStatusesPage() {
         onDeleteStatus={setDeletingStatus}
       />
 
-      <BottomSheet
+      <EditScheduleStatusSheet
         isOpen={isSheetOpen}
+        isEditing={isEditing}
+        statusId={editingId}
+        initialValues={editingStatus}
         onClose={handleClose}
-        title={isEditing ? 'Редагувати статус' : 'Додати статус'}
-      >
-        <EditScheduleStatusForm
-          onCancel={handleClose}
-          onSave={handleSave}
-          initialValues={editingStatus ?? undefined}
-        />
-      </BottomSheet>
+        onSave={handleSave}
+      />
 
       {deletingStatus && (
         <DeleteConfirmationSheet
           isOpen={!!deletingStatus}
           onClose={handleClose}
           onConfirm={handleDelete}
-          isLoading={false}
+          isLoading={updateStatus.isPending}
           title='Видалення статусу'
           description={
             <View className='gap-2'>

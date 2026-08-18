@@ -100,19 +100,31 @@ A file may stay as one file when it represents one clear responsibility and rema
 
 If a file starts handling multiple responsibilities, decompose it.
 
-## Public API
+## File Naming Conventions
 
-Each reusable slice should expose its external API through `index.ts`.
+- **UI component files**: File names in `ui/` must match the component name in `kebab-case`. For example, `EmployeeDetailsSheet` → `employee-details-sheet.tsx`, `DeleteConfirmationSheet` → `delete-confirmation-sheet.tsx`.
+- **Model files**: Hooks, schemas, types and state files must be in `kebab-case` (`use-get-employees.ts`, `schema.ts`, `types.ts`, `mock-employees.ts`, `schedule-data.ts`).
+- **No `index.ts` inside internal segments**: NEVER create `index.ts` inside `model/`, `ui/`, `api/`, or `lib/`. Files inside segments must have specific, descriptive names. `index.ts` is placed ONLY at the slice root.
+- **API files**: API query/mutation files in `kebab-case` (`get-employees.ts`, `add-schedule-status.ts`).
+- **Lib/helpers**: Private helper files in `kebab-case` (`prepare-weekly-data.ts`).
 
-Prefer:
+## Public API & Re-exports (`index.ts`)
 
-```ts
-import { ShiftCard } from '@/entities/shift';
-```
+Every slice (`entities/*`, `features/*`, `widgets/*`, `pages/*`) must have an `index.ts` file ONLY at its root acting as its single public entry point.
 
-instead of importing internal files of another slice.
-
-Do not expose private implementation without a reason.
+- **Explicit named exports only**: Explicitly re-export only what is intended for public consumption from `ui/`, `model/`, `api/`, `lib/`:
+  ```ts
+  export { EmployeeDetailsSheet } from './ui/employee-details-sheet';
+  export { useGetEmployees } from './model/use-get-employees';
+  export { getEmployees, type Employee } from './api/get-employees';
+  ```
+- **No wildcard exports**: Do not use `export * from ...`.
+- **No internal imports**: Never import internal files of another slice directly (e.g. do not do `import { ... } from '@/features/employee-details/ui/...'`). Always import through the slice root:
+  ```ts
+  import { EmployeeDetailsSheet } from '@/features/employee-details';
+  ```
+- **Strict typing (No `any`)**: Never use `any` or `as any`. Use strict domain types and interfaces everywhere.
+- Do not expose private slice implementation details without necessity.
 
 Reusable UI components should accept an optional `className` prop and merge it
 with their default classes through `cn`. Default styles must apply without

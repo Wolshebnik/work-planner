@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { cn } from '@/shared/lib/cn';
 import { Text } from '@/shared/ui/text';
 
-import type { WeekDay } from '../model';
+import type { WeekDay } from '../model/types';
 
 interface ScheduleDayProps {
   day: WeekDay;
