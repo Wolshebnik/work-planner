@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { View } from 'react-native';
@@ -15,9 +14,9 @@ import {
 
 interface EditViewProps {
   defaultValues: Partial<EditEmployeeNameFormData>;
-  onSave: (data: EditEmployeeNameFormData) => Promise<void>;
   onCancel: () => void;
   onClose: () => void;
+  onSave: (data: EditEmployeeNameFormData) => Promise<void>;
 }
 
 export function EditView({
@@ -26,14 +25,12 @@ export function EditView({
   onCancel,
   onClose,
 }: EditViewProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const {
     control,
     handleSubmit,
     reset,
     setError,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<EditEmployeeNameFormData>({
     resolver: zodResolver(editEmployeeNameSchema),
     defaultValues: {
@@ -49,7 +46,6 @@ export function EditView({
       : undefined;
 
   async function handleSave(data: EditEmployeeNameFormData) {
-    setIsSubmitting(true);
     try {
       await onSave(data);
       reset();
@@ -57,8 +53,6 @@ export function EditView({
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Помилка збереження';
       setError('root.server', { type: 'manual', message });
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
@@ -129,7 +123,7 @@ export function EditView({
         <ButtonBase
           variant='primary'
           appearance='outline'
-          className='w-30'
+          className='w-40'
           disabled={isSubmitting}
           onPress={handleCancel}
         >
@@ -139,7 +133,7 @@ export function EditView({
         <ButtonLoader
           variant='primary'
           appearance='solid'
-          className='w-35'
+          className='w-45'
           loaderColor='#fff'
           loading={isSubmitting}
           onPress={handleSubmit(handleSave)}

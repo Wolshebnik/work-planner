@@ -13,7 +13,6 @@ export function EmployeeDetailsSheet({
   employee,
   isOpen,
   onClose,
-  onArchive,
   onSave,
   initialMode = 'details',
 }: EmployeeDetailsSheetProps) {
@@ -44,7 +43,7 @@ export function EmployeeDetailsSheet({
         <DetailsView
           employee={employee}
           onEditPress={handleEditPress}
-          onArchive={onArchive}
+          onClose={handleClose}
         />
       ) : (
         <EditView

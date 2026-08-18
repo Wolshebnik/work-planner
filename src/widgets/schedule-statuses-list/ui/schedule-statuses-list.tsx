@@ -1,43 +1,53 @@
-import { ScrollView } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
-import { EmployeeStatus } from '@/shared/config/employee-status';
+import {
+  type ScheduleStatus,
+  useGetScheduleStatuses,
+} from '@/features/get-schedule-statuses';
+import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import { ScheduleStatusItem } from '@/shared/ui/schedule-status-item';
-import { type BadgeVariant } from '@/shared/ui/status-badge/status-badge-appearance';
-
-const employeeStatusOrder = [
-  'WORK',
-  'OFF',
-  'SICK',
-  'VACATION',
-  'NA',
-  'ST',
-  'ABSENT',
-  'FIRED',
-] as const;
+import { Text } from '@/shared/ui/text';
 
 interface Props {
-  onStatusPress: (status: { title: string }) => void;
-  onDeleteStatus: (status: { title: string }) => void;
+  onDeleteStatus: (status: ScheduleStatus) => void;
+  onStatusPress: (status: ScheduleStatus) => void;
 }
 
-export const ScheduleStatusesList = ({ onStatusPress, onDeleteStatus }: Props) => {
-  return (
-    <ScrollView className='flex-1'>
-      {employeeStatusOrder.map((key) => {
-        const config = EmployeeStatus[key];
+export const ScheduleStatusesList = ({
+  onStatusPress,
+  onDeleteStatus,
+}: Props) => {
+  const { data: statuses = [], isLoading, error } = useGetScheduleStatuses();
 
-        return (
-          <ScheduleStatusItem
-            key={key}
-            title={config.label}
-            description={`${config.short} · Опис для ${config.label.toLowerCase()}`}
-            status={config.short}
-            variant={config.variant as BadgeVariant}
-            onPress={() => onStatusPress({ title: config.label })}
-            onDelete={() => onDeleteStatus({ title: config.label })}
-          />
-        );
-      })}
+  if (isLoading) {
+    return (
+      <View className='flex-1 items-center justify-center'>
+        <CircularProgressLoader size='large' />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View className='flex-1 items-center justify-center'>
+        <Text className='text-danger'>Помилка завантаження статусів</Text>
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView className='flex-1 mb-5'>
+      {statuses.map((status) => (
+        <ScheduleStatusItem
+          key={status.id}
+          title={status.name}
+          description={status.description ?? ''}
+          status={status.schedule_mark ?? status.code ?? ''}
+          color={status.color}
+          onPress={() => onStatusPress(status)}
+          onDelete={() => onDeleteStatus(status)}
+        />
+      ))}
     </ScrollView>
   );
 };

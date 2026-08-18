@@ -5,7 +5,11 @@ import { useFonts } from 'expo-font';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import { QueryClientProvider } from '@tanstack/react-query';
 
+import { queryClient } from '@/shared/api/query-client';
+import { SessionInitializer } from '@/entities/auth-session';
+import { ToastRoot } from '@/shared/ui/toast';
 import { BottomNavigation } from '@/widgets/bottom-navigation';
 
 import '../../global.css';
@@ -22,20 +26,25 @@ export default function RootLayout() {
   });
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <BottomSheetModalProvider>
-        <SafeAreaProvider>
-          <StyledSafeAreaView
-            edges={['top', 'bottom']}
-            className='flex-1 bg-neutral'
-          >
-            <View className='flex-1 bg-background'>
-              <Stack screenOptions={{ headerShown: false }} />
-              <BottomNavigation />
-            </View>
-          </StyledSafeAreaView>
-        </SafeAreaProvider>
-      </BottomSheetModalProvider>
-    </GestureHandlerRootView>
+    <QueryClientProvider client={queryClient}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <BottomSheetModalProvider>
+          <SafeAreaProvider>
+            <StyledSafeAreaView
+              edges={['top', 'bottom']}
+              className='flex-1 bg-neutral'
+            >
+              <SessionInitializer>
+                <View className='flex-1 bg-background'>
+                  <Stack screenOptions={{ headerShown: false }} />
+                  <BottomNavigation />
+                  <ToastRoot />
+                </View>
+              </SessionInitializer>
+            </StyledSafeAreaView>
+          </SafeAreaProvider>
+        </BottomSheetModalProvider>
+      </GestureHandlerRootView>
+    </QueryClientProvider>
   );
 }

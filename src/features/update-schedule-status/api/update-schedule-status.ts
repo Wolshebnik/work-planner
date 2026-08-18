@@ -1,0 +1,52 @@
+import { supabase } from '@/shared/api/supabase';
+
+export type UpdateStatusDto = {
+  id: string;
+  name?: string;
+  description?: string | null;
+  scheduleMark?: string | null;
+  excelMark?: string | null;
+  color?: string | null;
+  hours?: number | null;
+  isLocked?: boolean;
+  isActive?: boolean;
+  sortOrder?: number;
+};
+
+export const updateStatus = async ({
+  id,
+  name,
+  description,
+  scheduleMark,
+  excelMark,
+  color,
+  hours,
+  isLocked,
+  isActive,
+  sortOrder,
+}: UpdateStatusDto) => {
+  const { error } = await supabase
+    .from('statuses')
+    .update({
+      ...(name !== undefined && { name: name.trim() }),
+      ...(description !== undefined && {
+        description: description?.trim() || null,
+      }),
+      ...(scheduleMark !== undefined && {
+        schedule_mark: scheduleMark?.trim() || null,
+      }),
+      ...(excelMark !== undefined && {
+        excel_mark: excelMark?.trim() || null,
+      }),
+      ...(color !== undefined && { color }),
+      ...(hours !== undefined && { hours }),
+      ...(isLocked !== undefined && { is_locked: isLocked }),
+      ...(isActive !== undefined && { is_active: isActive }),
+      ...(sortOrder !== undefined && { sort_order: sortOrder }),
+    })
+    .eq('id', id);
+
+  if (error) {
+    throw error;
+  }
+};

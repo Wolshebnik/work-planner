@@ -20,7 +20,6 @@ export interface EmployeeDetailsSheetProps {
   employee: EmployeeData | null;
   isOpen: boolean;
   onClose: () => void;
-  onArchive: (id: string) => void;
   onSave: (data: EditEmployeeNameFormData) => Promise<void>;
   initialMode?: EmployeeDetailsMode;
 }

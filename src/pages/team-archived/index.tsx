@@ -1,40 +1,50 @@
 import { useState } from 'react';
 
 import { useRouter } from 'expo-router';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
-import { Trash } from '@/assets/svg';
-import { EmployeeCard, employees } from '@/entities/employee';
+import { EmployeeCard } from '@/entities/employee';
 import { DeleteConfirmationSheet } from '@/features/delete-employee/ui/delete-confirmation-sheet';
-import { EmployeeData } from '@/features/employee-details';
+import { useGetEmployees } from '@/features/get-employees';
+import { useRestoreEmployee } from '@/features/restore-employee';
 import { ROUTES } from '@/shared/config/routes';
+import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import { Header } from '@/shared/ui/header';
 import { SectionTitle } from '@/shared/ui/section-title';
 import { Text } from '@/shared/ui/text';
 
 export function TeamArchivedPage() {
   const router = useRouter();
-  const [employeesList, setEmployeesList] = useState(employees);
-  const [deletingEmployee, setDeletingEmployee] = useState<EmployeeData | null>(
-    null,
-  );
-  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDelete = async () => {
-    if (!deletingEmployee) return;
-    setIsDeleting(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+  const { data: employees = [], isLoading } = useGetEmployees();
+  const restoreEmployeeMutation = useRestoreEmployee();
 
-    setEmployeesList((prev) =>
-      prev.map((e) =>
-        e.id === deletingEmployee.id ? { ...e, isActive: true } : e,
-      ),
-    );
-    setIsDeleting(false);
-    setDeletingEmployee(null);
+  const [restoringEmployee, setRestoringEmployee] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+
+  const archivedEmployees = employees
+    .filter((e) => !e.is_active)
+    .map((e) => ({
+      id: e.id,
+      name: [e.last_name, e.first_name, e.patronymic].filter(Boolean).join(' '),
+      isActive: e.is_active,
+    }));
+
+  const handleRestore = async () => {
+    if (!restoringEmployee) return;
+    await restoreEmployeeMutation.mutateAsync(restoringEmployee.id);
+    setRestoringEmployee(null);
   };
 
-  const archivedEmployees = employeesList.filter((e) => !e.isActive);
+  if (isLoading) {
+    return (
+      <View className='flex-1 items-center justify-center'>
+        <CircularProgressLoader size='large' />
+      </View>
+    );
+  }
 
   return (
     <View className='flex-1'>
@@ -42,7 +52,7 @@ export function TeamArchivedPage() {
 
       <View className='px-6 mb-3'>
         <SectionTitle
-          text={`${archivedEmployees.length} АРХІВОВАНИЙ ПРАЦІВНИК`}
+          text={`${archivedEmployees.length} АРХІВОВАНИХ ПРАЦІВНИКІВ`}
           className='font-bold text-[14px]'
         />
       </View>
@@ -53,32 +63,30 @@ export function TeamArchivedPage() {
             isArchived
             key={employee.id}
             employee={employee}
-            rightElement={
-              <View className='flex-row items-center gap-2'>
-                <TouchableOpacity
-                  onPress={() => setDeletingEmployee(employee)}
-                  className='p-2'
-                >
-                  <Trash className='text-danger' />
-                </TouchableOpacity>
-              </View>
+            onPress={() =>
+              setRestoringEmployee({
+                id: employee.id,
+                name: employee.name,
+              })
             }
           />
         ))}
       </ScrollView>
 
-      {deletingEmployee && (
+      {restoringEmployee && (
         <DeleteConfirmationSheet
-          isOpen={!!deletingEmployee}
-          onClose={() => setDeletingEmployee(null)}
-          onConfirm={handleDelete}
-          isLoading={isDeleting}
-          title='Видалення працівника'
+          isOpen={!!restoringEmployee}
+          onClose={() => setRestoringEmployee(null)}
+          onConfirm={handleRestore}
+          isLoading={restoreEmployeeMutation.isPending}
+          title='Відновлення працівника'
+          confirmText='Відновити'
+          confirmVariant='success'
           description={
             <Text className='text-[16px] text-text'>
-              Ви впевнені, що хочете видалити працівника &nbsp;
-              <Text className='text-[18px] text-danger'>
-                {`"${deletingEmployee.name}"`}
+              Ви впевнені, що хочете відновити працівника &nbsp;
+              <Text className='text-[18px] text-success'>
+                {`"${restoringEmployee.name}"`}
               </Text>
               ?
             </Text>

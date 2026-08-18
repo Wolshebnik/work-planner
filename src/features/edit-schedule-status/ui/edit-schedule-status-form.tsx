@@ -10,23 +10,28 @@ import { InputBase } from '@/shared/ui/input-base';
 import { type FormValues, schema } from '../model/schema';
 
 interface Props {
+  initialValues?: FormValues | undefined;
   onCancel: () => void;
   onSave: (data: FormValues) => Promise<void>;
 }
 
-export const EditScheduleStatusForm = ({ onCancel, onSave }: Props) => {
+export const EditScheduleStatusForm = ({
+  onCancel,
+  onSave,
+  initialValues,
+}: Props) => {
   const {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: {
+    defaultValues: initialValues ?? {
       name: '',
-      shortName: '',
-      dbMark: '',
+      description: '',
+      scheduleMark: '',
+      excelMark: '',
       color: '#E1E2E5',
-      workingHours: '',
     },
   });
 
@@ -51,7 +56,24 @@ export const EditScheduleStatusForm = ({ onCancel, onSave }: Props) => {
 
       <Controller
         control={control}
-        name='shortName'
+        name='description'
+        render={({ field: { onChange, value } }) => (
+          <InputBase
+            bottomSheet
+            label='Опис'
+            placeholder='Короткий опис статусу'
+            labelColor='#fff'
+            required
+            value={value}
+            onChangeText={onChange}
+            error={errors.description?.message}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name='scheduleMark'
         render={({ field: { onChange, value } }) => (
           <InputBase
             bottomSheet
@@ -61,24 +83,24 @@ export const EditScheduleStatusForm = ({ onCancel, onSave }: Props) => {
             required
             value={value}
             onChangeText={onChange}
-            error={errors.shortName?.message}
+            error={errors.scheduleMark?.message}
           />
         )}
       />
 
       <Controller
         control={control}
-        name='dbMark'
+        name='excelMark'
         render={({ field: { onChange, value } }) => (
           <InputBase
             bottomSheet
-            label='Позначка в базе'
-            placeholder='Позначка в базе'
+            label='Позначка в Excel'
+            placeholder='Позначка в Excel'
             labelColor='#fff'
             required
             value={value}
             onChangeText={onChange}
-            error={errors.dbMark?.message}
+            error={errors.excelMark?.message}
           />
         )}
       />
@@ -96,7 +118,7 @@ export const EditScheduleStatusForm = ({ onCancel, onSave }: Props) => {
           />
         )}
       />
-
+      {/*
       <Controller
         control={control}
         name='workingHours'
@@ -112,13 +134,12 @@ export const EditScheduleStatusForm = ({ onCancel, onSave }: Props) => {
             error={errors.workingHours?.message}
           />
         )}
-      />
+      /> */}
 
       <View className='flex-row gap-3 justify-end'>
         <ButtonBase
           variant='primary'
           appearance='outline'
-          className='w-30'
           disabled={isSubmitting}
           onPress={onCancel}
         >

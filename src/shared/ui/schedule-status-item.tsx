@@ -2,24 +2,23 @@ import { TouchableOpacity, View } from 'react-native';
 
 import { Trash } from '@/assets/svg';
 import { cn } from '@/shared/lib/cn';
-import { StatusBadge } from '@/shared/ui/status-badge';
-import { type BadgeVariant } from '@/shared/ui/status-badge/status-badge-appearance';
+import { HexStatusBadge } from '@/shared/ui/hex-status-badge';
 import { Text } from '@/shared/ui/text';
 
 interface ScheduleStatusItemProps {
+  color?: string | null;
   description: string;
   onDelete?: () => void;
   onPress?: () => void;
   status: string;
   title: string;
-  variant: BadgeVariant;
 }
 
 export function ScheduleStatusItem({
   title,
   description,
   status,
-  variant,
+  color,
   onPress,
   onDelete,
 }: ScheduleStatusItemProps) {
@@ -31,9 +30,9 @@ export function ScheduleStatusItem({
         'mx-4 mb-3 flex-row items-center gap-3 rounded-12 border border-primary bg-white/40 px-4 py-2 shadow-card',
       )}
     >
-      <StatusBadge variant={variant} className='w-10 h-10'>
+      <HexStatusBadge color={color} className='w-10 h-10'>
         {status}
-      </StatusBadge>
+      </HexStatusBadge>
 
       <View className='flex-1 gap-1'>
         <Text className='font-semibold text-[16px] text-primary'>{title}</Text>
