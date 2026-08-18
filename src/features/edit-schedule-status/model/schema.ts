@@ -6,6 +6,7 @@ export const schema = z.object({
   scheduleMark: z.string().min(1, "Обов'язкове поле"),
   excelMark: z.string().min(1, "Обов'язкове поле"),
   color: z.string().min(1, "Обов'язкове поле"),
+  isLocked: z.boolean().default(false),
 });
 
 export type FormValues = z.infer<typeof schema>;

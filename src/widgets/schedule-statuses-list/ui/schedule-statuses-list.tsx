@@ -42,8 +42,9 @@ export const ScheduleStatusesList = ({
           key={status.id}
           title={status.name}
           description={status.description ?? ''}
-          status={status.schedule_mark ?? status.code ?? ''}
+          status={status.schedule_mark ?? ''}
           color={status.color}
+          isLocked={status.is_locked}
           onPress={() => onStatusPress(status)}
           onDelete={() => onDeleteStatus(status)}
         />

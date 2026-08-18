@@ -1,17 +1,16 @@
 import { supabase } from '@/shared/api/supabase';
 
 export interface ScheduleStatus {
-  id: string;
-  code: string | null;
-  name: string;
-  description: string | null;
-  schedule_mark: string | null;
-  excel_mark: string | null;
   color: string | null;
+  description: string | null;
+  excel_mark: string | null;
   hours: number | null;
+  id: string;
+  is_active: boolean;
   is_locked: boolean;
   is_system: boolean;
-  is_active: boolean;
+  name: string;
+  schedule_mark: string | null;
   sort_order: number;
 }
 

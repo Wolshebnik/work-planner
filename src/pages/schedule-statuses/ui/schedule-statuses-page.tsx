@@ -8,6 +8,9 @@ import {
   EditScheduleStatusForm,
   type FormValues,
 } from '@/features/edit-schedule-status';
+import { ScheduleStatus } from '@/features/get-schedule-statuses';
+import { useAddScheduleStatus } from '@/features/add-schedule-status';
+import { useUpdateScheduleStatus } from '@/features/update-schedule-status';
 import { ROUTES } from '@/shared/config/routes';
 import { BottomSheet } from '@/shared/ui/bottom-sheet';
 import { ButtonBase } from '@/shared/ui/button-base';
@@ -15,76 +18,70 @@ import { Header } from '@/shared/ui/header';
 import { SectionTitle } from '@/shared/ui/section-title';
 import { Text } from '@/shared/ui/text';
 import { ScheduleStatusesList } from '@/widgets/schedule-statuses-list';
-import { ScheduleStatus } from '@/features/get-schedule-statuses';
-import { useUpdateScheduleStatus } from '@/features/update-schedule-status';
-
-const emptyFormValues: FormValues = {
-  name: '',
-  description: '',
-  scheduleMark: '',
-  excelMark: '',
-  color: '#E1E2E5',
-};
 
 export function ScheduleStatusesPage() {
   const router = useRouter();
 
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState<FormValues | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [editingStatus, setEditingStatus] = useState<FormValues | null>(null);
   const [deletingStatus, setDeletingStatus] = useState<ScheduleStatus | null>(
     null,
   );
 
+  const addStatus = useAddScheduleStatus();
   const updateStatus = useUpdateScheduleStatus();
 
   const handleClose = (): void => {
     setEditingId(null);
-    setFormData(null);
+    setIsAdding(false);
+    setEditingStatus(null);
     setDeletingStatus(null);
   };
 
   const handleSave = async (data: FormValues): Promise<void> => {
-    if (!editingId) return;
-
-    await updateStatus.mutateAsync({
-      id: editingId,
-      name: data.name,
-      description: data.description,
-      scheduleMark: data.scheduleMark,
-      excelMark: data.excelMark,
-      color: data.color,
-      isActive: true,
-    });
+    if (editingId) {
+      await updateStatus.mutateAsync({
+        id: editingId,
+        name: data.name,
+        description: data.description,
+        scheduleMark: data.scheduleMark,
+        excelMark: data.excelMark,
+        color: data.color,
+        isActive: true,
+      });
+    } else {
+      await addStatus.mutateAsync({
+        name: data.name,
+        description: data.description,
+        scheduleMark: data.scheduleMark,
+        excelMark: data.excelMark,
+        color: data.color,
+        isActive: true,
+      });
+    }
 
     handleClose();
   };
-
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async (): Promise<void> => {
-    setIsDeleting(true);
-    console.log('Deleted:', deletingStatus?.name);
-    setIsDeleting(false);
     handleClose();
-  };
-
-  const handleAddStatus = (): void => {
-    setEditingId(null);
-    setFormData(emptyFormValues);
   };
 
   const handleStatusPress = (status: ScheduleStatus): void => {
     setEditingId(status.id);
-    setFormData({
+    setIsAdding(false);
+    setEditingStatus({
       name: status.name,
       description: status.description ?? '',
       scheduleMark: status.schedule_mark ?? '',
       excelMark: status.excel_mark ?? '',
       color: status.color ?? '#E1E2E5',
+      isLocked: false,
     });
   };
 
-  const isSheetOpen = editingId !== null || formData !== null;
+  const isSheetOpen = editingId !== null || isAdding;
   const isEditing = editingId !== null;
 
   return (
@@ -100,7 +97,11 @@ export function ScheduleStatusesPage() {
         <ButtonBase
           variant='primary'
           appearance='solid'
-          onPress={handleAddStatus}
+          onPress={() => {
+            setEditingId(null);
+            setEditingStatus(null);
+            setIsAdding(true);
+          }}
         >
           + Додати
         </ButtonBase>
@@ -114,16 +115,12 @@ export function ScheduleStatusesPage() {
       <BottomSheet
         isOpen={isSheetOpen}
         onClose={handleClose}
-        title={
-          isEditing && formData
-            ? `Редагувати — ${formData.name}`
-            : 'Додати статус'
-        }
+        title={isEditing ? 'Редагувати статус' : 'Додати статус'}
       >
         <EditScheduleStatusForm
           onCancel={handleClose}
           onSave={handleSave}
-          initialValues={formData ?? undefined}
+          initialValues={editingStatus ?? undefined}
         />
       </BottomSheet>
 
@@ -132,7 +129,7 @@ export function ScheduleStatusesPage() {
           isOpen={!!deletingStatus}
           onClose={handleClose}
           onConfirm={handleDelete}
-          isLoading={isDeleting}
+          isLoading={false}
           title='Видалення статусу'
           description={
             <View className='gap-2'>

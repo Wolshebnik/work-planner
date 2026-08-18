@@ -4,6 +4,7 @@ import { View } from 'react-native';
 
 import { ButtonBase } from '@/shared/ui/button-base';
 import { ButtonLoader } from '@/shared/ui/button-loader';
+import { Checkbox } from '@/shared/ui/checkbox';
 import { ColorPickerInput } from '@/shared/ui/color-picker-input';
 import { InputBase } from '@/shared/ui/input-base';
 
@@ -25,13 +26,14 @@ export const EditScheduleStatusForm = ({
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as any,
     defaultValues: initialValues ?? {
       name: '',
       description: '',
       scheduleMark: '',
       excelMark: '',
       color: '#E1E2E5',
+      isLocked: false,
     },
   });
 
@@ -118,23 +120,19 @@ export const EditScheduleStatusForm = ({
           />
         )}
       />
-      {/*
+
       <Controller
         control={control}
-        name='workingHours'
+        name='isLocked'
         render={({ field: { onChange, value } }) => (
-          <InputBase
-            bottomSheet
-            label='Рахується як робочий день'
-            placeholder='Введіть кількість робочих годин'
-            labelColor='#fff'
-            required
-            value={value}
-            onChangeText={onChange}
-            error={errors.workingHours?.message}
+          <Checkbox
+            checked={value}
+            className='mb-4'
+            label='Забронювати вихідний'
+            onCheckedChange={onChange}
           />
         )}
-      /> */}
+      />
 
       <View className='flex-row gap-3 justify-end'>
         <ButtonBase
