@@ -4,15 +4,12 @@ import { useRouter } from 'expo-router';
 import { ScrollView, View } from 'react-native';
 
 import { EmployeeCard } from '@/entities/employee';
-import { DeleteConfirmationSheet } from '@/shared/ui/delete-confirmation-sheet';
 import { useGetEmployees } from '@/features/get-employees';
 import { useRestoreEmployee } from '@/features/restore-employee';
+import { getEmployeeAvatarColor } from '@/shared/config/get-avatar-color';
 import { ROUTES } from '@/shared/config/routes';
-import {
-  createEmployeeColorMap,
-  getEmployeeAvatarColor,
-} from '@/shared/config/get-avatar-color';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
+import { DeleteConfirmationSheet } from '@/shared/ui/delete-confirmation-sheet';
 import { Header } from '@/shared/ui/header';
 import { SectionTitle } from '@/shared/ui/section-title';
 import { Text } from '@/shared/ui/text';
@@ -23,24 +20,25 @@ export function TeamArchivedPage() {
   const { data: employees = [], isLoading } = useGetEmployees();
   const restoreEmployeeMutation = useRestoreEmployee();
 
-  const colorMap = useMemo(
-    () => createEmployeeColorMap(employees),
-    [employees],
-  );
-
   const [restoringEmployee, setRestoringEmployee] = useState<{
     id: string;
     name: string;
   } | null>(null);
 
-  const archivedEmployees = employees
-    .filter((e) => !e.is_active)
-    .map((e) => ({
-      id: e.id,
-      name: [e.last_name, e.first_name, e.patronymic].filter(Boolean).join(' '),
-      isActive: e.is_active,
-      color: getEmployeeAvatarColor(e.id, colorMap),
-    }));
+  const archivedEmployees = useMemo(
+    () =>
+      employees
+        .filter((e) => !e.is_active)
+        .map((e) => ({
+          id: e.id,
+          name: [e.last_name, e.first_name, e.patronymic]
+            .filter(Boolean)
+            .join(' '),
+          isActive: e.is_active,
+          color: getEmployeeAvatarColor(e.id),
+        })),
+    [employees],
+  );
 
   const handleRestore = () => {
     if (!restoringEmployee) return;

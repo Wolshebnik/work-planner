@@ -15,6 +15,9 @@
         }
       ]
     ],
+    "android": {
+      "package": "com.workplanner.app"
+    },
     "web": {
       "bundler": "metro"
     }

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import dayjs from 'dayjs';
 import { View } from 'react-native';
@@ -41,20 +41,47 @@ export function ScheduleGrid({
   const [leftColWidth, setLeftColWidth] = useState(96);
   const [daysAreaWidth, setDaysAreaWidth] = useState(0);
 
+  const [columnLayouts, setColumnLayouts] = useState<
+    Record<number, { width: number; x: number }>
+  >({});
+
+  const handleColumnLayout = useCallback(
+    (index: number, layout: { width: number; x: number }) => {
+      setColumnLayouts((prev) => {
+        const existing = prev[index];
+        if (
+          existing &&
+          Math.abs(existing.x - layout.x) < 0.5 &&
+          Math.abs(existing.width - layout.width) < 0.5
+        ) {
+          return prev;
+        }
+        return { ...prev, [index]: layout };
+      });
+    },
+    [],
+  );
+
   const selectedDayIndex = useMemo(
     () => getSelectedDayIndex({ selectedCell, selectedDate, week }),
     [selectedCell, selectedDate, week],
   );
 
   const dayColumnWidth = daysCount > 0 && daysAreaWidth > 0 ? daysAreaWidth / daysCount : 0;
-  const selectedLeft = leftColWidth + selectedDayIndex * dayColumnWidth;
+  const currentColumn = columnLayouts[selectedDayIndex];
+  const overlayLeft = currentColumn
+    ? leftColWidth + currentColumn.x + 1
+    : leftColWidth + selectedDayIndex * dayColumnWidth + 1;
+  const overlayWidth = currentColumn
+    ? currentColumn.width - 2
+    : dayColumnWidth - 2;
 
   return (
     <View className={cn('overflow-hidden rounded-12 mx-3 relative', className)}>
-      {selectedDayIndex >= 0 && daysAreaWidth > 0 && (
+      {selectedDayIndex >= 0 && (currentColumn || daysAreaWidth > 0) && (
         <SelectedColumnOverlay
-          dayColumnWidth={dayColumnWidth}
-          leftOffset={selectedLeft}
+          width={overlayWidth}
+          leftOffset={overlayLeft}
         />
       )}
 
@@ -76,6 +103,10 @@ export function ScheduleGrid({
           {week.slice(weekStartDay, weekStartDay + daysCount).map((day, dayIndex) => (
             <View
               key={day.date.format('YYYY-MM-DD')}
+              onLayout={(e) => {
+                const { x, width } = e.nativeEvent.layout;
+                handleColumnLayout(dayIndex, { x, width });
+              }}
               className='flex-1 items-center justify-center py-2'
             >
               <ScheduleDay

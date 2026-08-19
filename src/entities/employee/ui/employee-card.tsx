@@ -50,9 +50,12 @@ export function EmployeeCard({
       />
 
       <View className='flex-1'>
-        <Text className='font-bold text-[14px]'>{name}</Text>
+        <Text className='font-bold text-[14px]' numberOfLines={1}>
+          {name}
+        </Text>
         <Text
           className={cn('text-[12px]', isActive ? 'text-grey' : 'text-danger')}
+          numberOfLines={1}
         >
           {isActive ? 'Активний' : 'Неактивний'}
         </Text>

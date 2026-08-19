@@ -1,9 +1,8 @@
 import type { Employee } from '@/entities/employee';
 
-export interface AvatarColor {
-  backgroundColor: string;
-  textColor: string;
-}
+import { type AvatarColor } from './avatar-color';
+
+export type { AvatarColor };
 
 const COLORS: AvatarColor[] = [
   { backgroundColor: '#CDF4D8', textColor: '#206F37' }, // Green
@@ -28,28 +27,34 @@ const COLORS: AvatarColor[] = [
   { backgroundColor: '#DFF4CD', textColor: '#446F20' }, // Light Lime
 ];
 
+export function getAvatarColorById(id?: string | null): AvatarColor {
+  if (!id) return COLORS[0];
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash << 5) - hash + id.charCodeAt(i);
+    hash |= 0;
+  }
+  const index = Math.abs(hash) % COLORS.length;
+  return COLORS[index];
+}
+
 export function createEmployeeColorMap(
   employees: Employee[],
 ): Map<string, AvatarColor> {
-  const sortedEmployees = [...employees].sort((a, b) => {
-    if (a.sort_order !== b.sort_order) {
-      return a.sort_order - b.sort_order;
-    }
-
-    return a.id.localeCompare(b.id);
-  });
-
   return new Map(
-    sortedEmployees.map((employee, index) => [
+    employees.map((employee) => [
       employee.id,
-      COLORS[index % COLORS.length],
+      getAvatarColorById(employee.id),
     ]),
   );
 }
 
 export function getEmployeeAvatarColor(
-  employeeId: string,
-  colorMap: Map<string, AvatarColor>,
+  employeeId?: string | null,
+  colorMap?: Map<string, AvatarColor>,
 ): AvatarColor {
-  return colorMap.get(employeeId) ?? COLORS[0];
+  if (colorMap && employeeId && colorMap.has(employeeId)) {
+    return colorMap.get(employeeId)!;
+  }
+  return getAvatarColorById(employeeId);
 }

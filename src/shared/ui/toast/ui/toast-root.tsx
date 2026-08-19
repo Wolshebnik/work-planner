@@ -1,5 +1,5 @@
 import Toast from 'react-native-toast-message';
 
 export function ToastRoot() {
-  return <Toast />;
-}
+  return <Toast visibilityTime={3000} />;
+}

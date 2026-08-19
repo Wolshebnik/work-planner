@@ -6,6 +6,7 @@ import { HexStatusBadge } from '@/shared/ui/hex-status-badge';
 import { Text } from '@/shared/ui/text';
 
 interface ScheduleStatusItemProps {
+  className?: string;
   color?: string | null;
   description: string;
   isLocked?: boolean;
@@ -23,13 +24,15 @@ export function ScheduleStatusItem({
   isLocked,
   onPress,
   onDelete,
+  className,
 }: ScheduleStatusItemProps) {
   return (
     <TouchableOpacity
       activeOpacity={0.7}
       onPress={onPress}
       className={cn(
-        'mx-4 mb-3 flex-row items-center gap-3 rounded-12 border border-primary bg-white/40 px-4 py-2 shadow-card',
+        'flex-row items-center gap-3 rounded-12 border border-primary bg-white px-4 py-2 shadow-card',
+        className,
       )}
     >
       <HexStatusBadge color={color} className='w-10 h-10'>
@@ -37,8 +40,18 @@ export function ScheduleStatusItem({
       </HexStatusBadge>
 
       <View className='flex-1 gap-1'>
-        <Text className='font-semibold text-[16px] text-primary'>{title}</Text>
-        <Text className='text-[14px] text-grey'>{description}</Text>
+        <Text
+          className='font-semibold text-[16px] leading-[22px] text-primary'
+          numberOfLines={1}
+        >
+          {title}
+        </Text>
+        <Text
+          className='text-[14px] leading-[18px] text-grey'
+          numberOfLines={1}
+        >
+          {description}
+        </Text>
       </View>
 
       {onDelete && (
