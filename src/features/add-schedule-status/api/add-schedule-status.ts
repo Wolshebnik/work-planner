@@ -24,18 +24,25 @@ export async function addScheduleStatus(input: AddScheduleStatusInput) {
 
   const nextSortOrder = (lastStatus?.sort_order ?? 0) + 1;
 
-  const { error } = await supabase.from('statuses').insert({
-    name: input.name.trim(),
-    description: input.description?.trim() ?? null,
-    schedule_mark: input.scheduleMark?.trim() ?? null,
-    excel_mark: input.excelMark?.trim() ?? null,
-    color: input.color ?? '#E1E2E5',
-    is_locked: input.isLocked ?? false,
-    is_active: input.isActive ?? true,
-    sort_order: nextSortOrder,
-  });
+  const { data, error } = await supabase
+    .from('statuses')
+    .insert({
+      name: input.name.trim(),
+      description: input.description?.trim() ?? null,
+      schedule_mark: input.scheduleMark?.trim() ?? null,
+      excel_mark: input.excelMark?.trim() ?? null,
+      color: input.color ?? '#E1E2E5',
+      is_locked: input.isLocked ?? false,
+      is_active: input.isActive ?? true,
+      sort_order: nextSortOrder,
+    })
+    .select();
 
   if (error) {
-    throw new Error(error.message);
+    throw error;
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error('Не вдалося додати статус: операцію відхилено базою даних (RLS).');
   }
 }

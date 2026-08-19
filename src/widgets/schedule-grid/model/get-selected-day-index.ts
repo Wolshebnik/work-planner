@@ -4,7 +4,7 @@ import type { WeekDay } from './types';
 
 interface GetSelectedDayIndexParams {
   selectedCell?: { dayIndex: number; employeeIndex: number } | null;
-  selectedDate?: dayjs.Dayjs;
+  selectedDate?: dayjs.Dayjs | null;
   week: WeekDay[];
 }
 
@@ -13,13 +13,16 @@ export function getSelectedDayIndex({
   selectedDate,
   week,
 }: GetSelectedDayIndexParams): number {
-  if (selectedCell?.dayIndex !== undefined && selectedCell.dayIndex !== null) {
-    return selectedCell.dayIndex;
-  }
   if (selectedDate) {
     const idx = week.findIndex((d) => d.date.isSame(selectedDate, 'day'));
     if (idx !== -1) return idx;
   }
-  const todayIndex = week.findIndex((d) => d.isToday);
-  return todayIndex !== -1 ? todayIndex : -1;
+  if (selectedCell?.dayIndex !== undefined && selectedCell.dayIndex !== null) {
+    return selectedCell.dayIndex;
+  }
+  return -1;
+}
+
+export function getTodayDayIndex(week: WeekDay[]): number {
+  return week.findIndex((d) => d.isToday);
 }

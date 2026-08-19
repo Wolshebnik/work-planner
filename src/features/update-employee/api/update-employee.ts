@@ -11,7 +11,7 @@ export type UpdateEmployeeDto = {
 export async function updateEmployee(dto: UpdateEmployeeDto) {
   const { id, ...fields } = dto;
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('employees')
     .update({
       ...(fields.lastName !== undefined && { last_name: fields.lastName.trim() }),
@@ -21,9 +21,16 @@ export async function updateEmployee(dto: UpdateEmployeeDto) {
       }),
       ...(fields.isActive !== undefined && { is_active: fields.isActive }),
     })
-    .eq('id', id);
+    .eq('id', id)
+    .select();
 
   if (error) {
     throw error;
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error(
+      `Не вдалося оновити працівника: запис з id "${id}" не знайдено або операцію відхилено правами доступу (RLS).`,
+    );
   }
 }

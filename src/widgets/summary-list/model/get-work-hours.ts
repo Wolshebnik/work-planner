@@ -3,7 +3,8 @@ export function getWorkHours(excelMark: string | null | undefined): number {
     return 0;
   }
 
-  const value = Number(excelMark);
+  const normalized = excelMark.trim().replace(',', '.');
+  const value = Number(normalized);
 
   return Number.isFinite(value) ? value : 0;
 }

@@ -31,8 +31,12 @@ export function ScheduleStatusesArchivedPage() {
   const handleRestore = () => {
     if (!restoringStatus) return;
     const statusId = restoringStatus.id;
+    const isLastStatus = archivedStatuses.length <= 1;
     setRestoringStatus(null);
     restoreStatusMutation.mutate(statusId);
+    if (isLastStatus) {
+      router.push(ROUTES.MORE_SCHEDULE_STATUSES);
+    }
   };
 
   if (isLoading) {

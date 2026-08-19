@@ -93,14 +93,15 @@ export function TeamPage() {
             useFlatList={false}
             renderItem={renderItem}
             style={{ backgroundColor: 'transparent' }}
-            contentContainerStyle={{ paddingBottom: 16 }}
+            contentContainerStyle={{ paddingBottom: 24 }}
+            ListFooterComponent={
+              archivedEmployeesCount > 0 ? (
+                <View className='pt-2 pb-6 px-4'>
+                  <ArchivedEmployeesCard count={archivedEmployeesCount} />
+                </View>
+              ) : null
+            }
           />
-
-          {archivedEmployeesCount > 0 && (
-            <View className='pt-2 pb-6 px-4'>
-              <ArchivedEmployeesCard count={archivedEmployeesCount} />
-            </View>
-          )}
         </View>
       )}
 

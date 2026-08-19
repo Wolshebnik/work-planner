@@ -21,6 +21,31 @@ function formatErrorMessage(error: unknown): { title: string; message: string } 
     };
   }
 
+  if (typeof error === 'object' && error !== null) {
+    const obj = error as Record<string, unknown>;
+    const message =
+      (typeof obj.message === 'string' && obj.message) ||
+      (typeof obj.error_description === 'string' && obj.error_description) ||
+      (typeof obj.details === 'string' && obj.details) ||
+      (typeof obj.hint === 'string' && obj.hint);
+
+    if (message) {
+      return {
+        title: 'Помилка',
+        message,
+      };
+    }
+
+    try {
+      return {
+        title: 'Помилка',
+        message: JSON.stringify(error),
+      };
+    } catch {
+      // fallback
+    }
+  }
+
   return {
     title: 'Помилка',
     message: String(error),

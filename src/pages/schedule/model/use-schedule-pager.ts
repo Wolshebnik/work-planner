@@ -1,11 +1,5 @@
 /* eslint-disable react-hooks/immutability */
-import {
-  startTransition,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import dayjs from 'dayjs';
 import type { LayoutChangeEvent } from 'react-native';
@@ -28,6 +22,11 @@ export interface PhysicalSlot {
   isReady: boolean;
   logicalPage: number;
 }
+interface UseSchedulePagerProps {
+  initialDate?: dayjs.Dayjs;
+  onDateChange?: (newDate: dayjs.Dayjs) => void;
+  viewMode: ViewMode;
+}
 
 export function getRelativeOffset(
   slotIndex: CurrentSlotIndex,
@@ -35,12 +34,6 @@ export function getRelativeOffset(
 ): -1 | 0 | 1 {
   const delta = (slotIndex - currentSlotIndex + 3) % 3;
   return delta === 2 ? -1 : (delta as 0 | 1);
-}
-
-interface UseSchedulePagerProps {
-  initialDate?: dayjs.Dayjs;
-  onDateChange?: (newDate: dayjs.Dayjs) => void;
-  viewMode: ViewMode;
 }
 
 export function useSchedulePager({
@@ -71,23 +64,13 @@ export function useSchedulePager({
     >
   >({
     0: { date: initialBaseDate, logicalPage: 0, isReady: true },
-    1: { date: initialBaseDate.add(1, unit), logicalPage: 1, isReady: false },
+    1: { date: initialBaseDate.add(1, unit), logicalPage: 1, isReady: true },
     2: {
       date: initialBaseDate.subtract(1, unit),
       logicalPage: -1,
-      isReady: false,
+      isReady: true,
     },
   });
-
-  useEffect(() => {
-    startTransition(() => {
-      setSlotMapping((prev) => ({
-        0: { ...prev[0], isReady: true },
-        1: { ...prev[1], isReady: true },
-        2: { ...prev[2], isReady: true },
-      }));
-    });
-  }, []);
 
   const offsetShared = useSharedValue(0);
   const dragX = useSharedValue(0);
@@ -102,30 +85,26 @@ export function useSchedulePager({
       const nextSlotIndex = ((urgentState.currentSlotIndex + direction + 3) %
         3) as CurrentSlotIndex;
       const nextLogicalPage = urgentState.logicalPageIndex + direction;
+      const farSlotIndex = ((nextSlotIndex + direction + 3) %
+        3) as CurrentSlotIndex;
+      const farLogicalPage = nextLogicalPage + direction;
+      const farDate = nextDate.add(direction, currentUnit);
 
       setUrgentState({
         currentDate: nextDate,
         currentSlotIndex: nextSlotIndex,
         logicalPageIndex: nextLogicalPage,
       });
+      setSlotMapping((prev) => ({
+        ...prev,
+        [farSlotIndex]: {
+          date: farDate,
+          logicalPage: farLogicalPage,
+          isReady: true,
+        },
+      }));
       onDateChange?.(nextDate);
       isAnimating.value = false;
-
-      startTransition(() => {
-        const farSlotIndex = ((nextSlotIndex + direction + 3) %
-          3) as CurrentSlotIndex;
-        const farLogicalPage = nextLogicalPage + direction;
-        const farDate = nextDate.add(direction, currentUnit);
-
-        setSlotMapping((prev) => ({
-          ...prev,
-          [farSlotIndex]: {
-            date: farDate,
-            logicalPage: farLogicalPage,
-            isReady: true,
-          },
-        }));
-      });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [viewMode, onDateChange, urgentState],
@@ -184,21 +163,13 @@ export function useSchedulePager({
         1: {
           date: targetDate.add(1, currentUnit),
           logicalPage: 1,
-          isReady: false,
+          isReady: true,
         },
         2: {
           date: targetDate.subtract(1, currentUnit),
           logicalPage: -1,
-          isReady: false,
+          isReady: true,
         },
-      });
-
-      startTransition(() => {
-        setSlotMapping((prev) => ({
-          0: { ...prev[0], isReady: true },
-          1: { ...prev[1], isReady: true },
-          2: { ...prev[2], isReady: true },
-        }));
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

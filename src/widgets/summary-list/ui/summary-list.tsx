@@ -30,7 +30,7 @@ export function SummaryList({
           name={employee.name}
           avatarColor={employee.avatarColor}
           values={employee.weeklyHours}
-          monthTotal={employee.monthlyHours}
+          monthTotal={employee.monthTotal ?? employee.monthlyHours}
           className='mb-2'
         />
       ))}

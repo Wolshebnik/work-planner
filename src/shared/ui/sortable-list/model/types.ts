@@ -8,6 +8,7 @@ export interface SortableData {
 }
 
 export interface SortableListProps<TData extends SortableData> {
+  ListFooterComponent?: ReactNode;
   contentContainerStyle?: StyleProp<ViewStyle>;
   data: TData[];
   enableDynamicHeights?: boolean;

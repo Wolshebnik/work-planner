@@ -16,13 +16,15 @@ interface ScheduleWeekContentProps {
   activeEmployees: Employee[];
   date: dayjs.Dayjs;
   onCellPress: (employeeIndex: number, dayIndex: number) => void;
-  selectedCell: { employeeIndex: number; dayIndex: number } | null;
+  selectedCell: { dayIndex: number; employeeIndex: number } | null;
+  selectedDate?: dayjs.Dayjs | null;
 }
 
 export const ScheduleWeekContent = memo(function ScheduleWeekContent({
   date,
   activeEmployees,
   selectedCell,
+  selectedDate,
   onCellPress,
 }: ScheduleWeekContentProps) {
   const {
@@ -83,6 +85,7 @@ export const ScheduleWeekContent = memo(function ScheduleWeekContent({
       startDate={date}
       data={weeklyData}
       selectedCell={selectedCell}
+      selectedDate={selectedDate}
       onCellPress={onCellPress}
     />
   );

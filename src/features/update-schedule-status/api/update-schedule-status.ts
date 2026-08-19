@@ -23,7 +23,7 @@ export const updateStatus = async ({
   isActive,
   sortOrder,
 }: UpdateStatusDto) => {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('statuses')
     .update({
       ...(name !== undefined && { name: name.trim() }),
@@ -41,9 +41,16 @@ export const updateStatus = async ({
       ...(isActive !== undefined && { is_active: isActive }),
       ...(sortOrder !== undefined && { sort_order: sortOrder }),
     })
-    .eq('id', id);
+    .eq('id', id)
+    .select();
 
   if (error) {
     throw error;
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error(
+      `Не вдалося оновити статус: запис з id "${id}" не знайдено або операцію відхилено правами доступу (RLS).`,
+    );
   }
 };

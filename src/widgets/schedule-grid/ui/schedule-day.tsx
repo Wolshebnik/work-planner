@@ -17,7 +17,7 @@ export function ScheduleDay({ day, className, isSelected }: ScheduleDayProps) {
       return 'text-primary font-semibold';
     }
     if (day.isToday) {
-      return 'text-button font-medium';
+      return 'text-[#a16207] font-medium';
     }
     return 'text-text font-medium';
   };
@@ -27,7 +27,7 @@ export function ScheduleDay({ day, className, isSelected }: ScheduleDayProps) {
       return 'text-primary font-bold';
     }
     if (day.isToday) {
-      return 'text-button font-bold';
+      return 'text-[#a16207] font-semibold';
     }
     return 'text-text font-bold';
   };
@@ -37,7 +37,7 @@ export function ScheduleDay({ day, className, isSelected }: ScheduleDayProps) {
       return { fontFamily: 'RobotoFlex_800ExtraBold' };
     }
     if (day.isToday) {
-      return { fontFamily: 'RobotoFlex_700Bold' };
+      return { fontFamily: 'RobotoFlex_600SemiBold' };
     }
     return {};
   };

@@ -38,10 +38,8 @@ export function useClearScheduleEntry() {
         queryClient.setQueryData(context.queryKey, context.previousEntries);
       }
     },
-    onSettled: (_data, _error, _variables, context) => {
-      if (context?.queryKey) {
-        queryClient.invalidateQueries({ queryKey: context.queryKey });
-      }
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['schedule'] });
     },
   });
 }

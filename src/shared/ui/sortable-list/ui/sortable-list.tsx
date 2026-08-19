@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {
   FlatList,
   GestureHandlerRootView,
@@ -30,6 +30,7 @@ export function SortableList<TData extends SortableData>({
   contentContainerStyle,
   itemKeyExtractor = (item) => item.id,
   useFlatList = false,
+  ListFooterComponent,
 }: SortableListProps<TData>) {
   const {
     scrollViewRef,
@@ -72,11 +73,12 @@ export function SortableList<TData extends SortableData>({
               itemKeyExtractor(item as TData, index)
             }
             renderItem={memoizedVerticalRenderItem as never}
+            ListFooterComponent={ListFooterComponent as never}
             onScroll={handleScroll}
             scrollEventThrottle={16}
             style={[styles.scrollView, style]}
             contentContainerStyle={[
-              { height: contentHeight },
+              { minHeight: contentHeight },
               contentContainerStyle,
             ]}
             onScrollEndDrag={handleScrollEnd}
@@ -91,7 +93,7 @@ export function SortableList<TData extends SortableData>({
             scrollEventThrottle={16}
             style={[styles.scrollView, style]}
             contentContainerStyle={[
-              { height: contentHeight },
+              { minHeight: contentHeight },
               contentContainerStyle,
             ]}
             onScrollEndDrag={handleScrollEnd}
@@ -99,16 +101,19 @@ export function SortableList<TData extends SortableData>({
             simultaneousHandlers={dropProviderRef}
             showsVerticalScrollIndicator={false}
           >
-            {data.map((item, index) => {
-              const itemProps = getItemProps(item, index);
-              const sortableItemProps: SortableRenderItemProps<TData> = {
-                item,
-                index,
-                direction: SortableDirection.Vertical,
-                ...itemProps,
-              };
-              return renderItem(sortableItemProps);
-            })}
+            <View style={{ height: contentHeight }}>
+              {data.map((item, index) => {
+                const itemProps = getItemProps(item, index);
+                const sortableItemProps: SortableRenderItemProps<TData> = {
+                  item,
+                  index,
+                  direction: SortableDirection.Vertical,
+                  ...itemProps,
+                };
+                return renderItem(sortableItemProps);
+              })}
+            </View>
+            {ListFooterComponent}
           </AnimatedScrollView>
         )}
       </DropProvider>

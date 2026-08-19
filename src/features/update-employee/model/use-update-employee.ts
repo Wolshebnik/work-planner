@@ -43,6 +43,7 @@ export function useUpdateEmployee() {
       if (context?.queryKey) {
         queryClient.invalidateQueries({ queryKey: context.queryKey });
       }
+      queryClient.invalidateQueries({ queryKey: ['schedule'] });
     },
   });
 }

@@ -33,6 +33,7 @@ export function useRestoreEmployee() {
       if (context?.queryKey) {
         queryClient.invalidateQueries({ queryKey: context.queryKey });
       }
+      queryClient.invalidateQueries({ queryKey: ['schedule'] });
     },
   });
 }
