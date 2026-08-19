@@ -42,10 +42,11 @@ export function TeamArchivedPage() {
       color: getEmployeeAvatarColor(e.id, colorMap),
     }));
 
-  const handleRestore = async () => {
+  const handleRestore = () => {
     if (!restoringEmployee) return;
-    await restoreEmployeeMutation.mutateAsync(restoringEmployee.id);
+    const employeeId = restoringEmployee.id;
     setRestoringEmployee(null);
+    restoreEmployeeMutation.mutate(employeeId);
   };
 
   return (

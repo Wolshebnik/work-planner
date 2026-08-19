@@ -21,7 +21,7 @@ export function DetailsView({
   onEditPress,
   onClose,
 }: DetailsViewProps) {
-  const { mutateAsync, isPending } = useArchiveEmployee();
+  const { mutate, isPending } = useArchiveEmployee();
 
   const initials = employee.name
     .split(' ')
@@ -30,9 +30,9 @@ export function DetailsView({
     .toUpperCase()
     .slice(0, 2);
 
-  const handleArchive = async () => {
-    await mutateAsync(employee.id);
+  const handleArchive = () => {
     onClose();
+    mutate(employee.id);
   };
 
   return (

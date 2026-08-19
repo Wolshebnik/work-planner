@@ -28,10 +28,11 @@ export function ScheduleStatusesArchivedPage() {
 
   const archivedStatuses = statuses.filter((s) => !s.is_active);
 
-  const handleRestore = async () => {
+  const handleRestore = () => {
     if (!restoringStatus) return;
-    await restoreStatusMutation.mutateAsync(restoringStatus.id);
+    const statusId = restoringStatus.id;
     setRestoringStatus(null);
+    restoreStatusMutation.mutate(statusId);
   };
 
   if (isLoading) {

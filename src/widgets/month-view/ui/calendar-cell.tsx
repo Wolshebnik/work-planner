@@ -14,18 +14,25 @@ export function CalendarCell({ day, isSelected, onPress }: CalendarCellProps) {
   return (
     <Pressable
       className={cn(
-        'flex-1 h-16 border border-border rounded-8 mx-0.5 border-b-4 relative',
-        !day.isCurrentMonth && 'opacity-40',
-        day.isToday && !isSelected && 'border-button',
-        isSelected && 'border-danger',
+        'relative mx-0.5 h-16 flex-1 rounded-8 border border-[#b8c3cc] border-b-4 border-b-[#aeb8c0] bg-background shadow-card',
+
+        !day.isCurrentMonth && 'opacity-35',
+
+        day.isToday &&
+          !isSelected &&
+          'border-button border-b-button bg-button/20',
+
+        isSelected && 'border-primary/20 border-b-primary/20 bg-primary/20',
       )}
       onPress={onPress}
     >
       <Text
         className={cn(
-          'absolute top-1 left-1 text-[8px] text-text font-bold',
-          day.isToday && !isSelected && 'text-button',
-          isSelected && 'text-danger',
+          'absolute left-1.5 top-1.5 text-[9px] font-bold text-text',
+
+          day.isToday && !isSelected && 'text-primary',
+
+          isSelected && 'text-white',
         )}
       >
         {day.number}

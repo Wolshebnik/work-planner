@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { View } from 'react-native';
 
 import { Lock } from '@/assets/svg';
@@ -13,7 +14,7 @@ interface ScheduleCellProps {
   value?: DayCell | null;
 }
 
-export function ScheduleCell({
+export const ScheduleCell = memo(function ScheduleCell({
   value,
   className,
   onPress,
@@ -42,4 +43,4 @@ export function ScheduleCell({
       )}
     </HexStatusBadge>
   );
-}
+});

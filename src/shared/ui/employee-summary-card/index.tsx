@@ -1,16 +1,16 @@
 import { View } from 'react-native';
 
-import { cn } from '@/shared/lib/cn';
-import { Text } from '@/shared/ui/text';
-import { Avatar } from '@/shared/ui/avatar';
 import type { AvatarColor } from '@/shared/config/avatar-color';
+import { cn } from '@/shared/lib/cn';
+import { Avatar } from '@/shared/ui/avatar';
+import { Text } from '@/shared/ui/text';
 
 interface EmployeeSummaryCardProps {
-  name: string;
-  initials: string;
-  className?: string;
   avatarColor?: AvatarColor;
+  className?: string;
+  initials: string;
   monthTotal: string | number;
+  name: string;
   values: readonly (string | number)[];
 }
 
@@ -48,9 +48,11 @@ export function EmployeeSummaryCard({
         </View>
       </View>
 
-      <View className='my-3 h-12.25 w-16 shrink-0 items-center justify-center rounded-12 bg-blue-light'>
+      <View className='my-3 h-12.25 w-16 shrink-0 items-center justify-center rounded-12 bg-blue-light/70'>
         <Text className='font-bold text-[9px] leading-[13.5px]'>МІСЯЦЬ</Text>
-        <Text className='font-bold text-[17px] leading-4.25'>{monthTotal}</Text>
+        <Text className='font-bold text-[17px] leading-4.25 text-primary'>
+          {monthTotal}
+        </Text>
       </View>
     </View>
   );

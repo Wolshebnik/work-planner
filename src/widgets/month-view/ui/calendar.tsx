@@ -13,16 +13,22 @@ import { CalendarGrid } from './calendar-grid';
 
 interface CalendarProps {
   className?: string;
+  isCurrentPage?: boolean;
   startDate: dayjs.Dayjs;
 }
 
-export function Calendar({ startDate, className }: CalendarProps) {
+export function Calendar({
+  startDate,
+  className,
+  isCurrentPage = true,
+}: CalendarProps) {
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs | null>(null);
 
   const days = generateCalendarDays(startDate);
 
   const handleDayPress = (day: dayjs.Dayjs) => {
+    if (!isCurrentPage) return;
     setSelectedDate(day);
     setIsBottomSheetOpen(true);
   };
@@ -36,16 +42,18 @@ export function Calendar({ startDate, className }: CalendarProps) {
         onDayPress={handleDayPress}
       />
 
-      <BottomSheet
-        isOpen={isBottomSheetOpen}
-        title={selectedDate ? selectedDate.format('D MMMM') : 'Деталі зміни'}
-        onClose={() => {
-          setIsBottomSheetOpen(false);
-          setSelectedDate(null);
-        }}
-      >
-        <Text>На {selectedDate?.format('D MMMM')} наразі немає даних.</Text>
-      </BottomSheet>
+      {isCurrentPage && (
+        <BottomSheet
+          isOpen={isBottomSheetOpen}
+          title={selectedDate ? selectedDate.format('D MMMM') : 'Деталі зміни'}
+          onClose={() => {
+            setIsBottomSheetOpen(false);
+            setSelectedDate(null);
+          }}
+        >
+          <Text>На {selectedDate?.format('D MMMM')} наразі немає даних.</Text>
+        </BottomSheet>
+      )}
     </View>
   );
 }

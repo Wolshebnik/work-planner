@@ -8,5 +8,10 @@ export function useGetScheduleStatuses() {
   return useQuery({
     queryKey: scheduleStatusesQueryKey,
     queryFn: getScheduleStatuses,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 }
