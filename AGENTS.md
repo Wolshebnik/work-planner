@@ -64,9 +64,10 @@ Code generation alone is not completion.
 
 After a change, use the strongest practical verification available: relevant tests, type checks, linting, formatting checks, targeted commands, and application-specific validation. Prefer a sufficient targeted check first.
 
-**Run only `lint` by default.** Run `build` only when explicitly asked by the user.
+**Run `npm run lint` and `npm run typecheck` (`tsc --noEmit`) by default after code changes.** Run `build` only when explicitly asked by the user.
 
 For bug fixes, test the failing behavior; for features, the added behavior; for refactors, behavior before and after where practical. If verification cannot run, state exactly what was not verified and why. Do not claim it works without verification.
+
 
 ## 9. Inspect the final diff
 

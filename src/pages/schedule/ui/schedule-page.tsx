@@ -1,25 +1,30 @@
+import { useCallback, useEffect } from 'react';
+
 import type dayjs from 'dayjs';
 import { ScrollView, View } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { EditSchedule } from '@/features/edit-schedule';
+import { preparePagerMonths } from '@/features/get-schedule-by-month';
 import { BottomSheet } from '@/shared/ui/bottom-sheet';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import { Header } from '@/shared/ui/header';
 import { PeriodSwitcher } from '@/shared/ui/period-switcher';
 import { type ViewMode, ViewSwitcher } from '@/shared/ui/view-switcher';
-import { MonthViewPlaceholder } from '@/widgets/month-view';
-
-import { useSchedulePage } from '../model/use-schedule-page';
-import { useSchedulePager } from '../model/use-schedule-pager';
+import { ScheduleMonthContent } from './schedule-month-content';
 import { SchedulePeriodPager } from './schedule-period-pager';
 import { ScheduleSummaryContent } from './schedule-summary-content';
 import { ScheduleWeekContent } from './schedule-week-content';
+import { useSchedulePage } from '../model/use-schedule-page';
+import { useSchedulePager } from '../model/use-schedule-pager';
 
 export function SchedulePage() {
+  const queryClient = useQueryClient();
   const {
     viewMode,
     setViewMode,
     currentDate,
+    setCurrentDate,
     isBottomSheetOpen,
     selectedCell,
     activeEmployees,
@@ -29,8 +34,6 @@ export function SchedulePage() {
     monthLabel,
     isLoading,
     bottomSheetTitle,
-    handlePrev,
-    handleNext,
     handleResetToCurrent,
     handleCellPress,
     handleClose,
@@ -39,22 +42,25 @@ export function SchedulePage() {
   } = useSchedulePage();
 
   const {
+    currentDate: pagerCurrentDate,
+    slots,
     pageWidth,
-    pageOffset,
-    previousDate,
-    nextDate,
     swipeGesture,
     animatedStyle,
     handleLayout,
-    commitNext,
-    commitPrev,
+    navigate,
     resetPager,
   } = useSchedulePager({
-    currentDate,
+    initialDate: currentDate,
     viewMode,
-    onNext: handleNext,
-    onPrev: handlePrev,
+    onDateChange: setCurrentDate,
   });
+
+  useEffect(() => {
+    if (viewMode === 'month') {
+      void preparePagerMonths(pagerCurrentDate, viewMode, queryClient);
+    }
+  }, [pagerCurrentDate, viewMode, queryClient]);
 
   const onCalendarPress = () => {
     resetPager();
@@ -62,39 +68,44 @@ export function SchedulePage() {
   };
 
   const onViewModeChange = (mode: ViewMode) => {
-    resetPager();
+    resetPager(pagerCurrentDate);
     setViewMode(mode);
   };
 
-  const renderPage = (pageDate: dayjs.Dayjs, isCurrentPage: boolean) => {
-    if (viewMode === 'week') {
+  const renderPage = useCallback(
+    (pageDate: dayjs.Dayjs, isCurrentPage: boolean) => {
+      if (viewMode === 'week') {
+        return (
+          <ScheduleWeekContent
+            date={pageDate}
+            activeEmployees={activeEmployees}
+            selectedCell={isCurrentPage ? selectedCell : null}
+            onCellPress={handleCellPress}
+          />
+        );
+      }
+
+      if (viewMode === 'month') {
+        return (
+          <ScheduleMonthContent
+            date={pageDate}
+            activeEmployees={activeEmployees}
+            colorMap={colorMap}
+            isCurrentPage={isCurrentPage}
+          />
+        );
+      }
+
       return (
-        <ScheduleWeekContent
+        <ScheduleSummaryContent
           date={pageDate}
           activeEmployees={activeEmployees}
-          selectedCell={isCurrentPage ? selectedCell : null}
-          onCellPress={handleCellPress}
+          colorMap={colorMap}
         />
       );
-    }
-
-    if (viewMode === 'month') {
-      return (
-        <MonthViewPlaceholder
-          startDate={pageDate}
-          isCurrentPage={isCurrentPage}
-        />
-      );
-    }
-
-    return (
-      <ScheduleSummaryContent
-        date={pageDate}
-        activeEmployees={activeEmployees}
-        colorMap={colorMap}
-      />
-    );
-  };
+    },
+    [viewMode, activeEmployees, selectedCell, handleCellPress, colorMap],
+  );
 
   return (
     <View className='flex-1'>
@@ -108,26 +119,23 @@ export function SchedulePage() {
             week={viewMode === 'week' ? weekLabel : undefined}
             month={viewMode !== 'week' ? monthLabel : undefined}
             onCalendarPress={onCalendarPress}
-            onPreviousPress={commitPrev}
-            onNextPress={commitNext}
+            onPreviousPress={() => navigate(-1)}
+            onNextPress={() => navigate(1)}
           />
           <ViewSwitcher value={viewMode} onChange={onViewModeChange} />
         </View>
 
         {isLoading ? (
-          <View className='h-64 items-center justify-center'>
+          <View className='h-96 items-center justify-center'>
             <CircularProgressLoader size='large' />
           </View>
         ) : (
           <SchedulePeriodPager
             animatedStyle={animatedStyle}
-            pageOffset={pageOffset}
             pageWidth={pageWidth}
-            renderCurrent={() => renderPage(currentDate, true)}
-            renderNext={() => renderPage(nextDate, false)}
-            renderPrevious={() => renderPage(previousDate, false)}
+            renderPage={renderPage}
+            slots={slots}
             swipeGesture={swipeGesture}
-            viewModeKey={viewMode}
             onLayout={handleLayout}
           />
         )}
@@ -146,5 +154,6 @@ export function SchedulePage() {
     </View>
   );
 }
+
 
 

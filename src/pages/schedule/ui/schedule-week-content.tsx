@@ -25,7 +25,12 @@ export const ScheduleWeekContent = memo(function ScheduleWeekContent({
   selectedCell,
   onCellPress,
 }: ScheduleWeekContentProps) {
-  const { data: scheduleEntries = [], isPending, isLoading } = useScheduleByWeek(date);
+  const {
+    data: scheduleEntries = [],
+    isPending,
+    isLoading,
+    isFetching,
+  } = useScheduleByWeek(date);
 
   const startOfWeek = useMemo(() => date.startOf('isoWeek'), [date]);
 
@@ -59,13 +64,18 @@ export const ScheduleWeekContent = memo(function ScheduleWeekContent({
     });
   }, [activeEmployees, scheduleEntries, startOfWeek]);
 
-  if (isPending || isLoading) {
+  if (
+    isPending ||
+    isLoading ||
+    (isFetching && scheduleEntries.length === 0)
+  ) {
     return (
-      <View className='h-64 items-center justify-center'>
+      <View className='h-96 items-center justify-center'>
         <CircularProgressLoader size='large' />
       </View>
     );
   }
+
 
   return (
     <ScheduleGrid

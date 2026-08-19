@@ -1,0 +1,14 @@
+<svg
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <circle cx="12" cy="7" r="4" fill="currentColor" />
+
+  <path
+    d="M4.5 20C4.5 15.5817 7.85786 12 12 12C16.1421 12 19.5 15.5817 19.5 20C19.5 20.5523 19.0523 21 18.5 21H5.5C4.94772 21 4.5 20.5523 4.5 20Z"
+    fill="currentColor"
+  />
+</svg>

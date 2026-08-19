@@ -1,95 +1,72 @@
-import { useEffect, useState } from 'react';
+import { memo } from 'react';
 import type React from 'react';
+import type dayjs from 'dayjs';
 import { type LayoutChangeEvent, View } from 'react-native';
-import { type ComposedGesture, type GestureType, GestureDetector } from 'react-native-gesture-handler';
+import {
+  type ComposedGesture,
+  type GestureType,
+  GestureDetector,
+} from 'react-native-gesture-handler';
 import Animated, { type StyleProps } from 'react-native-reanimated';
+
+import type { PhysicalSlot } from '../model/use-schedule-pager';
 
 interface SchedulePeriodPagerProps {
   animatedStyle: StyleProps;
   onLayout: (event: LayoutChangeEvent) => void;
-  pageOffset: number;
   pageWidth: number;
-  renderCurrent: () => React.ReactNode;
-  renderNext: () => React.ReactNode;
-  renderPrevious: () => React.ReactNode;
+  renderPage: (date: dayjs.Dayjs, isCurrentPage: boolean) => React.ReactNode;
+  slots: PhysicalSlot[];
   swipeGesture: GestureType | ComposedGesture;
-  viewModeKey?: string;
 }
 
-export function SchedulePeriodPager({
+export const SchedulePeriodPager = memo(function SchedulePeriodPager({
   pageWidth,
-  pageOffset,
+  slots,
   swipeGesture,
   animatedStyle,
   onLayout,
-  viewModeKey,
-  renderPrevious,
-  renderCurrent,
-  renderNext,
+  renderPage,
 }: SchedulePeriodPagerProps) {
-  const [prevViewModeKey, setPrevViewModeKey] = useState(viewModeKey);
-  const [isAdjacentReady, setIsAdjacentReady] = useState(false);
-
-  if (prevViewModeKey !== viewModeKey) {
-    setPrevViewModeKey(viewModeKey);
-    setIsAdjacentReady(false);
-  }
-
-  useEffect(() => {
-    if (!isAdjacentReady) {
-      const frameId = requestAnimationFrame(() => {
-        setIsAdjacentReady(true);
-      });
-      return () => cancelAnimationFrame(frameId);
-    }
-  }, [isAdjacentReady]);
+  const currentSlot = slots.find((s) => s.isCurrent) ?? slots[0];
 
   return (
     <View className='w-full overflow-hidden' onLayout={onLayout}>
       {pageWidth > 0 ? (
         <GestureDetector gesture={swipeGesture}>
           <Animated.View style={animatedStyle} collapsable={false}>
-            {isAdjacentReady && (
+            {slots.map((slot) => (
               <View
-                key={`prev-${pageOffset - 1}`}
-                style={{
-                  position: 'absolute',
-                  left: (pageOffset - 1) * pageWidth,
-                  width: pageWidth,
-                  top: 0,
-                }}
+                key={`slot-${slot.index}`}
+                style={[
+                  {
+                    left: slot.logicalPage * pageWidth,
+                    width: pageWidth,
+                  },
+                  slot.isCurrent
+                    ? undefined
+                    : {
+                        position: 'absolute',
+                        top: 0,
+                      },
+                ]}
               >
-                {renderPrevious()}
+                {slot.isCurrent || slot.isReady
+                  ? renderPage(slot.date, slot.isCurrent)
+                  : null}
               </View>
-            )}
-            <View
-              key={`curr-${pageOffset}`}
-              style={{
-                left: pageOffset * pageWidth,
-                width: pageWidth,
-              }}
-            >
-              {renderCurrent()}
-            </View>
-            {isAdjacentReady && (
-              <View
-                key={`next-${pageOffset + 1}`}
-                style={{
-                  position: 'absolute',
-                  left: (pageOffset + 1) * pageWidth,
-                  width: pageWidth,
-                  top: 0,
-                }}
-              >
-                {renderNext()}
-              </View>
-            )}
+            ))}
           </Animated.View>
         </GestureDetector>
       ) : (
-        renderCurrent()
+        renderPage(currentSlot.date, true)
       )}
     </View>
   );
-}
+});
+
+
+
+
+
 
