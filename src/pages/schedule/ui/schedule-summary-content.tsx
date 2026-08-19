@@ -10,6 +10,7 @@ import { getEmployeeAvatarColor } from '@/shared/config/get-avatar-color';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import {
   buildMonthSummaries,
+  formatMonthTotal,
   type EmployeeSummaryItem,
   SummaryList,
 } from '@/widgets/summary-list';
@@ -59,8 +60,9 @@ export const ScheduleSummaryContent = memo(function ScheduleSummaryContent({
         name,
         initials,
         avatarColor: getEmployeeAvatarColor(summary.employeeId, colorMap),
-        weeklyHours: summary.weeklyHours,
+        weeklyHours: summary.weeklyHours.map((hours) => formatMonthTotal(hours)),
         monthlyHours: summary.monthlyHours,
+        monthTotal: formatMonthTotal(summary.monthlyHours),
       };
     });
   }, [summaries, activeEmployees, colorMap]);

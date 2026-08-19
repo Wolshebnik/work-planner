@@ -101,7 +101,7 @@ export function ScheduleStatusesPage() {
         onBackPress={() => router.push(ROUTES.MORE)}
       />
 
-      <View className='flex-row items-center justify-between px-6 mb-3'>
+      <View className='flex-row items-center justify-between px-6 mb-5'>
         <SectionTitle text={'Статуси'} className='font-bold text-[18px]' />
 
         <ButtonBase

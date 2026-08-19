@@ -43,8 +43,12 @@ export function TeamArchivedPage() {
   const handleRestore = () => {
     if (!restoringEmployee) return;
     const employeeId = restoringEmployee.id;
+    const isLastEmployee = archivedEmployees.length <= 1;
     setRestoringEmployee(null);
     restoreEmployeeMutation.mutate(employeeId);
+    if (isLastEmployee) {
+      router.push(ROUTES.TEAM);
+    }
   };
 
   return (

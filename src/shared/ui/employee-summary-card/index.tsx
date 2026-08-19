@@ -38,9 +38,18 @@ export function EmployeeSummaryCard({
           {values.map((value, index) => (
             <View
               key={`${value}-${index}`}
-              className='h-6 w-7.5 items-center justify-center rounded-6 bg-neutral'
+              className='h-6 min-w-7.5 px-1 items-center justify-center rounded-6 bg-neutral'
             >
-              <Text className='font-medium text-[11px] leading-[16px] text-primary'>
+              <Text
+                className={cn(
+                  'font-medium text-primary text-center',
+                  String(value).length > 3
+                    ? 'text-[9px] leading-[13px]'
+                    : 'text-[11px] leading-[16px]',
+                )}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
                 {value}
               </Text>
             </View>
@@ -48,9 +57,18 @@ export function EmployeeSummaryCard({
         </View>
       </View>
 
-      <View className='my-3 h-12.25 w-16 shrink-0 items-center justify-center rounded-12 bg-blue-light/70'>
+      <View className='my-3 h-12.25 min-w-16 px-1.5 shrink-0 items-center justify-center rounded-12 bg-blue-light/70'>
         <Text className='font-bold text-[9px] leading-[13.5px]'>МІСЯЦЬ</Text>
-        <Text className='font-bold text-[17px] leading-4.25 text-primary'>
+        <Text
+          className={cn(
+            'font-bold text-primary text-center',
+            String(monthTotal).length > 4
+              ? 'text-[12px] leading-[16px]'
+              : 'text-[16px] leading-[20px]',
+          )}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
           {monthTotal}
         </Text>
       </View>

@@ -20,15 +20,22 @@ export async function addEmployee(input: AddEmployeeInput) {
 
   const sortOrder = (lastEmployee?.sort_order ?? 0) + 10;
 
-  const { error } = await supabase.from('employees').insert({
-    last_name: input.lastName.trim(),
-    first_name: input.firstName.trim(),
-    patronymic: input.patronymic?.trim() ?? null,
-    is_active: true,
-    sort_order: sortOrder,
-  });
+  const { data, error } = await supabase
+    .from('employees')
+    .insert({
+      last_name: input.lastName.trim(),
+      first_name: input.firstName.trim(),
+      patronymic: input.patronymic?.trim() ?? null,
+      is_active: true,
+      sort_order: sortOrder,
+    })
+    .select();
 
   if (error) {
     throw error;
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error('Не вдалося додати працівника: операцію відхилено базою даних (RLS).');
   }
 }

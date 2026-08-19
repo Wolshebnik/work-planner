@@ -45,6 +45,7 @@ export function useAddScheduleStatus() {
       if (context?.queryKey) {
         queryClient.invalidateQueries({ queryKey: context.queryKey });
       }
+      queryClient.invalidateQueries({ queryKey: ['schedule'] });
     },
   });
 }

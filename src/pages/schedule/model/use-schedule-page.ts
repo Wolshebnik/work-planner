@@ -20,9 +20,10 @@ export function useSchedulePage() {
   const [viewMode, setViewMode] = useState<ViewMode>('week');
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  const [selectedCell, setSelectedCell] = useState<{
-    employeeIndex: number;
+  const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs | null>(null);
+  const [editingCell, setEditingCell] = useState<{
     dayIndex: number;
+    employeeIndex: number;
   } | null>(null);
 
   const { data: employees = [], isLoading: isLoadingEmployees } =
@@ -31,21 +32,23 @@ export function useSchedulePage() {
   const setScheduleEntryMutation = useSetScheduleEntry();
   const clearScheduleEntryMutation = useClearScheduleEntry();
 
+  const startOfWeek = currentDate.startOf('isoWeek');
+  const endOfWeek = startOfWeek.add(6, 'day');
+
   const handleCellPress = useCallback(
     (employeeIndex: number, dayIndex: number) => {
-      setSelectedCell({ employeeIndex, dayIndex });
+      const clickedDate = startOfWeek.add(dayIndex, 'day');
+      setSelectedDate(clickedDate);
+      setEditingCell({ employeeIndex, dayIndex });
       setIsBottomSheetOpen(true);
     },
-    [],
+    [startOfWeek],
   );
 
   const handleClose = useCallback(() => {
     setIsBottomSheetOpen(false);
-    setSelectedCell(null);
+    setEditingCell(null);
   }, []);
-
-  const startOfWeek = currentDate.startOf('isoWeek');
-  const endOfWeek = startOfWeek.add(6, 'day');
 
   const activeEmployees = useMemo(
     () => employees.filter((e) => e.is_active),
@@ -56,7 +59,6 @@ export function useSchedulePage() {
     () => createEmployeeColorMap(employees),
     [employees],
   );
-
 
   const weekPeriod = useMemo(() => {
     const isSameMonth = startOfWeek.isSame(endOfWeek, 'month');
@@ -106,14 +108,14 @@ export function useSchedulePage() {
   }, []);
 
   const handleStatusSelect = (status: ScheduleStatus) => {
-    if (!selectedCell) return;
-    const employee = activeEmployees[selectedCell.employeeIndex];
+    if (!editingCell) return;
+    const employee = activeEmployees[editingCell.employeeIndex];
     if (!employee) return;
-    const day = startOfWeek.add(selectedCell.dayIndex, 'day');
+    const day = startOfWeek.add(editingCell.dayIndex, 'day');
     const dateStr = day.format('YYYY-MM-DD');
 
     setIsBottomSheetOpen(false);
-    setSelectedCell(null);
+    setEditingCell(null);
 
     setScheduleEntryMutation.mutate({
       employeeId: employee.id,
@@ -124,14 +126,14 @@ export function useSchedulePage() {
   };
 
   const handleClearCell = () => {
-    if (!selectedCell) return;
-    const employee = activeEmployees[selectedCell.employeeIndex];
+    if (!editingCell) return;
+    const employee = activeEmployees[editingCell.employeeIndex];
     if (!employee) return;
-    const day = startOfWeek.add(selectedCell.dayIndex, 'day');
+    const day = startOfWeek.add(editingCell.dayIndex, 'day');
     const dateStr = day.format('YYYY-MM-DD');
 
     setIsBottomSheetOpen(false);
-    setSelectedCell(null);
+    setEditingCell(null);
 
     clearScheduleEntryMutation.mutate({
       employeeId: employee.id,
@@ -140,13 +142,13 @@ export function useSchedulePage() {
   };
 
   const bottomSheetTitle = (() => {
-    if (!selectedCell) return 'Деталі зміни';
-    const employee = activeEmployees[selectedCell.employeeIndex];
+    if (!editingCell) return 'Деталі зміни';
+    const employee = activeEmployees[editingCell.employeeIndex];
     if (!employee) return 'Деталі зміни';
     const employeeName = [employee.last_name, employee.first_name]
       .filter(Boolean)
       .join(' ');
-    const day = startOfWeek.add(selectedCell.dayIndex, 'day');
+    const day = startOfWeek.add(editingCell.dayIndex, 'day');
     return `${employeeName}, ${day.format('D MMMM')}`;
   })();
 
@@ -157,7 +159,8 @@ export function useSchedulePage() {
     setCurrentDate,
     isBottomSheetOpen,
 
-    selectedCell,
+    selectedCell: editingCell,
+    selectedDate,
     activeEmployees,
     colorMap,
     weekPeriod,

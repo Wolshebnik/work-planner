@@ -34,6 +34,7 @@ export function useArchiveScheduleStatus() {
       if (context?.queryKey) {
         queryClient.invalidateQueries({ queryKey: context.queryKey });
       }
+      queryClient.invalidateQueries({ queryKey: ['schedule'] });
     },
   });
 }

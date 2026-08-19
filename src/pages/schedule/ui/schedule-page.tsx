@@ -27,6 +27,7 @@ export function SchedulePage() {
     setCurrentDate,
     isBottomSheetOpen,
     selectedCell,
+    selectedDate,
     activeEmployees,
     colorMap,
     weekPeriod,
@@ -57,9 +58,7 @@ export function SchedulePage() {
   });
 
   useEffect(() => {
-    if (viewMode === 'month') {
-      void preparePagerMonths(pagerCurrentDate, viewMode, queryClient);
-    }
+    void preparePagerMonths(pagerCurrentDate, viewMode, queryClient);
   }, [pagerCurrentDate, viewMode, queryClient]);
 
   const onCalendarPress = () => {
@@ -80,6 +79,7 @@ export function SchedulePage() {
             date={pageDate}
             activeEmployees={activeEmployees}
             selectedCell={isCurrentPage ? selectedCell : null}
+            selectedDate={selectedDate}
             onCellPress={handleCellPress}
           />
         );
@@ -104,7 +104,14 @@ export function SchedulePage() {
         />
       );
     },
-    [viewMode, activeEmployees, selectedCell, handleCellPress, colorMap],
+    [
+      viewMode,
+      activeEmployees,
+      selectedCell,
+      selectedDate,
+      handleCellPress,
+      colorMap,
+    ],
   );
 
   return (

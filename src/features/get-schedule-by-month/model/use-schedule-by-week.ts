@@ -2,8 +2,7 @@ import { useQueries } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 
-import { getScheduleByMonth } from '../api/get-schedule-by-month';
-import { scheduleKeys } from './query-keys';
+import { scheduleMonthQueryOptions } from './query-keys';
 
 dayjs.extend(isoWeek);
 
@@ -23,14 +22,8 @@ export function useScheduleByWeek(
 
   const queries = useQueries({
     queries: months.map((monthKey) => ({
-      queryKey: scheduleKeys.month(monthKey),
-      queryFn: () => getScheduleByMonth(monthKey),
+      ...scheduleMonthQueryOptions(monthKey),
       enabled,
-      staleTime: Infinity,
-      gcTime: Infinity,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
     })),
   });
 

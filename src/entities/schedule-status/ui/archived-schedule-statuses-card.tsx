@@ -22,7 +22,7 @@ export function ArchivedScheduleStatusesCard({
       activeOpacity={0.7}
       onPress={() => router.push(ROUTES.MORE_SCHEDULE_STATUSES_ARCHIVED)}
       className={cn(
-        'mx-4 p-3 bg-[#D0E2F3]/30 rounded-12 border border-border gap-2 shadow-card',
+        'p-3 bg-[#D0E2F3]/30 rounded-12 border border-border gap-2 shadow-card',
         className,
       )}
     >

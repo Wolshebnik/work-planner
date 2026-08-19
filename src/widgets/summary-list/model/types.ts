@@ -11,6 +11,7 @@ export interface EmployeeSummaryItem {
   id: string;
   initials: string;
   monthlyHours: number;
+  monthTotal?: string;
   name: string;
-  weeklyHours: number[];
+  weeklyHours: (string | number)[];
 }

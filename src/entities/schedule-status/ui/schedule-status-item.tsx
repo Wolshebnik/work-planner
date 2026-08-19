@@ -31,7 +31,7 @@ export function ScheduleStatusItem({
       activeOpacity={0.7}
       onPress={onPress}
       className={cn(
-        'flex-row items-center gap-3 rounded-12 border border-primary bg-white px-4 py-2 shadow-card',
+        'flex-row items-center gap-3 p-3 bg-white rounded-12 border border-border shadow-card',
         className,
       )}
     >
@@ -39,15 +39,15 @@ export function ScheduleStatusItem({
         {isLocked ? <Lock className='text-white' /> : status}
       </HexStatusBadge>
 
-      <View className='flex-1 gap-1'>
+      <View className='flex-1'>
         <Text
-          className='font-semibold text-[16px] leading-[22px] text-primary'
+          className='font-bold text-[14px] text-primary'
           numberOfLines={1}
         >
           {title}
         </Text>
         <Text
-          className='text-[14px] leading-[18px] text-grey'
+          className='text-[12px] text-grey'
           numberOfLines={1}
         >
           {description}
@@ -55,7 +55,7 @@ export function ScheduleStatusItem({
       </View>
 
       {onDelete && (
-        <TouchableOpacity onPress={onDelete} className='p-2'>
+        <TouchableOpacity onPress={onDelete} className='p-1'>
           <Trash className='text-danger' />
         </TouchableOpacity>
       )}

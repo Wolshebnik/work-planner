@@ -78,18 +78,19 @@ export const ScheduleStatusesList = ({
     <View className='flex-1'>
       <SortableList
         data={activeStatuses}
-        itemHeight={80}
+        itemHeight={78}
         useFlatList={false}
         renderItem={renderItem}
         style={{ backgroundColor: 'transparent' }}
-        contentContainerStyle={{ paddingBottom: 16 }}
+        contentContainerStyle={{ paddingBottom: 24 }}
+        ListFooterComponent={
+          archivedStatusesCount > 0 ? (
+            <View className='pt-2 pb-6 px-4'>
+              <ArchivedScheduleStatusesCard count={archivedStatusesCount} />
+            </View>
+          ) : null
+        }
       />
-
-      {archivedStatusesCount > 0 && (
-        <View className='pt-2 pb-6 px-4'>
-          <ArchivedScheduleStatusesCard count={archivedStatusesCount} />
-        </View>
-      )}
     </View>
   );
 };

@@ -1,7 +1,6 @@
 import type { QueryClient } from '@tanstack/react-query';
 import type dayjs from 'dayjs';
 
-import { generateCalendarDays } from '@/entities/calendar';
 import { type ViewMode } from '@/shared/ui/view-switcher';
 
 import { scheduleMonthQueryOptions } from './query-keys';
@@ -43,24 +42,10 @@ export async function preparePagerMonths(
   viewMode: ViewMode,
   queryClient: QueryClient,
 ): Promise<void> {
-  if (viewMode !== 'month') return;
-
-  const pagerMonths = [
-    currentDate.subtract(1, 'month'),
-    currentDate,
-    currentDate.add(1, 'month'),
-  ];
-
-  const touchedMonthKeys = new Set<string>();
-  for (const monthDate of pagerMonths) {
-    const days = generateCalendarDays(monthDate);
-    for (const day of days) {
-      touchedMonthKeys.add(day.date.format('YYYY-MM'));
-    }
-  }
+  const monthKeys = getRequiredMonthKeys(viewMode, currentDate);
 
   await Promise.allSettled(
-    Array.from(touchedMonthKeys).map((monthKey) =>
+    monthKeys.map((monthKey) =>
       queryClient.ensureQueryData(scheduleMonthQueryOptions(monthKey)),
     ),
   );

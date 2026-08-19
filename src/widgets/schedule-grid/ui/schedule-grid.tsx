@@ -9,7 +9,7 @@ import { Text } from '@/shared/ui/text';
 import { ScheduleCell } from './schedule-cell';
 import { ScheduleDay } from './schedule-day';
 import { SelectedColumnOverlay } from './selected-column-overlay';
-import { getSelectedDayIndex } from '../model/get-selected-day-index';
+import { getSelectedDayIndex, getTodayDayIndex } from '../model/get-selected-day-index';
 import { getWeekDays } from '../model/get-week-days';
 import { type EmployeeRow } from '../model/types';
 
@@ -22,7 +22,7 @@ interface ScheduleGridProps {
     dayIndex: number;
     employeeIndex: number;
   } | null;
-  selectedDate?: dayjs.Dayjs;
+  selectedDate?: dayjs.Dayjs | null;
   startDate?: dayjs.Dayjs;
   weekStartDay?: number;
 }
@@ -62,26 +62,56 @@ export function ScheduleGrid({
     [],
   );
 
+  const todayDayIndex = useMemo(() => getTodayDayIndex(week), [week]);
+
   const selectedDayIndex = useMemo(
     () => getSelectedDayIndex({ selectedCell, selectedDate, week }),
     [selectedCell, selectedDate, week],
   );
 
-  const dayColumnWidth = daysCount > 0 && daysAreaWidth > 0 ? daysAreaWidth / daysCount : 0;
-  const currentColumn = columnLayouts[selectedDayIndex];
-  const overlayLeft = currentColumn
-    ? leftColWidth + currentColumn.x + 1
-    : leftColWidth + selectedDayIndex * dayColumnWidth + 1;
-  const overlayWidth = currentColumn
-    ? currentColumn.width - 2
-    : dayColumnWidth - 2;
+  const getColumnGeometry = useCallback(
+    (dayIndex: number) => {
+      if (dayIndex < 0) return null;
+      const colLayout = columnLayouts[dayIndex];
+      if (colLayout) {
+        return {
+          left: leftColWidth + colLayout.x + 1,
+          width: colLayout.width - 2,
+        };
+      }
+      if (daysAreaWidth > 0 && daysCount > 0) {
+        const colWidth = daysAreaWidth / daysCount;
+        return {
+          left: leftColWidth + dayIndex * colWidth + 1,
+          width: colWidth - 2,
+        };
+      }
+      return null;
+    },
+    [columnLayouts, daysAreaWidth, daysCount, leftColWidth],
+  );
+
+  const selectedColumnGeom = getColumnGeometry(selectedDayIndex);
+  const showTodayColumn =
+    todayDayIndex >= 0 && todayDayIndex !== selectedDayIndex;
+  const todayColumnGeom = showTodayColumn
+    ? getColumnGeometry(todayDayIndex)
+    : null;
 
   return (
     <View className={cn('overflow-hidden rounded-12 mx-3 relative', className)}>
-      {selectedDayIndex >= 0 && (currentColumn || daysAreaWidth > 0) && (
+      {todayColumnGeom && (
         <SelectedColumnOverlay
-          width={overlayWidth}
-          leftOffset={overlayLeft}
+          variant='today'
+          width={todayColumnGeom.width}
+          leftOffset={todayColumnGeom.left}
+        />
+      )}
+      {selectedColumnGeom && (
+        <SelectedColumnOverlay
+          variant='selected'
+          width={selectedColumnGeom.width}
+          leftOffset={selectedColumnGeom.left}
         />
       )}
 
