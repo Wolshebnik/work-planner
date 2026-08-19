@@ -51,12 +51,12 @@ export function TeamPage() {
     firstName: string;
     middleName?: string;
   }) => {
-    await addEmployeeMutation.mutateAsync({
+    setIsAddOpen(false);
+    addEmployeeMutation.mutate({
       lastName: data.lastName,
       firstName: data.firstName,
       patronymic: data.middleName,
     });
-    setIsAddOpen(false);
   };
 
   const handleUpdateEmployee = async (data: {
@@ -65,13 +65,14 @@ export function TeamPage() {
     middleName?: string;
   }) => {
     if (!selectedEmployee) return;
-    await updateEmployeeMutation.mutateAsync({
-      id: selectedEmployee.id,
+    const employeeId = selectedEmployee.id;
+    setSelectedEmployee(null);
+    updateEmployeeMutation.mutate({
+      id: employeeId,
       lastName: data.lastName,
       firstName: data.firstName,
       patronymic: data.middleName,
     });
-    setSelectedEmployee(null);
   };
 
   return (

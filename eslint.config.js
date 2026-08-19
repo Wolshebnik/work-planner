@@ -7,7 +7,10 @@ module.exports = defineConfig([
   {
     ignores: ["dist/*"],
     rules: {
-      '@typescript-eslint/no-unused-vars': ['warn', { args: 'all' }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { args: 'all', argsIgnorePattern: '^_' },
+      ],
     },
   }
 ]);

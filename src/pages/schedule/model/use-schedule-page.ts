@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import dayjs from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
@@ -6,10 +6,10 @@ import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { type ScheduleStatus } from '@/entities/schedule-status';
 import { useClearScheduleEntry } from '@/features/clear-schedule-entry';
 import { useGetEmployees } from '@/features/get-employees';
-import { useScheduleByMonth } from '@/features/get-schedule-by-month';
 import { useSetScheduleEntry } from '@/features/set-schedule-entry';
+import { createEmployeeColorMap } from '@/shared/config/get-avatar-color';
 import { type ViewMode } from '@/shared/ui/view-switcher';
-import { type DayCell, type EmployeeRow } from '@/widgets/schedule-grid';
+
 
 import 'dayjs/locale/uk';
 
@@ -20,8 +20,6 @@ export function useSchedulePage() {
   const [viewMode, setViewMode] = useState<ViewMode>('week');
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  const [selectedStatusId, setSelectedStatusId] = useState<string | null>(null);
-  const [isClearing, setIsClearing] = useState(false);
   const [selectedCell, setSelectedCell] = useState<{
     employeeIndex: number;
     dayIndex: number;
@@ -29,8 +27,6 @@ export function useSchedulePage() {
 
   const { data: employees = [], isLoading: isLoadingEmployees } =
     useGetEmployees();
-  const { data: scheduleEntries = [], isLoading: isLoadingSchedule } =
-    useScheduleByMonth(currentDate);
 
   const setScheduleEntryMutation = useSetScheduleEntry();
   const clearScheduleEntryMutation = useClearScheduleEntry();
@@ -51,106 +47,96 @@ export function useSchedulePage() {
   const startOfWeek = currentDate.startOf('isoWeek');
   const endOfWeek = startOfWeek.add(6, 'day');
 
-  const activeEmployees = employees.filter((e) => e.is_active);
+  const activeEmployees = useMemo(
+    () => employees.filter((e) => e.is_active),
+    [employees],
+  );
 
-  const weeklyData: EmployeeRow[] = activeEmployees.map((employee) => {
-    const values: (DayCell | null)[] = [];
-    for (let i = 0; i < 7; i += 1) {
-      const day = startOfWeek.add(i, 'day');
-      const dateStr = day.format('YYYY-MM-DD');
+  const colorMap = useMemo(
+    () => createEmployeeColorMap(employees),
+    [employees],
+  );
 
-      const entry = scheduleEntries.find(
-        (e) => e.employee_id === employee.id && e.work_date === dateStr,
-      );
 
-      if (entry) {
-        values.push({
-          scheduleMark: entry.status.schedule_mark,
-          isLocked: entry.status.is_locked,
-          color: entry.status.color,
-        });
-      } else {
-        values.push(null);
-      }
+  const weekPeriod = useMemo(() => {
+    const isSameMonth = startOfWeek.isSame(endOfWeek, 'month');
+    const isSameYear = startOfWeek.isSame(endOfWeek, 'year');
+
+    if (isSameMonth) {
+      return `${startOfWeek.format('D')}–${endOfWeek.format('D')} ${startOfWeek.format('MMMM YYYY')}`;
     }
 
-    return {
-      id: employee.id,
-      name: employee.last_name,
-      values,
-    };
-  });
+    if (isSameYear) {
+      return `${startOfWeek.format('D MMM')} – ${endOfWeek.format('D MMM YYYY')}`;
+    }
 
-  const weekPeriod = `${startOfWeek.format('D')}–${endOfWeek.format('D')} ${startOfWeek.format('MMMM YYYY')}`;
-  const weekLabel = `Тиждень ${currentDate.week()}`;
+    return `${startOfWeek.format('D MMM YYYY')} – ${endOfWeek.format('D MMM YYYY')}`;
+  }, [startOfWeek, endOfWeek]);
 
-  const monthLabel =
-    currentDate.format('MMMM').charAt(0).toUpperCase() +
-    currentDate.format('MMMM').slice(1) +
-    ' ' +
-    currentDate.format('YYYY');
+  const weekLabel = useMemo(
+    () => `Тиждень ${currentDate.week()}`,
+    [currentDate],
+  );
 
-  const handlePrev = () => {
+  const monthLabel = useMemo(
+    () =>
+      currentDate.format('MMMM').charAt(0).toUpperCase() +
+      currentDate.format('MMMM').slice(1) +
+      ' ' +
+      currentDate.format('YYYY'),
+    [currentDate],
+  );
+
+  const handlePrev = useCallback(() => {
     setCurrentDate((prev) =>
       viewMode === 'week'
         ? prev.subtract(1, 'week')
         : prev.subtract(1, 'month'),
     );
-  };
+  }, [viewMode]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     setCurrentDate((prev) =>
       viewMode === 'week' ? prev.add(1, 'week') : prev.add(1, 'month'),
     );
-  };
+  }, [viewMode]);
 
-  const handleResetToCurrent = () => {
+  const handleResetToCurrent = useCallback(() => {
     setCurrentDate(dayjs());
-  };
+  }, []);
 
-  const handleStatusSelect = async (status: ScheduleStatus) => {
+  const handleStatusSelect = (status: ScheduleStatus) => {
     if (!selectedCell) return;
     const employee = activeEmployees[selectedCell.employeeIndex];
     if (!employee) return;
     const day = startOfWeek.add(selectedCell.dayIndex, 'day');
     const dateStr = day.format('YYYY-MM-DD');
 
-    try {
-      setSelectedStatusId(status.id);
-      await setScheduleEntryMutation.mutateAsync({
-        employeeId: employee.id,
-        workDate: dateStr,
-        statusId: status.id,
-      });
-      setIsBottomSheetOpen(false);
-      setSelectedCell(null);
-    } catch {
-      // Error handled by global queryClient onError toast
-    } finally {
-      setSelectedStatusId(null);
-    }
+    setIsBottomSheetOpen(false);
+    setSelectedCell(null);
+
+    setScheduleEntryMutation.mutate({
+      employeeId: employee.id,
+      workDate: dateStr,
+      statusId: status.id,
+      status,
+    });
   };
 
-  const handleClearCell = async () => {
+  const handleClearCell = () => {
     if (!selectedCell) return;
     const employee = activeEmployees[selectedCell.employeeIndex];
     if (!employee) return;
     const day = startOfWeek.add(selectedCell.dayIndex, 'day');
     const dateStr = day.format('YYYY-MM-DD');
 
-    try {
-      setIsClearing(true);
-      await clearScheduleEntryMutation.mutateAsync({
-        employeeId: employee.id,
-        workDate: dateStr,
-      });
-      setIsBottomSheetOpen(false);
-      setSelectedCell(null);
-    } catch {
-      // Error handled by global queryClient onError toast
-    } finally {
-      setIsClearing(false);
-    }
+    setIsBottomSheetOpen(false);
+    setSelectedCell(null);
+
+    clearScheduleEntryMutation.mutate({
+      employeeId: employee.id,
+      workDate: dateStr,
+    });
   };
 
   const bottomSheetTitle = (() => {
@@ -169,14 +155,13 @@ export function useSchedulePage() {
     setViewMode,
     currentDate,
     isBottomSheetOpen,
-    selectedStatusId,
-    isClearing,
     selectedCell,
-    weeklyData,
+    activeEmployees,
+    colorMap,
     weekPeriod,
     weekLabel,
     monthLabel,
-    isLoading: isLoadingEmployees || isLoadingSchedule,
+    isLoading: isLoadingEmployees,
     bottomSheetTitle,
     handlePrev,
     handleNext,
@@ -187,3 +172,5 @@ export function useSchedulePage() {
     handleClearCell,
   };
 }
+
+

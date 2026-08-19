@@ -41,9 +41,12 @@ export function ScheduleStatusesPage() {
   };
 
   const handleSave = async (data: FormValues): Promise<void> => {
-    if (editingId) {
-      await updateStatus.mutateAsync({
-        id: editingId,
+    const currentEditingId = editingId;
+    handleClose();
+
+    if (currentEditingId) {
+      updateStatus.mutate({
+        id: currentEditingId,
         name: data.name,
         description: data.description,
         scheduleMark: data.scheduleMark,
@@ -53,7 +56,7 @@ export function ScheduleStatusesPage() {
         isActive: true,
       });
     } else {
-      await addStatus.mutateAsync({
+      addStatus.mutate({
         name: data.name,
         description: data.description,
         scheduleMark: data.scheduleMark,
@@ -63,15 +66,16 @@ export function ScheduleStatusesPage() {
         isActive: true,
       });
     }
-
-    handleClose();
   };
 
   const handleDelete = async (): Promise<void> => {
     if (deletingStatus) {
-      await archiveStatus.mutateAsync(deletingStatus.id);
+      const statusId = deletingStatus.id;
+      handleClose();
+      archiveStatus.mutate(statusId);
+    } else {
+      handleClose();
     }
-    handleClose();
   };
 
   const handleStatusPress = (status: ScheduleStatus): void => {

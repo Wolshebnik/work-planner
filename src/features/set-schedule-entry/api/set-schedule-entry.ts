@@ -1,7 +1,9 @@
+import type { ScheduleStatus } from '@/entities/schedule-status';
 import { supabase } from '@/shared/api/supabase';
 
 export type SetScheduleEntryDto = {
   employeeId: string;
+  status?: ScheduleStatus;
   statusId: string;
   workDate: string;
 };
