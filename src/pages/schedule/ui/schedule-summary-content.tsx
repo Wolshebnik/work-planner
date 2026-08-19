@@ -25,7 +25,12 @@ export const ScheduleSummaryContent = memo(function ScheduleSummaryContent({
   activeEmployees,
   colorMap,
 }: ScheduleSummaryContentProps) {
-  const { data: scheduleEntries, isPending, isLoading } = useScheduleByMonth(date);
+  const {
+    data: scheduleEntries,
+    isPending,
+    isLoading,
+    isFetching,
+  } = useScheduleByMonth(date);
 
   const summaries = useMemo(
     () => buildMonthSummaries(activeEmployees, scheduleEntries ?? [], date),
@@ -69,13 +74,19 @@ export const ScheduleSummaryContent = memo(function ScheduleSummaryContent({
     );
   }, [date]);
 
-  if (isPending || isLoading || !scheduleEntries) {
+  if (
+    isPending ||
+    isLoading ||
+    !scheduleEntries ||
+    (isFetching && scheduleEntries.length === 0)
+  ) {
     return (
-      <View className='h-64 items-center justify-center'>
+      <View className='h-96 items-center justify-center'>
         <CircularProgressLoader size='large' />
       </View>
     );
   }
+
 
   return (
     <SummaryList

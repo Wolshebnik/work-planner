@@ -1,3 +1,4 @@
+export { isWorkStatus } from './lib/is-work-status';
 export {
   scheduleEntrySchema,
   scheduleEntriesSchema,

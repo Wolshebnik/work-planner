@@ -154,7 +154,9 @@ export function useSchedulePage() {
     viewMode,
     setViewMode,
     currentDate,
+    setCurrentDate,
     isBottomSheetOpen,
+
     selectedCell,
     activeEmployees,
     colorMap,
