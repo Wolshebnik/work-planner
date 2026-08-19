@@ -57,7 +57,10 @@ export function ScheduleStatusesArchivedPage() {
         />
       </View>
 
-      <ScrollView className='flex-1 mb-5' contentContainerClassName='pb-6'>
+      <ScrollView
+        className='flex-1 mb-5 px-4'
+        contentContainerClassName='gap-3 pb-6'
+      >
         {archivedStatuses.map((status) => (
           <ScheduleStatusItem
             key={status.id}

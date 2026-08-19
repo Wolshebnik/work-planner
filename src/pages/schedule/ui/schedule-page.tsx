@@ -68,7 +68,7 @@ export function SchedulePage() {
   };
 
   const onViewModeChange = (mode: ViewMode) => {
-    resetPager(pagerCurrentDate);
+    resetPager(pagerCurrentDate, mode);
     setViewMode(mode);
   };
 

@@ -162,14 +162,15 @@ export function useSchedulePager({
   }, []);
 
   const resetPager = useCallback(
-    (newDate?: dayjs.Dayjs) => {
+    (newDate?: dayjs.Dayjs, targetViewMode?: ViewMode) => {
       offsetShared.value = 0;
       dragX.value = 0;
       isAnimating.value = false;
       isGestureActive.value = false;
       gestureBlocked.value = false;
       const targetDate = newDate ?? dayjs();
-      const currentUnit = viewMode === 'week' ? 'week' : 'month';
+      const effectiveMode = targetViewMode ?? viewMode;
+      const currentUnit = effectiveMode === 'week' ? 'week' : 'month';
 
       setUrgentState({
         currentDate: targetDate,

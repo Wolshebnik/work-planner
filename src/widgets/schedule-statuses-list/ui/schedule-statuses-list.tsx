@@ -1,24 +1,62 @@
-import { ScrollView, View } from 'react-native';
+import { useCallback } from 'react';
+
+import { View } from 'react-native';
+import {
+  SortableItem,
+  type SortableRenderItemProps,
+} from 'react-native-reanimated-dnd';
 
 import {
   ArchivedScheduleStatusesCard,
   type ScheduleStatus,
   ScheduleStatusItem,
 } from '@/entities/schedule-status';
-import { useGetScheduleStatuses } from '@/features/get-schedule-statuses';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
+import { SortableList } from '@/shared/ui/sortable-list';
 import { Text } from '@/shared/ui/text';
 
-interface Props {
-  onDeleteStatus: (status: ScheduleStatus) => void;
-  onStatusPress: (status: ScheduleStatus) => void;
-}
+import { type ScheduleStatusesListProps } from '../model/types';
+import { useScheduleStatusesList } from '../model/use-schedule-statuses-list';
 
 export const ScheduleStatusesList = ({
   onStatusPress,
   onDeleteStatus,
-}: Props) => {
-  const { data: statuses = [], isLoading, error } = useGetScheduleStatuses();
+}: ScheduleStatusesListProps) => {
+  const {
+    activeStatuses,
+    archivedStatusesCount,
+    error,
+    handleDrop,
+    isLoading,
+  } = useScheduleStatusesList();
+
+  const renderItem = useCallback(
+    (props: SortableRenderItemProps<ScheduleStatus>) => {
+      const { item, id, ...rest } = props;
+      return (
+        <SortableItem
+          key={id}
+          id={id}
+          data={item}
+          onDrop={handleDrop}
+          {...rest}
+        >
+          <View className='pb-3 px-4'>
+            <ScheduleStatusItem
+              title={item.name}
+              description={item.description ?? ''}
+              status={item.schedule_mark ?? ''}
+              color={item.color}
+              isLocked={item.is_locked}
+              onPress={() => onStatusPress(item)}
+              onDelete={() => onDeleteStatus(item)}
+            />
+          </View>
+        </SortableItem>
+      );
+    },
+    [handleDrop, onDeleteStatus, onStatusPress],
+  );
 
   if (isLoading) {
     return (
@@ -36,27 +74,25 @@ export const ScheduleStatusesList = ({
     );
   }
 
-  const activeStatuses = statuses.filter((s) => s.is_active);
-  const archivedStatusesCount = statuses.length - activeStatuses.length;
-
   return (
-    <ScrollView className='flex-1 mb-5' contentContainerClassName='pb-6'>
-      {activeStatuses.map((status) => (
-        <ScheduleStatusItem
-          key={status.id}
-          title={status.name}
-          description={status.description ?? ''}
-          status={status.schedule_mark ?? ''}
-          color={status.color}
-          isLocked={status.is_locked}
-          onPress={() => onStatusPress(status)}
-          onDelete={() => onDeleteStatus(status)}
-        />
-      ))}
+    <View className='flex-1'>
+      <SortableList
+        data={activeStatuses}
+        itemHeight={80}
+        useFlatList={false}
+        renderItem={renderItem}
+        style={{ backgroundColor: 'transparent' }}
+        contentContainerStyle={{ paddingBottom: 16 }}
+      />
 
       {archivedStatusesCount > 0 && (
-        <ArchivedScheduleStatusesCard count={archivedStatusesCount} />
+        <View className='pt-2 pb-6 px-4'>
+          <ArchivedScheduleStatusesCard count={archivedStatusesCount} />
+        </View>
       )}
-    </ScrollView>
+    </View>
   );
 };
+
+
+
