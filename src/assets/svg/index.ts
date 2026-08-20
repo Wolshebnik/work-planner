@@ -6,12 +6,14 @@ import CalendarIcon from './calendar.svg';
 import CheckIcon from './check.svg';
 import ChevronIcon from './chevron.svg';
 import DotsIcon from './dots.svg';
+import EditIcon from './edit.svg';
 import LockIcon from './lock.svg';
 import OffPeopleIcon from './off-people.svg';
 import PaintIcon from './paint.svg';
 import TableIcon from './table.svg';
 import TeamIcon from './team.svg';
 import TrashIcon from './trash.svg';
+import UploadCloudIcon from './upload-cloud.svg';
 import UserIcon from './user.svg';
 import WorkPeopleIcon from './work-people.svg';
 import XIcon from './x.svg';
@@ -28,6 +30,8 @@ export const Chevron = styledSvg(ChevronIcon);
 
 export const Dots = styledSvg(DotsIcon);
 
+export const Edit = styledSvg(EditIcon);
+
 export const Lock = styledSvg(LockIcon);
 
 export const OffPeople = styledSvg(OffPeopleIcon);
@@ -39,6 +43,8 @@ export const Table = styledSvg(TableIcon);
 export const Team = styledSvg(TeamIcon);
 
 export const Trash = styledSvg(TrashIcon);
+
+export const UploadCloud = styledSvg(UploadCloudIcon);
 
 export const User = styledSvg(UserIcon);
 

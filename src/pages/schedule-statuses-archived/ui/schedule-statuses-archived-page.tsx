@@ -1,14 +1,7 @@
-import { useState } from 'react';
-
 import { useRouter } from 'expo-router';
 import { ScrollView, View } from 'react-native';
 
-import {
-  type ScheduleStatus,
-  ScheduleStatusItem,
-} from '@/entities/schedule-status';
-import { useGetScheduleStatuses } from '@/features/get-schedule-statuses';
-import { useRestoreScheduleStatus } from '@/features/restore-schedule-status';
+import { ScheduleStatusItem } from '@/entities/schedule-status';
 import { ROUTES } from '@/shared/config/routes';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import { DeleteConfirmationSheet } from '@/shared/ui/delete-confirmation-sheet';
@@ -16,28 +9,19 @@ import { Header } from '@/shared/ui/header';
 import { SectionTitle } from '@/shared/ui/section-title';
 import { Text } from '@/shared/ui/text';
 
+import { useScheduleStatusesArchivedPage } from '../model/use-schedule-statuses-archived-page';
+
 export function ScheduleStatusesArchivedPage() {
   const router = useRouter();
-
-  const { data: statuses = [], isLoading } = useGetScheduleStatuses();
-  const restoreStatusMutation = useRestoreScheduleStatus();
-
-  const [restoringStatus, setRestoringStatus] = useState<ScheduleStatus | null>(
-    null,
-  );
-
-  const archivedStatuses = statuses.filter((s) => !s.is_active);
-
-  const handleRestore = () => {
-    if (!restoringStatus) return;
-    const statusId = restoringStatus.id;
-    const isLastStatus = archivedStatuses.length <= 1;
-    setRestoringStatus(null);
-    restoreStatusMutation.mutate(statusId);
-    if (isLastStatus) {
-      router.push(ROUTES.MORE_SCHEDULE_STATUSES);
-    }
-  };
+  const {
+    archivedStatuses,
+    isLoading,
+    restoringStatus,
+    setRestoringStatus,
+    isRestorePending,
+    handleRestore,
+    handleClose,
+  } = useScheduleStatusesArchivedPage();
 
   if (isLoading) {
     return (
@@ -81,9 +65,9 @@ export function ScheduleStatusesArchivedPage() {
       {restoringStatus && (
         <DeleteConfirmationSheet
           isOpen={!!restoringStatus}
-          onClose={() => setRestoringStatus(null)}
+          onClose={handleClose}
           onConfirm={handleRestore}
-          isLoading={restoreStatusMutation.isPending}
+          isLoading={isRestorePending}
           title='Відновлення статусу'
           confirmText='Відновити'
           confirmVariant='success'

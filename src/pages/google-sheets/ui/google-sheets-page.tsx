@@ -3,9 +3,9 @@ import { ScrollView, View } from 'react-native';
 
 import { GoogleSheetItemCard } from '@/entities/google-sheets';
 import { ConnectGoogleSheetSheet } from '@/features/connect-google-sheet';
+import { GoogleSheetDetailsSheet } from '@/features/sync-google-sheets';
 import { ROUTES } from '@/shared/config/routes';
 import { ButtonBase } from '@/shared/ui/button-base';
-import { ButtonLoader } from '@/shared/ui/button-loader';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import { DeleteConfirmationSheet } from '@/shared/ui/delete-confirmation-sheet';
 import { Header } from '@/shared/ui/header';
@@ -21,16 +21,15 @@ export function GoogleSheetsPage() {
   const {
     sheets,
     isLoading,
-    isSyncing,
-    isSending,
     isSheetOpen,
     editingItem,
     deletingItem,
+    selectedSheet,
     isDeleting,
-    handleSync,
-    handleSend,
     handleOpenAdd,
     handleOpenEdit,
+    handleOpenDetails,
+    handleCloseDetails,
     handleCloseSheet,
     handleSave,
     setDeletingItem,
@@ -75,39 +74,22 @@ export function GoogleSheetsPage() {
               <GoogleSheetItemCard
                 key={item.id}
                 item={item}
-                onPress={handleOpenEdit}
+                onPress={handleOpenDetails}
+                onEdit={handleOpenEdit}
                 onDelete={(selected) => setDeletingItem(selected)}
               />
             ))
           )}
 
-          <View className='mt-2 gap-3'>
-            <ButtonLoader
-              variant='primary'
-              appearance='solid'
-              className='w-full'
-              loaderColor='#fff'
-              loading={isSyncing}
-              onPress={handleSync}
-            >
-              Синхронізація
-            </ButtonLoader>
-
-            <ButtonLoader
-              variant='primary'
-              appearance='outline'
-              className='w-full'
-              loaderColor='#004b71'
-              loading={isSending}
-              onPress={handleSend}
-            >
-              Відправити
-            </ButtonLoader>
-          </View>
-
           <GoogleSheetsInfoCard />
         </ScrollView>
       )}
+
+      <GoogleSheetDetailsSheet
+        isOpen={!!selectedSheet}
+        item={selectedSheet}
+        onClose={handleCloseDetails}
+      />
 
       <ConnectGoogleSheetSheet
         isOpen={isSheetOpen}

@@ -9,9 +9,7 @@ export {
 } from './model/use-google-sheets';
 export {
   extractSpreadsheetId,
-  colIndexToA1Letter,
   fetchSpreadsheetValues,
-  updateSpreadsheetValues,
 } from './api/google-sheets-api';
 export type { GoogleSheetItem } from './model/types';
 

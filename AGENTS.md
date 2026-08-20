@@ -111,3 +111,11 @@ Do not assume the file content based on conversation history or cached context. 
 - **Explicit named exports**: Use explicit `export { ... }` in `index.ts`. Never use `export * from ...`.
 - **No deep internal imports**: External code must import from the slice root (e.g. `@/features/employee-details`), never directly from inner folders (`@/features/employee-details/ui/...`).
 - **Strict typing (No `any`)**: Never use `any` or `as any`. Always use explicit domain types, interfaces, and strict TypeScript types.
+
+## 17. FSD Entities vs Features (API & Queries)
+
+- **`entities/<name>` (Domain Objects & Base API)**:
+  - An entity encapsulates the domain model: schemas (`model/schema.ts`), types (`model/types.ts`), **all base database/API queries and mutations** (`api/get-xxx.ts`, `api/create-xxx.ts`, etc.), TanStack Query options/keys (`model/query-keys.ts`), and base query/mutation hooks (`model/use-xxx.ts`).
+  - **NEVER create standalone feature slices just for fetching entity data** (e.g. `features/get-schedule-by-month` or `features/get-employees` are forbidden). All entity queries and base data access belong inside `entities/<name>`.
+- **`features/<name>` (User Actions & Interactive Flows)**:
+  - A feature MUST represent a real user interaction, modal, form, or interactive business flow (e.g. `features/edit-schedule`, `features/sync-google-sheets`, `features/employee-details`).

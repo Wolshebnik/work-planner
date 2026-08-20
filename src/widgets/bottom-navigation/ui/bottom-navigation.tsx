@@ -20,7 +20,7 @@ export function BottomNavigation() {
       {navigationItems.map(({ href, label, Icon }) => {
         const isActive =
           href === ROUTES.HOME
-            ? pathname === ROUTES.HOME
+            ? pathname === ROUTES.HOME || pathname.startsWith('/schedule')
             : pathname.startsWith(href);
 
         return (

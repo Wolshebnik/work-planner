@@ -1,8 +1,10 @@
 import { useCallback, useMemo } from 'react';
 
-import { type ScheduleStatus } from '@/entities/schedule-status';
-import { useGetScheduleStatuses } from '@/features/get-schedule-statuses';
-import { useReorderScheduleStatuses } from '@/features/reorder-schedule-statuses';
+import {
+  type ScheduleStatus,
+  useGetScheduleStatuses,
+  useReorderScheduleStatuses,
+} from '@/entities/schedule-status';
 
 export function useScheduleStatusesList() {
   const { data: statuses = [], isLoading, error } = useGetScheduleStatuses();

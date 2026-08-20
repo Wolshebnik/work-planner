@@ -1,8 +1,10 @@
 import { View } from 'react-native';
 
 import { Lock } from '@/assets/svg';
-import { type ScheduleStatus } from '@/entities/schedule-status';
-import { useGetScheduleStatuses } from '@/features/get-schedule-statuses';
+import {
+  type ScheduleStatus,
+  useGetScheduleStatuses,
+} from '@/entities/schedule-status';
 import { ButtonLoader } from '@/shared/ui/button-loader';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import { HexStatusButton } from '@/shared/ui/hex-status-button';

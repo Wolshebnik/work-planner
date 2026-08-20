@@ -112,16 +112,7 @@ export function useGoogleAuth() {
 
       try {
         const currentUser = nitro.GoogleOneTapSignIn.getCurrentUser();
-        if (currentUser?.user) {
-          return currentUser.user;
-        }
-
-        const response = await nitro.GoogleOneTapSignIn.signIn();
-        if (isSuccessResponse(response)) {
-          return response.data.user;
-        }
-
-        return null;
+        return currentUser?.user ?? null;
       } catch {
         return null;
       }
