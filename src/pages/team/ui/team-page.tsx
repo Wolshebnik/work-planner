@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { View } from 'react-native';
+import { Alert, View } from 'react-native';
 import {
   SortableItem,
   type SortableRenderItemProps,
@@ -15,6 +15,7 @@ import {
   EmployeeAddSheet,
   EmployeeDetailsSheet,
 } from '@/features/employee-details';
+import { getGoogleUserInitials, useGoogleAuth } from '@/entities/google-auth';
 import { ButtonBase } from '@/shared/ui/button-base';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import { Header } from '@/shared/ui/header';
@@ -24,6 +25,11 @@ import { SortableList } from '@/shared/ui/sortable-list';
 import { useTeamPage } from '../model/use-team-page';
 
 export function TeamPage() {
+  const {
+    user: googleUser,
+    signIn: signInGoogle,
+    signOut: signOutGoogle,
+  } = useGoogleAuth();
   const {
     activeEmployees,
     archivedEmployeesCount,
@@ -63,9 +69,38 @@ export function TeamPage() {
     [getCardData, handleDrop, setSelectedEmployee],
   );
 
+  const handleAvatarPress = () => {
+    if (!googleUser) {
+      void signInGoogle();
+    } else {
+      Alert.alert(
+        googleUser.name ?? 'Google профіль',
+        googleUser.email ?? undefined,
+        [
+          {
+            text: 'Скасувати',
+            style: 'cancel',
+          },
+          {
+            text: 'Вийти з акаунта',
+            style: 'destructive',
+            onPress: () => {
+              void signOutGoogle();
+            },
+          },
+        ],
+      );
+    }
+  };
+
   return (
     <View className='flex-1'>
-      <Header title='Команда' />
+      <Header
+        title='Команда'
+        avatarUrl={googleUser?.photo ?? undefined}
+        avatarInitials={getGoogleUserInitials(googleUser?.name)}
+        onAvatarPress={handleAvatarPress}
+      />
 
       <View className='flex-row items-center justify-between px-6 mb-5'>
         <SectionTitle

@@ -16,6 +16,38 @@ export interface EmployeeDayBadgeProps {
   status?: ScheduleStatus | null;
 }
 
+function StatusIndicator({ status }: { status: ScheduleStatus }) {
+  if (status.is_locked) {
+    return (
+      <View className='flex-row items-center gap-1'>
+        <Text className='text-[13px] text-grey'>·</Text>
+        <Lock
+          color={status.color ?? undefined}
+          className={status.color ? undefined : 'text-grey'}
+          height={12}
+          width={12}
+        />
+      </View>
+    );
+  }
+
+  if (status.schedule_mark) {
+    return (
+      <View className='flex-row items-center gap-1'>
+        <Text className='text-[13px] text-grey'>·</Text>
+        <Text
+          style={status.color ? { color: status.color } : undefined}
+          className={cn('font-semibold text-[13px]', !status.color && 'text-grey')}
+        >
+          {status.schedule_mark}
+        </Text>
+      </View>
+    );
+  }
+
+  return null;
+}
+
 export function EmployeeDayBadge({
   employee,
   status,
@@ -44,20 +76,7 @@ export function EmployeeDayBadge({
         {employee.last_name}
       </Text>
 
-      {!isWorking && status && (
-        <>
-          {status.is_locked ? (
-            <View className='flex-row items-center gap-1'>
-              <Text className='text-[13px] text-grey'>·</Text>
-              <Lock className='text-grey' height={12} width={12} />
-            </View>
-          ) : status.schedule_mark ? (
-            <Text className='font-semibold text-[13px] text-grey'>
-              · {status.schedule_mark}
-            </Text>
-          ) : null}
-        </>
-      )}
+      {!isWorking && status && <StatusIndicator status={status} />}
     </View>
   );
 }
