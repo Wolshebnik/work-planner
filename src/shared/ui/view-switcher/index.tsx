@@ -1,7 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { type LayoutChangeEvent, Pressable, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { cn } from '@/shared/lib/cn';
 import { Text } from '@/shared/ui/text';
@@ -14,8 +18,7 @@ interface ViewSwitcherProps {
 }
 
 const options: readonly { label: string; value: ViewMode }[] = [
-
-{ label: 'Тиждень', value: 'week' },
+  { label: 'Тиждень', value: 'week' },
   { label: 'Місяць', value: 'month' },
   { label: 'Підсумки', value: 'summary' },
 ];
@@ -28,21 +31,27 @@ export function ViewSwitcher({
   const [containerWidth, setContainerWidth] = useState(0);
   const indicatorX = useSharedValue(0);
 
-  const selectedIndex = options.findIndex((option) => option.value === value);
+  const selectedIndex = Math.max(
+    0,
+    options.findIndex((option) => option.value === value),
+  );
   const itemWidth =
     containerWidth > 0 ? (containerWidth - 8) / options.length : 0;
 
+  useEffect(() => {
+    if (itemWidth > 0) {
+      indicatorX.value = withTiming(itemWidth * selectedIndex, { duration: 150 });
+    }
+  }, [selectedIndex, itemWidth, indicatorX]);
+
   const handleLayout = ({ nativeEvent }: LayoutChangeEvent) => {
     const width = nativeEvent.layout.width;
-    setContainerWidth(width);
-    const calculatedWidth = (width - 8) / options.length;
-    indicatorX.value = calculatedWidth * selectedIndex;
+    if (width > 0) {
+      setContainerWidth(width);
+    }
   };
 
-  const handlePress = (optionValue: ViewMode, index: number) => {
-    if (itemWidth > 0) {
-      indicatorX.value = withTiming(itemWidth * index, { duration: 75 });
-    }
+  const handlePress = (optionValue: ViewMode) => {
     onChange(optionValue);
   };
 
@@ -66,7 +75,7 @@ export function ViewSwitcher({
         />
       )}
 
-      {options.map((option, index) => {
+      {options.map((option) => {
         const isSelected = option.value === value;
 
         return (
@@ -75,7 +84,7 @@ export function ViewSwitcher({
             accessibilityRole='tab'
             accessibilityState={{ selected: isSelected }}
             className='flex-1 items-center justify-center rounded-8'
-            onPress={() => handlePress(option.value, index)}
+            onPress={() => handlePress(option.value)}
           >
             <Text
               className={cn(

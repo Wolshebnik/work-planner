@@ -4,11 +4,11 @@ import { useGoogleAuth } from '@/entities/google-auth';
 import { extractSpreadsheetId, type GoogleSheetItem } from '@/entities/google-sheets';
 import { showToast } from '@/shared/ui/toast';
 
-import { syncGoogleSheets } from '../api/sync-google-sheets';
+import { syncGoogleSheets } from './sync-google-sheets';
 
 export function useSyncGoogleSheets() {
   const [isSyncing, setIsSyncing] = useState(false);
-  const { user, signIn, ensureSheetsScopeAndGetToken } = useGoogleAuth();
+  const { ensureSheetsScopeAndGetToken } = useGoogleAuth();
 
   const sync = async (sheet?: GoogleSheetItem | null) => {
     if (!sheet) {
@@ -32,10 +32,6 @@ export function useSyncGoogleSheets() {
 
     try {
       setIsSyncing(true);
-
-      if (!user) {
-        await signIn();
-      }
 
       const accessToken = await ensureSheetsScopeAndGetToken();
       await syncGoogleSheets({ spreadsheetId, accessToken });

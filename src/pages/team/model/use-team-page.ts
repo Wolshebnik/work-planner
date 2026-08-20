@@ -1,11 +1,13 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { type Employee } from '@/entities/employee';
-import { useAddEmployee } from '@/features/add-employee';
+import {
+  type Employee,
+  useAddEmployee,
+  useGetEmployees,
+  useReorderEmployees,
+  useUpdateEmployee,
+} from '@/entities/employee';
 import { type EmployeeData } from '@/features/employee-details';
-import { useGetEmployees } from '@/features/get-employees';
-import { useReorderEmployees } from '@/features/reorder-employees';
-import { useUpdateEmployee } from '@/features/update-employee';
 import {
   createEmployeeColorMap,
   getEmployeeAvatarColor,

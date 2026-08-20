@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 
 import { Archive } from '@/assets/svg';
-import { useArchiveEmployee } from '@/features/archive-employee';
+import { useArchiveEmployee } from '@/entities/employee';
 import { cn } from '@/shared/lib/cn';
 import { Avatar } from '@/shared/ui/avatar';
 import { ButtonBase } from '@/shared/ui/button-base';

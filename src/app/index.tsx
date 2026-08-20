@@ -1,5 +1,7 @@
-import { SchedulePage } from '@/pages/schedule';
+import { Redirect } from 'expo-router';
+
+import { ROUTES } from '@/shared/config/routes';
 
 export default function HomeRoute() {
-  return <SchedulePage />;
+  return <Redirect href={ROUTES.SCHEDULE_WEEK} />;
 }

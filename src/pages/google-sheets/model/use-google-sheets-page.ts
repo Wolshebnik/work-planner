@@ -8,8 +8,6 @@ import {
   useUpdateGoogleSheet,
 } from '@/entities/google-sheets';
 import type { ConnectGoogleSheetFormValues } from '@/features/connect-google-sheet';
-import { useSendWeekSchedule } from '@/features/send-google-sheet-schedule';
-import { useSyncGoogleSheets } from '@/features/sync-google-sheets';
 import { showToast } from '@/shared/ui/toast';
 
 export function useGoogleSheetsPage() {
@@ -18,26 +16,29 @@ export function useGoogleSheetsPage() {
   const updateSheetMutation = useUpdateGoogleSheet();
   const deleteSheetMutation = useDeleteGoogleSheet();
 
-  const { sync, isSyncing } = useSyncGoogleSheets();
-  const { send, isSending } = useSendWeekSchedule();
-
   const [isAdding, setIsAdding] = useState(false);
   const [editingItem, setEditingItem] = useState<GoogleSheetItem | null>(null);
   const [deletingItem, setDeletingItem] = useState<GoogleSheetItem | null>(null);
-
-  const targetSheet = sheets[0] ?? null;
-
-  const handleSync = () => sync(targetSheet);
-  const handleSend = () => send(targetSheet);
+  const [selectedSheet, setSelectedSheet] = useState<GoogleSheetItem | null>(null);
 
   const handleOpenAdd = () => {
     setEditingItem(null);
+    setSelectedSheet(null);
     setIsAdding(true);
   };
 
   const handleOpenEdit = (item: GoogleSheetItem) => {
+    setSelectedSheet(null);
     setIsAdding(false);
     setEditingItem(item);
+  };
+
+  const handleOpenDetails = (item: GoogleSheetItem) => {
+    setSelectedSheet(item);
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedSheet(null);
   };
 
   const handleCloseSheet = () => {
@@ -82,16 +83,15 @@ export function useGoogleSheetsPage() {
   return {
     sheets,
     isLoading,
-    isSyncing,
-    isSending,
     isSheetOpen: isAdding || editingItem !== null,
     editingItem,
     deletingItem,
+    selectedSheet,
     isDeleting: deleteSheetMutation.isPending,
-    handleSync,
-    handleSend,
     handleOpenAdd,
     handleOpenEdit,
+    handleOpenDetails,
+    handleCloseDetails,
     handleCloseSheet,
     handleSave,
     setDeletingItem,

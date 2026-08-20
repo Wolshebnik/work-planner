@@ -1,14 +1,15 @@
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { styled } from 'nativewind';
-import { View } from 'react-native';
-import { useFonts } from 'expo-font';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { NavigationBar } from 'expo-navigation-bar';
+import { StatusBar, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-import { queryClient } from '@/shared/api/query-client';
 import { SessionInitializer } from '@/entities/auth-session';
+import { queryClient } from '@/shared/api/query-client';
 import { ToastRoot } from '@/shared/ui/toast';
 import { BottomNavigation } from '@/widgets/bottom-navigation';
 
@@ -34,6 +35,14 @@ export default function RootLayout() {
               edges={['top', 'bottom']}
               className='flex-1 bg-neutral'
             >
+              <StatusBar
+                barStyle='dark-content'
+                backgroundColor='transparent'
+                translucent
+              />
+
+              <NavigationBar style='dark' />
+
               <SessionInitializer>
                 <View className='flex-1 bg-background'>
                   <Stack screenOptions={{ headerShown: false }} />

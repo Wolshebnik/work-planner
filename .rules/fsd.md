@@ -46,9 +46,9 @@ Do not create route files like `settings.tsx` or `notifications.tsx`.
 
 `widgets` — large independent UI blocks used to compose pages.
 
-`features` — user actions and business capabilities: `create-shift`, `edit-shift`, `filter-schedule`, `login`.
+`features` — user actions and interactive business flows: `edit-schedule`, `employee-details`, `sync-google-sheets`, `archive-employee`. A feature must represent a user interaction (modal, form, action flow). NEVER create feature slices just for fetching entity data.
 
-`entities` — business/domain objects: `user`, `employee`, `shift`, `schedule`.
+`entities` — business/domain objects: `user`, `employee`, `schedule`, `schedule-status`. An entity encapsulates its domain types, schemas, base Supabase API queries/mutations (`api/`), query keys, and data fetching hooks (`model/`).
 
 `shared` — generic code without project-specific business meaning: buttons, inputs, date helpers, Supabase client, config.
 

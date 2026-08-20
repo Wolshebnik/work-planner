@@ -1,5 +1,8 @@
 export const ROUTES = {
   HOME: '/',
+  SCHEDULE_WEEK: '/schedule/week',
+  SCHEDULE_MONTH: '/schedule/month',
+  SCHEDULE_SUMMARY: '/schedule/summary',
   TEAM: '/team',
   TEAM_ARCHIVED: '/team/archived',
   MORE: '/more',
