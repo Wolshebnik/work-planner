@@ -40,7 +40,6 @@ export function useSyncGoogleSheets() {
         type: 'success',
         text1: 'Синхронізація успішна',
         text2: 'Всі вкладки перевірено',
-        visibilityTime: 3000,
       });
     } catch (error) {
       const errorMessage =
@@ -49,7 +48,6 @@ export function useSyncGoogleSheets() {
         type: 'error',
         text1: 'Помилка синхронізації',
         text2: errorMessage,
-        visibilityTime: 3000,
       });
     } finally {
       setIsSyncing(false);

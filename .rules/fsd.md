@@ -156,3 +156,14 @@ Always inspect the existing structure before creating a new slice.
 Prefer extending an existing appropriate slice instead of creating duplicate concepts.
 
 Keep routes thin, pages readable, components focused, and business/API logic separated from presentation.
+
+## No Comments Policy
+
+- NEVER write comments (single-line `//`, multi-line `/* ... */`, JSDoc, inline explanations, or TODOs) in code.
+- Keep code clean, readable, and self-explanatory through good naming and clean structure.
+
+## Modal Scopes & Single Source of Truth for Mounts
+
+- **Strict Scope Boundaries (No Leaky Modals)**: NEVER render or mount modal dialogs, bottom sheets, or action buttons on screens or entities where they were not explicitly requested. Each feature/modal must exist strictly within its designated consumer scope.
+- **Single Source of Truth for Mounting (No Ghost / Double Mounts)**: A modal/sheet component must be mounted in exactly ONE place in the React render tree. NEVER mount a sheet inside a trigger button AND simultaneously hoist/mount it at the page level. Trigger buttons must only trigger state/actions; the modal must be mounted once at its intended owner component.
+

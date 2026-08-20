@@ -10,7 +10,6 @@ import {
   useScheduleSlotContext,
 } from '../../model/context/schedule-slot-context';
 import { ScheduleSlotControls } from '../controls/schedule-slot-controls';
-import { ScheduleEditBottomSheet } from './schedule-edit-bottom-sheet';
 import { ScheduleSlotHeader } from './schedule-slot-header';
 
 function ScheduleSlotLayoutContent({ children }: { children: ReactNode }) {
@@ -29,8 +28,6 @@ function ScheduleSlotLayoutContent({ children }: { children: ReactNode }) {
         <ScheduleSlotControls />
         {children}
       </ScrollView>
-
-      <ScheduleEditBottomSheet />
     </View>
   );
 }

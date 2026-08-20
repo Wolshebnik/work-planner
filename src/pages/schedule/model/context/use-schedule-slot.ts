@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import dayjs from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
@@ -32,6 +32,25 @@ export function useScheduleSlot() {
     dayIndex: number;
     employeeIndex: number;
   } | null>(null);
+
+  const [isExportOpen, setIsExportOpen] = useState(false);
+
+  const handleOpenExport = useCallback(() => {
+    setIsExportOpen(true);
+  }, []);
+
+  const handleCloseExport = useCallback(() => {
+    setIsExportOpen(false);
+  }, []);
+
+  const navigateHandlerRef = useRef<((direction: -1 | 1) => void) | null>(null);
+
+  const registerNavigateHandler = useCallback(
+    (handler: ((direction: -1 | 1) => void) | null) => {
+      navigateHandlerRef.current = handler;
+    },
+    [],
+  );
 
   const { data: employees = [], isLoading: isLoadingEmployees } =
     useGetEmployees();
@@ -82,21 +101,29 @@ export function useScheduleSlot() {
   );
 
   const handlePrev = useCallback(() => {
-    setCurrentDate((prev) => {
-      if (viewMode === 'week') {
-        return prev.subtract(1, 'week');
-      }
-      return prev.subtract(1, 'month');
-    });
+    if (navigateHandlerRef.current) {
+      navigateHandlerRef.current(-1);
+    } else {
+      setCurrentDate((prev) => {
+        if (viewMode === 'week') {
+          return prev.subtract(1, 'week');
+        }
+        return prev.subtract(1, 'month');
+      });
+    }
   }, [viewMode]);
 
   const handleNext = useCallback(() => {
-    setCurrentDate((prev) => {
-      if (viewMode === 'week') {
-        return prev.add(1, 'week');
-      }
-      return prev.add(1, 'month');
-    });
+    if (navigateHandlerRef.current) {
+      navigateHandlerRef.current(1);
+    } else {
+      setCurrentDate((prev) => {
+        if (viewMode === 'week') {
+          return prev.add(1, 'week');
+        }
+        return prev.add(1, 'month');
+      });
+    }
   }, [viewMode]);
 
   const handleResetToCurrent = useCallback(() => {
@@ -153,6 +180,7 @@ export function useScheduleSlot() {
     currentDate,
     setCurrentDate,
     isBottomSheetOpen,
+    isExportOpen,
     selectedCell: editingCell,
     selectedDate,
     activeEmployees,
@@ -162,6 +190,9 @@ export function useScheduleSlot() {
     monthLabel,
     isLoading: isLoadingEmployees,
     bottomSheetTitle,
+    registerNavigateHandler,
+    handleOpenExport,
+    handleCloseExport,
     handlePrev,
     handleNext,
     handleResetToCurrent,

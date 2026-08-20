@@ -119,3 +119,15 @@ Do not assume the file content based on conversation history or cached context. 
   - **NEVER create standalone feature slices just for fetching entity data** (e.g. `features/get-schedule-by-month` or `features/get-employees` are forbidden). All entity queries and base data access belong inside `entities/<name>`.
 - **`features/<name>` (User Actions & Interactive Flows)**:
   - A feature MUST represent a real user interaction, modal, form, or interactive business flow (e.g. `features/edit-schedule`, `features/sync-google-sheets`, `features/employee-details`).
+
+## 18. No Comments in Code
+
+- **NEVER** write comments (single-line `//`, multi-line `/* ... */`, JSDoc, inline notes, or TODOs) in code.
+- Write clean, self-explanatory code with descriptive variable/function names.
+- The ONLY allowed exceptions are strictly required tool/compiler directives (such as `/* eslint-disable ... */` or `'worklet'`).
+
+## 19. Strict Modal Scope & Single Source of Truth for Mounts
+
+- **Strict Scope Boundaries (No Leaky Modals)**: NEVER render or mount modal dialogs, bottom sheets, or action buttons on screens or entities where they were not explicitly requested. Each feature/modal must exist strictly within its designated consumer scope.
+- **Single Source of Truth for Mounting (No Ghost / Double Mounts)**: A modal/sheet component must be mounted in exactly ONE place in the React render tree. NEVER mount a sheet inside a trigger button AND simultaneously hoist/mount it at the page level. Trigger buttons must only trigger state/actions; the modal must be mounted once at its intended owner component.
+
