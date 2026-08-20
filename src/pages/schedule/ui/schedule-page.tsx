@@ -1,11 +1,12 @@
 import { useCallback, useEffect } from 'react';
 
 import type dayjs from 'dayjs';
-import { ScrollView, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { EditSchedule } from '@/features/edit-schedule';
 import { preparePagerMonths } from '@/features/get-schedule-by-month';
+import { getGoogleUserInitials, useGoogleAuth } from '@/entities/google-auth';
 import { BottomSheet } from '@/shared/ui/bottom-sheet';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import { Header } from '@/shared/ui/header';
@@ -20,6 +21,11 @@ import { useSchedulePager } from '../model/use-schedule-pager';
 
 export function SchedulePage() {
   const queryClient = useQueryClient();
+  const {
+    user: googleUser,
+    signIn: signInGoogle,
+    signOut: signOutGoogle,
+  } = useGoogleAuth();
   const {
     viewMode,
     setViewMode,
@@ -114,9 +120,38 @@ export function SchedulePage() {
     ],
   );
 
+  const handleAvatarPress = () => {
+    if (!googleUser) {
+      void signInGoogle();
+    } else {
+      Alert.alert(
+        googleUser.name ?? 'Google профіль',
+        googleUser.email ?? undefined,
+        [
+          {
+            text: 'Скасувати',
+            style: 'cancel',
+          },
+          {
+            text: 'Вийти з акаунта',
+            style: 'destructive',
+            onPress: () => {
+              void signOutGoogle();
+            },
+          },
+        ],
+      );
+    }
+  };
+
   return (
     <View className='flex-1'>
-      <Header title='Графік роботи' />
+      <Header
+        title='Графік роботи'
+        avatarUrl={googleUser?.photo ?? undefined}
+        avatarInitials={getGoogleUserInitials(googleUser?.name)}
+        onAvatarPress={handleAvatarPress}
+      />
 
       <ScrollView className='flex-1'>
         <View className='mt-2 mb-3 px-4'>

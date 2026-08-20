@@ -9,8 +9,10 @@ import DotsIcon from './dots.svg';
 import LockIcon from './lock.svg';
 import OffPeopleIcon from './off-people.svg';
 import PaintIcon from './paint.svg';
+import TableIcon from './table.svg';
 import TeamIcon from './team.svg';
 import TrashIcon from './trash.svg';
+import UserIcon from './user.svg';
 import WorkPeopleIcon from './work-people.svg';
 import XIcon from './x.svg';
 
@@ -32,9 +34,13 @@ export const OffPeople = styledSvg(OffPeopleIcon);
 
 export const Paint = styledSvg(PaintIcon);
 
+export const Table = styledSvg(TableIcon);
+
 export const Team = styledSvg(TeamIcon);
 
 export const Trash = styledSvg(TrashIcon);
+
+export const User = styledSvg(UserIcon);
 
 export const WorkPeople = styledSvg(WorkPeopleIcon);
 
