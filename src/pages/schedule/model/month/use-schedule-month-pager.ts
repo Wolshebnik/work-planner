@@ -1,5 +1,5 @@
-/* eslint-disable react-hooks/immutability */
-import { useCallback, useMemo, useState } from 'react';
+/* eslint-disable react-hooks/immutability, react-hooks/set-state-in-effect */
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type dayjs from 'dayjs';
 import type { LayoutChangeEvent } from 'react-native';
@@ -13,7 +13,6 @@ import {
 } from 'react-native-reanimated';
 
 export type CurrentMonthSlotIndex = 0 | 1 | 2;
-
 export interface PhysicalMonthSlot {
   date: dayjs.Dayjs;
   index: CurrentMonthSlotIndex;
@@ -21,7 +20,6 @@ export interface PhysicalMonthSlot {
   isReady: boolean;
   logicalPage: number;
 }
-
 interface UseScheduleMonthPagerProps {
   currentDate: dayjs.Dayjs;
   onDateChange?: (newDate: dayjs.Dayjs) => void;
@@ -50,9 +48,20 @@ export function useScheduleMonthPager({
     >
   >({
     0: { date: currentDate, logicalPage: 0, isReady: true },
-    1: { date: currentDate.add(1, 'month'), logicalPage: 1, isReady: true },
-    2: { date: currentDate.subtract(1, 'month'), logicalPage: -1, isReady: true },
+    1: { date: currentDate.add(1, 'month'), logicalPage: 1, isReady: false },
+    2: { date: currentDate.subtract(1, 'month'), logicalPage: -1, isReady: false },
   });
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSlotMapping((prev) => ({
+        0: { ...prev[0], isReady: true },
+        1: { ...prev[1], isReady: true },
+        2: { ...prev[2], isReady: true },
+      }));
+    }, 60);
+    return () => clearTimeout(timer);
+  }, []);
 
   const offsetShared = useSharedValue(0);
   const dragX = useSharedValue(0);
@@ -62,26 +71,39 @@ export function useScheduleMonthPager({
 
   const [syncedPropDate, setSyncedPropDate] = useState(currentDate);
 
-  // Synchronize ONLY on external date changes (e.g. calendar reset or switcher)
-  if (!currentDate.isSame(syncedPropDate, 'day')) {
-    setSyncedPropDate(currentDate);
-    offsetShared.value = 0;
-    dragX.value = 0;
-    isAnimating.value = false;
-    isGestureActive.value = false;
-    gestureBlocked.value = false;
+  useEffect(() => {
+    if (!currentDate.isSame(syncedPropDate, 'day')) {
+      setSyncedPropDate(currentDate);
+      offsetShared.value = 0;
+      dragX.value = 0;
+      isAnimating.value = false;
+      isGestureActive.value = false;
+      gestureBlocked.value = false;
 
-    setUrgentState({
-      currentDate,
-      currentSlotIndex: 0,
-      logicalPageIndex: 0,
-    });
-    setSlotMapping({
-      0: { date: currentDate, logicalPage: 0, isReady: true },
-      1: { date: currentDate.add(1, 'month'), logicalPage: 1, isReady: true },
-      2: { date: currentDate.subtract(1, 'month'), logicalPage: -1, isReady: true },
-    });
-  }
+      setUrgentState({
+        currentDate,
+        currentSlotIndex: 0,
+        logicalPageIndex: 0,
+      });
+      setSlotMapping({
+        0: { date: currentDate, logicalPage: 0, isReady: true },
+        1: { date: currentDate.add(1, 'month'), logicalPage: 1, isReady: true },
+        2: {
+          date: currentDate.subtract(1, 'month'),
+          logicalPage: -1,
+          isReady: true,
+        },
+      });
+    }
+  }, [
+    currentDate,
+    syncedPropDate,
+    offsetShared,
+    dragX,
+    isAnimating,
+    isGestureActive,
+    gestureBlocked,
+  ]);
 
   const commitNavigation = useCallback(
     (direction: -1 | 1) => {
@@ -92,7 +114,6 @@ export function useScheduleMonthPager({
         3) as CurrentMonthSlotIndex;
       const nextLogicalPage = urgentState.logicalPageIndex + direction;
 
-      // Far slot ahead to recycle to the new front position
       const farSlotIndex = ((nextSlotIndex + direction + 3) %
         3) as CurrentMonthSlotIndex;
       const farLogicalPage = nextLogicalPage + direction;
@@ -119,8 +140,7 @@ export function useScheduleMonthPager({
   const navigate = useCallback(
     (direction: -1 | 1) => {
       if (isAnimating.value || isGestureActive.value || pageWidth <= 0) return;
-      isAnimating.value = true;
-      runOnJS(commitNavigation)(direction);
+      commitNavigation(direction);
       dragX.value = withTiming(
         -direction * pageWidth,
         { duration: 200 },
@@ -134,7 +154,14 @@ export function useScheduleMonthPager({
         },
       );
     },
-    [pageWidth, commitNavigation, isAnimating, isGestureActive, dragX, offsetShared],
+    [
+      pageWidth,
+      commitNavigation,
+      isAnimating,
+      isGestureActive,
+      dragX,
+      offsetShared,
+    ],
   );
 
   const handleLayout = useCallback((event: LayoutChangeEvent) => {
@@ -216,7 +243,15 @@ export function useScheduleMonthPager({
         gestureBlocked.value = false;
         isGestureActive.value = false;
       });
-  }, [commitNavigation, pageWidth, dragX, isAnimating, gestureBlocked, isGestureActive, offsetShared]);
+  }, [
+    commitNavigation,
+    pageWidth,
+    dragX,
+    isAnimating,
+    gestureBlocked,
+    isGestureActive,
+    offsetShared,
+  ]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

@@ -42,6 +42,15 @@ export function BottomSheet({
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    const modalRef = bottomSheetModalRef.current;
+    return () => {
+      if (hasPresentedRef.current) {
+        modalRef?.dismiss();
+      }
+    };
+  }, []);
+
   const handleDismiss = useCallback(() => {
     hasPresentedRef.current = false;
     onClose();

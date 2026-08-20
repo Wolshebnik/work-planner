@@ -10,8 +10,8 @@ import { CalendarCell } from './calendar-cell';
 
 interface CalendarGridProps {
   days: CalendarDay[];
-  onDayPress: (day: dayjs.Dayjs) => void;
-  selectedDate: dayjs.Dayjs | null;
+  onDayPress?: (day: dayjs.Dayjs) => void;
+  selectedDate?: dayjs.Dayjs | null;
   statsByDate?: Map<string, DayEmployeeStats>;
 }
 

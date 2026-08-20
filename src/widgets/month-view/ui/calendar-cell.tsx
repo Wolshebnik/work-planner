@@ -12,7 +12,7 @@ import type { DayEmployeeStats } from '../model/types';
 interface CalendarCellProps {
   day: CalendarDay;
   isSelected: boolean;
-  onPress: (date: dayjs.Dayjs) => void;
+  onPress?: (date: dayjs.Dayjs) => void;
   stats?: DayEmployeeStats;
 }
 
@@ -23,7 +23,7 @@ export const CalendarCell = memo(function CalendarCell({
   stats,
 }: CalendarCellProps) {
   const hasData = stats && (stats.workingCount > 0 || stats.absentCount > 0);
-  const handlePress = useCallback(() => onPress(day.date), [onPress, day.date]);
+  const handlePress = useCallback(() => onPress?.(day.date), [onPress, day.date]);
 
   return (
     <Pressable

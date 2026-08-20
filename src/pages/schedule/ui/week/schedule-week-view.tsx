@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 
 import type dayjs from 'dayjs';
 import { View } from 'react-native';
@@ -6,26 +6,31 @@ import { GestureDetector } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 
 import type { Employee } from '@/entities/employee';
-import { ScheduleWeekContent } from './schedule-week-content';
+import { ExportScheduleSheet } from '@/features/export-schedule-sheet';
 
 import { useScheduleSlotContext } from '../../model/context/schedule-slot-context';
 import { useScheduleWeekPager } from '../../model/week/use-schedule-week-pager';
+import { ScheduleWeekContent } from './schedule-week-content';
+import { ScheduleWeekEditSheet } from './schedule-week-edit-sheet';
 
 interface ScheduleWeekViewProps {
   activeEmployees?: Employee[];
   currentDate?: dayjs.Dayjs;
   onCellPress?: (employeeIndex: number, dayIndex: number) => void;
   onDateChange?: (newDate: dayjs.Dayjs) => void;
-  selectedCell?: { dayIndex: number; employeeIndex: number } | null;
+  selectedCell?: {
+ dayIndex: number; employeeIndex: number 
+} | null;
   selectedDate?: dayjs.Dayjs | null;
 }
-
 interface ScheduleWeekSlotItemProps {
   activeEmployees: Employee[];
   date: dayjs.Dayjs;
   isCurrent: boolean;
   onCellPress: (employeeIndex: number, dayIndex: number) => void;
-  selectedCell: { dayIndex: number; employeeIndex: number } | null;
+  selectedCell: {
+ dayIndex: number; employeeIndex: number 
+} | null;
   selectedDate?: dayjs.Dayjs | null;
 }
 
@@ -51,16 +56,9 @@ const ScheduleWeekSlotItem = memo(
   (prev, next) => {
     if (!prev.date.isSame(next.date, 'day')) return false;
     if (prev.activeEmployees !== next.activeEmployees) return false;
-    if (prev.isCurrent !== next.isCurrent && (prev.selectedCell || next.selectedCell)) {
-      return false;
-    }
-    if (
-      next.isCurrent &&
-      (prev.selectedCell !== next.selectedCell ||
-        prev.selectedDate !== next.selectedDate)
-    ) {
-      return false;
-    }
+    if (prev.isCurrent !== next.isCurrent) return false;
+    if (prev.selectedCell !== next.selectedCell) return false;
+    if (prev.selectedDate !== next.selectedDate) return false;
     return true;
   },
 );
@@ -81,12 +79,23 @@ export function ScheduleWeekView(props: ScheduleWeekViewProps) {
     swipeGesture,
     animatedStyle,
     handleLayout,
+    navigate,
   } = useScheduleWeekPager({
     currentDate,
     onDateChange,
   });
 
+  const { registerNavigateHandler, isExportOpen, handleCloseExport } = context;
+
+  useEffect(() => {
+    registerNavigateHandler(navigate);
+    return () => {
+      registerNavigateHandler(null);
+    };
+  }, [navigate, registerNavigateHandler]);
+
   const currentSlot = slots.find((s) => s.isCurrent) ?? slots[0];
+  const activeDate = currentSlot.date;
 
   return (
     <View className='w-full overflow-hidden' onLayout={handleLayout}>
@@ -133,6 +142,14 @@ export function ScheduleWeekView(props: ScheduleWeekViewProps) {
           onCellPress={onCellPress}
         />
       )}
+
+      <ScheduleWeekEditSheet />
+
+      <ExportScheduleSheet
+        date={activeDate}
+        isOpen={isExportOpen}
+        onClose={handleCloseExport}
+      />
     </View>
   );
 }

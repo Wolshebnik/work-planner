@@ -14,24 +14,21 @@ export function getRequiredMonthKeys(
 ): string[] {
   const monthKeys = new Set<string>();
 
-  if (viewMode === 'month') {
-    // 5-month buffer for month view: [M-2, M-1, M, M+1, M+2]
+  if (viewMode === 'month' || viewMode === 'summary') {
     for (let offset = -2; offset <= 2; offset += 1) {
       monthKeys.add(currentDate.add(offset, 'month').format('YYYY-MM'));
     }
     return Array.from(monthKeys);
   }
 
-  // 3-month sliding buffer for week view: [M-1, M, M+1]
   monthKeys.add(currentDate.subtract(1, 'month').format('YYYY-MM'));
   monthKeys.add(currentDate.format('YYYY-MM'));
   monthKeys.add(currentDate.add(1, 'month').format('YYYY-MM'));
 
-  // Ensure cross-month boundary weeks in active 5-screen window are covered
-  const prev2Weeks = currentDate.subtract(2, 'week');
-  const next2Weeks = currentDate.add(2, 'week');
-  monthKeys.add(prev2Weeks.startOf('isoWeek').format('YYYY-MM'));
-  monthKeys.add(next2Weeks.endOf('isoWeek').format('YYYY-MM'));
+  const prevWeek = currentDate.subtract(1, 'week');
+  const nextWeek = currentDate.add(1, 'week');
+  monthKeys.add(prevWeek.startOf('isoWeek').format('YYYY-MM'));
+  monthKeys.add(nextWeek.endOf('isoWeek').format('YYYY-MM'));
 
   return Array.from(monthKeys);
 }
@@ -49,7 +46,3 @@ export async function preparePagerMonths(
     ),
   );
 }
-
-
-
-

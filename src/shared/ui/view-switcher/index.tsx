@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability */
 import { useEffect, useState } from 'react';
 
 import { type LayoutChangeEvent, Pressable, View } from 'react-native';
@@ -30,34 +31,48 @@ export function ViewSwitcher({
 }: ViewSwitcherProps) {
   const [containerWidth, setContainerWidth] = useState(0);
   const indicatorX = useSharedValue(0);
+  const indicatorWidth = useSharedValue(0);
 
   const selectedIndex = Math.max(
     0,
     options.findIndex((option) => option.value === value),
   );
-  const itemWidth =
-    containerWidth > 0 ? (containerWidth - 8) / options.length : 0;
 
   useEffect(() => {
-    if (itemWidth > 0) {
-      indicatorX.value = withTiming(itemWidth * selectedIndex, { duration: 150 });
+    if (containerWidth > 0) {
+      const calculatedItemWidth = (containerWidth - 8) / options.length;
+      indicatorWidth.value = calculatedItemWidth;
+      indicatorX.value = withTiming(calculatedItemWidth * selectedIndex, {
+        duration: 150,
+      });
     }
-  }, [selectedIndex, itemWidth, indicatorX]);
+  }, [selectedIndex, containerWidth, indicatorX, indicatorWidth]);
 
   const handleLayout = ({ nativeEvent }: LayoutChangeEvent) => {
     const width = nativeEvent.layout.width;
     if (width > 0) {
+      const calculatedItemWidth = (width - 8) / options.length;
+      indicatorWidth.value = calculatedItemWidth;
+      indicatorX.value = calculatedItemWidth * selectedIndex;
       setContainerWidth(width);
     }
   };
 
   const handlePress = (optionValue: ViewMode) => {
+    if (optionValue === value) return;
+    const newIndex = options.findIndex((option) => option.value === optionValue);
+    if (newIndex >= 0 && containerWidth > 0) {
+      const calculatedItemWidth = (containerWidth - 8) / options.length;
+      indicatorX.value = withTiming(calculatedItemWidth * newIndex, {
+        duration: 150,
+      });
+    }
     onChange(optionValue);
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: indicatorX.value }],
-    width: itemWidth,
+    width: indicatorWidth.value,
   }));
 
   return (

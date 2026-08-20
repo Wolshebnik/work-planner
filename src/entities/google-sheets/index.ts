@@ -8,7 +8,9 @@ export {
   googleSheetsQueryKey,
 } from './model/use-google-sheets';
 export {
+  batchUpdateSpreadsheetValues,
   extractSpreadsheetId,
+  fetchSpreadsheetSheetTitles,
   fetchSpreadsheetValues,
 } from './api/google-sheets-api';
 export type { GoogleSheetItem } from './model/types';

@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 
 import type dayjs from 'dayjs';
 import { View } from 'react-native';
@@ -6,21 +6,29 @@ import { View } from 'react-native';
 import { generateCalendarDays } from '@/entities/calendar';
 import type { Employee } from '@/entities/employee';
 import { useScheduleMonths } from '@/entities/schedule';
-import type { AvatarColor } from '@/shared/config/avatar-color';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
-import { buildMonthEmployeeStats, Calendar } from '@/widgets/month-view';
+import {
+  buildMonthEmployeeStats,
+  Calendar,
+  type DayEmployeeStats,
+} from '@/widgets/month-view';
 
 interface ScheduleMonthContentProps {
   activeEmployees: Employee[];
-  colorMap: Map<string, AvatarColor>;
   date: dayjs.Dayjs;
   isCurrentPage?: boolean;
+  onDayPress?: (
+    day: dayjs.Dayjs,
+    statsByDate?: Map<string, DayEmployeeStats>,
+  ) => void;
+  selectedDate?: dayjs.Dayjs | null;
 }
 
 export const ScheduleMonthContent = memo(function ScheduleMonthContent({
   date,
   activeEmployees,
-  colorMap,
+  selectedDate,
+  onDayPress,
   isCurrentPage = true,
 }: ScheduleMonthContentProps) {
   const gridMonthKeys = useMemo(() => {
@@ -39,6 +47,14 @@ export const ScheduleMonthContent = memo(function ScheduleMonthContent({
     return buildMonthEmployeeStats(activeEmployees, scheduleEntries);
   }, [activeEmployees, scheduleEntries]);
 
+  const handleCalendarDayPress = useCallback(
+    (day: dayjs.Dayjs) => {
+      if (!isCurrentPage) return;
+      onDayPress?.(day, statsByDate);
+    },
+    [isCurrentPage, onDayPress, statsByDate],
+  );
+
   if (isPending && scheduleEntries.length === 0) {
     return (
       <View className='h-96 items-center justify-center'>
@@ -51,8 +67,8 @@ export const ScheduleMonthContent = memo(function ScheduleMonthContent({
     <Calendar
       startDate={date}
       statsByDate={statsByDate}
-      colorMap={colorMap}
-      isCurrentPage={isCurrentPage}
+      selectedDate={selectedDate}
+      onDayPress={handleCalendarDayPress}
     />
   );
 });

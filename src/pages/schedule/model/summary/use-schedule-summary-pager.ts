@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/immutability, react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useQueryClient } from '@tanstack/react-query';
-import dayjs from 'dayjs';
+import type dayjs from 'dayjs';
 import type { LayoutChangeEvent } from 'react-native';
 import { Gesture } from 'react-native-gesture-handler';
 import {
@@ -13,31 +12,28 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 
-import { preparePagerMonths } from '@/entities/schedule';
-
-export type CurrentSlotIndex = 0 | 1 | 2;
-export interface PhysicalSlot {
+export type CurrentSummarySlotIndex = 0 | 1 | 2;
+export interface PhysicalSummarySlot {
   date: dayjs.Dayjs;
-  index: CurrentSlotIndex;
+  index: CurrentSummarySlotIndex;
   isCurrent: boolean;
   isReady: boolean;
   logicalPage: number;
 }
-interface UseScheduleWeekPagerProps {
+interface UseScheduleSummaryPagerProps {
   currentDate: dayjs.Dayjs;
   onDateChange?: (newDate: dayjs.Dayjs) => void;
 }
 
-export function useScheduleWeekPager({
+export function useScheduleSummaryPager({
   currentDate,
   onDateChange,
-}: UseScheduleWeekPagerProps) {
-  const queryClient = useQueryClient();
+}: UseScheduleSummaryPagerProps) {
   const [pageWidth, setPageWidth] = useState(0);
 
   const [urgentState, setUrgentState] = useState<{
     currentDate: dayjs.Dayjs;
-    currentSlotIndex: CurrentSlotIndex;
+    currentSlotIndex: CurrentSummarySlotIndex;
     logicalPageIndex: number;
   }>({
     currentDate,
@@ -47,13 +43,13 @@ export function useScheduleWeekPager({
 
   const [slotMapping, setSlotMapping] = useState<
     Record<
-      CurrentSlotIndex,
+      CurrentSummarySlotIndex,
       { date: dayjs.Dayjs; isReady: boolean; logicalPage: number }
     >
   >({
     0: { date: currentDate, logicalPage: 0, isReady: true },
-    1: { date: currentDate.add(1, 'week'), logicalPage: 1, isReady: false },
-    2: { date: currentDate.subtract(1, 'week'), logicalPage: -1, isReady: false },
+    1: { date: currentDate.add(1, 'month'), logicalPage: 1, isReady: false },
+    2: { date: currentDate.subtract(1, 'month'), logicalPage: -1, isReady: false },
   });
 
   useEffect(() => {
@@ -91,9 +87,9 @@ export function useScheduleWeekPager({
       });
       setSlotMapping({
         0: { date: currentDate, logicalPage: 0, isReady: true },
-        1: { date: currentDate.add(1, 'week'), logicalPage: 1, isReady: true },
+        1: { date: currentDate.add(1, 'month'), logicalPage: 1, isReady: true },
         2: {
-          date: currentDate.subtract(1, 'week'),
+          date: currentDate.subtract(1, 'month'),
           logicalPage: -1,
           isReady: true,
         },
@@ -109,23 +105,19 @@ export function useScheduleWeekPager({
     gestureBlocked,
   ]);
 
-  useEffect(() => {
-    void preparePagerMonths(urgentState.currentDate, 'week', queryClient);
-  }, [urgentState.currentDate, queryClient]);
-
   const commitNavigation = useCallback(
     (direction: -1 | 1) => {
-      const nextDate = urgentState.currentDate.add(direction, 'week');
+      const nextDate = urgentState.currentDate.add(direction, 'month');
       setSyncedPropDate(nextDate);
 
       const nextSlotIndex = ((urgentState.currentSlotIndex + direction + 3) %
-        3) as CurrentSlotIndex;
+        3) as CurrentSummarySlotIndex;
       const nextLogicalPage = urgentState.logicalPageIndex + direction;
 
       const farSlotIndex = ((nextSlotIndex + direction + 3) %
-        3) as CurrentSlotIndex;
+        3) as CurrentSummarySlotIndex;
       const farLogicalPage = nextLogicalPage + direction;
-      const farDate = nextDate.add(direction, 'week');
+      const farDate = nextDate.add(direction, 'month');
 
       setUrgentState({
         currentDate: nextDate,
@@ -181,8 +173,8 @@ export function useScheduleWeekPager({
 
   const swipeGesture = useMemo(() => {
     return Gesture.Pan()
-      .activeOffsetX([-20, 20])
-      .failOffsetY([-15, 15])
+      .activeOffsetX([-15, 15])
+      .failOffsetY([-30, 30])
       .onBegin(() => {
         'worklet';
         if (isAnimating.value) {
@@ -201,8 +193,8 @@ export function useScheduleWeekPager({
         'worklet';
         if (gestureBlocked.value || isAnimating.value || pageWidth <= 0) return;
 
-        const threshold = 70;
-        const velocityThreshold = 500;
+        const threshold = 60;
+        const velocityThreshold = 400;
         const shouldGoNext =
           event.translationX <= -threshold ||
           (event.translationX < -20 && event.velocityX <= -velocityThreshold);
@@ -269,8 +261,8 @@ export function useScheduleWeekPager({
     };
   });
 
-  const slots: PhysicalSlot[] = useMemo(() => {
-    const indices: CurrentSlotIndex[] = [0, 1, 2];
+  const slots: PhysicalSummarySlot[] = useMemo(() => {
+    const indices: CurrentSummarySlotIndex[] = [0, 1, 2];
     return indices.map((i) => {
       const mapping = slotMapping[i];
       const isCurrent = i === urgentState.currentSlotIndex;

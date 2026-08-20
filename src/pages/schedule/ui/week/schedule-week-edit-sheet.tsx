@@ -3,7 +3,7 @@ import { BottomSheet } from '@/shared/ui/bottom-sheet';
 
 import { useScheduleSlotContext } from '../../model/context/schedule-slot-context';
 
-export function ScheduleEditBottomSheet() {
+export function ScheduleWeekEditSheet() {
   const {
     isBottomSheetOpen,
     bottomSheetTitle,

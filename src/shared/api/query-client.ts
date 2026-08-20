@@ -42,7 +42,10 @@ function formatErrorMessage(error: unknown): { title: string; message: string } 
         message: JSON.stringify(error),
       };
     } catch {
-      // fallback
+      return {
+        title: 'Помилка',
+        message: String(error),
+      };
     }
   }
 
