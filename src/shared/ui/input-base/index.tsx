@@ -16,7 +16,7 @@ export interface InputBaseProps extends TextInputProps {
 export function InputBase({
   error,
   label,
-  labelColor = '#f8f9fc',
+  labelColor = '#FFFFFF',
   bottomSheet = false,
   className,
   required,
@@ -39,7 +39,7 @@ export function InputBase({
   );
 
   return (
-    <View className={cn('w-full', className)}>
+    <View className={cn('w-full', label && 'pt-2.5', className)}>
       {label ? (
         <View className={cn('relative h-14 rounded-8 border', borderClassName)}>
           <View

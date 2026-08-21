@@ -1,11 +1,18 @@
-import { useRouter } from 'expo-router';
-import { ScrollView, View } from 'react-native';
+import { useCallback, useState } from 'react';
 
-import { ScheduleStatusItem } from '@/entities/schedule-status';
+import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'expo-router';
+import { RefreshControl, ScrollView, View } from 'react-native';
+
+import {
+  ScheduleStatusItem,
+  scheduleStatusesQueryKey,
+} from '@/entities/schedule-status';
 import { ROUTES } from '@/shared/config/routes';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import { DeleteConfirmationSheet } from '@/shared/ui/delete-confirmation-sheet';
 import { Header } from '@/shared/ui/header';
+import { ResponsiveContainer } from '@/shared/ui/responsive-container';
 import { SectionTitle } from '@/shared/ui/section-title';
 import { Text } from '@/shared/ui/text';
 
@@ -13,6 +20,9 @@ import { useScheduleStatusesArchivedPage } from '../model/use-schedule-statuses-
 
 export function ScheduleStatusesArchivedPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const [refreshing, setRefreshing] = useState(false);
+
   const {
     archivedStatuses,
     isLoading,
@@ -22,6 +32,17 @@ export function ScheduleStatusesArchivedPage() {
     handleRestore,
     handleClose,
   } = useScheduleStatusesArchivedPage();
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await queryClient.invalidateQueries({
+        queryKey: scheduleStatusesQueryKey,
+      });
+    } finally {
+      setRefreshing(false);
+    }
+  }, [queryClient]);
 
   if (isLoading) {
     return (
@@ -36,30 +57,41 @@ export function ScheduleStatusesArchivedPage() {
       <Header
         title='Архів статусів'
         onBackPress={() => router.push(ROUTES.MORE_SCHEDULE_STATUSES)}
+        className='mb-3'
       />
 
-      <View className='px-6 mb-3'>
-        <SectionTitle
-          text={`${archivedStatuses.length} АРХІВОВАНИХ СТАТУСІВ`}
-          className='font-bold text-[14px]'
-        />
-      </View>
-
       <ScrollView
-        className='flex-1 mb-5 px-4'
-        contentContainerClassName='gap-3 pb-6'
-      >
-        {archivedStatuses.map((status) => (
-          <ScheduleStatusItem
-            key={status.id}
-            title={status.name}
-            description={status.description ?? ''}
-            status={status.schedule_mark ?? ''}
-            color={status.color}
-            isLocked={status.is_locked}
-            onPress={() => setRestoringStatus(status)}
+        className='flex-1'
+        contentContainerClassName='px-4'
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={['#02658B']}
+            tintColor='#02658B'
           />
-        ))}
+        }
+      >
+        <ResponsiveContainer>
+          <SectionTitle
+            text={`${archivedStatuses.length} АРХІВОВАНИХ СТАТУСІВ`}
+            className='font-bold text-[14px] pl-2 mb-3'
+          />
+
+          <View className='gap-3 pb-6'>
+            {archivedStatuses.map((status) => (
+              <ScheduleStatusItem
+                key={status.id}
+                title={status.name}
+                description={status.description ?? ''}
+                status={status.schedule_mark ?? ''}
+                color={status.color}
+                isLocked={status.is_locked}
+                onPress={() => setRestoringStatus(status)}
+              />
+            ))}
+          </View>
+        </ResponsiveContainer>
       </ScrollView>
 
       {restoringStatus && (

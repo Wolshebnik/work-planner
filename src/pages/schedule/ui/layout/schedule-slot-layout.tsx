@@ -1,6 +1,6 @@
-import { type ReactNode, useEffect } from 'react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 
-import { ScrollView, View } from 'react-native';
+import { RefreshControl, ScrollView, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { preparePagerMonths } from '@/entities/schedule';
@@ -16,16 +16,40 @@ import { ScheduleSlotHeader } from './schedule-slot-header';
 function ScheduleSlotLayoutContent({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const { currentDate, viewMode } = useScheduleSlotContext();
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     void preparePagerMonths(currentDate, viewMode, queryClient);
   }, [currentDate, viewMode, queryClient]);
 
-  return (
-    <View className='flex-1'>
-      <ScheduleSlotHeader />
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await queryClient.refetchQueries();
+      await preparePagerMonths(currentDate, viewMode, queryClient);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [currentDate, queryClient, viewMode]);
 
-      <ScrollView className='flex-1' contentContainerClassName='pb-6'>
+  return (
+    <View className='flex-1 bg-background'>
+      <ScrollView
+        className='flex-1'
+        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerClassName='pb-6'
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={['#02658B']}
+            tintColor='#02658B'
+          />
+        }
+      >
+        <ScheduleSlotHeader />
+
         <ResponsiveContainer>
           <ScheduleSlotControls />
           {children}

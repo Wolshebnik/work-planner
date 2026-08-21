@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import {
   FlatList,
   GestureHandlerRootView,
@@ -26,6 +26,8 @@ export function SortableList<TData extends SortableData>({
   enableDynamicHeights = false,
   estimatedItemHeight = 60,
   onHeightsMeasured,
+  refreshControl,
+  scrollEnabled,
   style,
   contentContainerStyle,
   itemKeyExtractor = (item) => item.id,
@@ -63,7 +65,7 @@ export function SortableList<TData extends SortableData>({
   );
 
   return (
-    <GestureHandlerRootView style={styles.flex}>
+    <GestureHandlerRootView className='flex-1'>
       <DropProvider ref={dropProviderRef}>
         {useFlatList ? (
           <AnimatedFlatList
@@ -74,32 +76,42 @@ export function SortableList<TData extends SortableData>({
             }
             renderItem={memoizedVerticalRenderItem as never}
             ListFooterComponent={ListFooterComponent as never}
+            refreshControl={refreshControl as never}
+            scrollEnabled={scrollEnabled}
             onScroll={handleScroll}
             scrollEventThrottle={16}
-            style={[styles.scrollView, style]}
+            className='flex-1 bg-transparent relative'
+            style={style}
             contentContainerStyle={[
-              { minHeight: contentHeight },
+              { flexGrow: 1, minHeight: contentHeight },
               contentContainerStyle,
             ]}
             onScrollEndDrag={handleScrollEnd}
             onMomentumScrollEnd={handleScrollEnd}
             simultaneousHandlers={dropProviderRef}
             showsVerticalScrollIndicator={false}
+            overScrollMode='always'
+            alwaysBounceVertical
           />
         ) : (
           <AnimatedScrollView
             ref={scrollViewRef}
+            refreshControl={refreshControl as never}
+            scrollEnabled={scrollEnabled}
             onScroll={handleScroll}
             scrollEventThrottle={16}
-            style={[styles.scrollView, style]}
+            className='flex-1 bg-transparent relative'
+            style={style}
             contentContainerStyle={[
-              { minHeight: contentHeight },
+              { flexGrow: 1, minHeight: contentHeight },
               contentContainerStyle,
             ]}
             onScrollEndDrag={handleScrollEnd}
             onMomentumScrollEnd={handleScrollEnd}
             simultaneousHandlers={dropProviderRef}
             showsVerticalScrollIndicator={false}
+            overScrollMode='always'
+            alwaysBounceVertical
           >
             <View style={{ height: contentHeight }}>
               {data.map((item, index) => {
@@ -120,14 +132,3 @@ export function SortableList<TData extends SortableData>({
     </GestureHandlerRootView>
   );
 }
-
-const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
-  scrollView: {
-    backgroundColor: 'transparent',
-    flex: 1,
-    position: 'relative',
-  },
-});

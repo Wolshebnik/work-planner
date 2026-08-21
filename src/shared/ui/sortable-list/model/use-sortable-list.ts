@@ -117,7 +117,9 @@ export function useSortableList<TData extends SortableData>({
   useAnimatedReaction(
     () => scrollY.value,
     (scrolling) => {
-      scrollTo(scrollViewRef, 0, scrolling, false);
+      if (scrolling >= 0) {
+        scrollTo(scrollViewRef, 0, scrolling, false);
+      }
     },
   );
 
