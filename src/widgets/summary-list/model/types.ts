@@ -8,6 +8,7 @@ export interface EmployeeMonthSummary {
 
 export interface EmployeeSummaryItem {
   avatarColor?: AvatarColor;
+  cashTotal?: string | number;
   id: string;
   initials: string;
   monthlyHours: number;

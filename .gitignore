@@ -4,6 +4,7 @@ dist/
 expo-env.d.ts
 node_modules
 .claude/
+.codex/
 *.env*
 !.env.example
 /android

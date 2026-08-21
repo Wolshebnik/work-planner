@@ -96,7 +96,7 @@ export function BottomSheet({
           paddingBottom: insets.bottom,
         }}
       >
-        <View className='mb-4 flex-row items-center'>
+        <View className='mb-2 flex-row items-center justify-between'>
           {title && (
             <Text
               className='min-w-0 flex-1 font-bold leading-[24px] text-primary text-[18px]'

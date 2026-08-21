@@ -120,6 +120,7 @@ export function ScheduleSummaryView(props: ScheduleSummaryViewProps) {
       )}
 
       <ExportSummarySheet
+        date={currentDate}
         isOpen={isExportOpen}
         onClose={handleCloseExport}
       />

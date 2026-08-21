@@ -9,11 +9,13 @@ interface SummaryListProps {
   className?: string;
   employees: EmployeeSummaryItem[];
   monthLabel: string;
+  onCashPress?: (employee: EmployeeSummaryItem) => void;
 }
 
 export function SummaryList({
   employees,
   monthLabel,
+  onCashPress,
   className,
 }: SummaryListProps) {
   return (
@@ -30,7 +32,9 @@ export function SummaryList({
           name={employee.name}
           avatarColor={employee.avatarColor}
           values={employee.weeklyHours}
+          cashTotal={employee.cashTotal ?? 0}
           monthTotal={employee.monthTotal ?? employee.monthlyHours}
+          onCashPress={() => onCashPress?.(employee)}
           className='mb-2'
         />
       ))}

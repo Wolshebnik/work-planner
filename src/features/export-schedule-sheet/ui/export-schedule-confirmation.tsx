@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import type dayjs from 'dayjs';
 import { View } from 'react-native';
@@ -8,6 +8,7 @@ import { ButtonBase } from '@/shared/ui/button-base';
 import { ButtonLoader } from '@/shared/ui/button-loader';
 import { SelectInput } from '@/shared/ui/select-input';
 import { Text } from '@/shared/ui/text';
+import { showToast } from '@/shared/ui/toast';
 
 import { getExportWeekPeriodOptions } from '../model/get-export-week-period-options';
 import { useCheckSheetAvailability } from '../model/use-check-sheet-availability';
@@ -41,6 +42,7 @@ export function ExportScheduleConfirmation({
   const {
     monthError,
     weekError,
+    employeeError,
     isLoading: isCheckingSheet,
   } = useCheckSheetAvailability({
     endDate: currentOption.endDate,
@@ -48,6 +50,16 @@ export function ExportScheduleConfirmation({
     monthName: currentOption.monthName,
     startDate: currentOption.startDate,
   });
+
+  useEffect(() => {
+    if (employeeError) {
+      showToast({
+        text1: 'Помилка перевірки працівників',
+        text2: employeeError,
+        type: 'error',
+      });
+    }
+  }, [employeeError]);
 
   const monthOptions = useMemo(
     () =>
@@ -68,19 +80,24 @@ export function ExportScheduleConfirmation({
   );
 
   const isInteractive = periodData.isCrossMonth;
+  const isSubmitDisabled =
+    isLoading ||
+    Boolean(monthError) ||
+    Boolean(weekError) ||
+    Boolean(employeeError) ||
+    isCheckingSheet;
 
   return (
-    <View className='gap-4 pb-6'>
-      <View className='gap-1'>
-        <Text className='font-bold text-[22px] text-primary'>
-          Підтвердження
-        </Text>
-        <Text className='text-[14px] leading-5 text-grey'>
+    <View className='mb-6'>
+      <View className='mb-6'>
+        <Text className='font-bold text-[22px] text-primary'>Відправка</Text>
+        <Text className='mt-1 text-[14px] leading-5 text-grey'>
           Перевірте дані перед відправкою у Google Sheets.
         </Text>
       </View>
 
       <SelectInput<number>
+        className='mb-4'
         disabled={!isInteractive}
         error={monthError ?? undefined}
         label='Період у таблиці'
@@ -92,6 +109,7 @@ export function ExportScheduleConfirmation({
       />
 
       <SelectInput<number>
+        className='mb-4'
         disabled={!isInteractive}
         error={weekError ?? undefined}
         label='Тиждень'
@@ -102,13 +120,23 @@ export function ExportScheduleConfirmation({
         value={selectedIndex}
       />
 
-      <ExportScheduleSummary
-        monthLabel={currentOption.monthLabel}
-        sourceLabel={sourceLabel}
-        weekLabel={currentOption.weekLabel}
-      />
+      <View className='mb-6'>
+        <ExportScheduleSummary
+          monthLabel={currentOption.monthLabel}
+          sourceLabel={sourceLabel}
+          weekLabel={currentOption.weekLabel}
+        />
+      </View>
 
-      <View className='mt-2 flex-row gap-3'>
+      {Boolean(employeeError) && (
+        <View className='mb-4 rounded-8 bg-danger/10 p-3'>
+          <Text className='font-medium text-[13px] leading-4 text-danger'>
+            {employeeError}
+          </Text>
+        </View>
+      )}
+
+      <View className='flex-row gap-3'>
         <ButtonBase
           appearance='outline'
           className='flex-1 py-3'
@@ -122,12 +150,7 @@ export function ExportScheduleConfirmation({
         <ButtonLoader
           appearance='solid'
           className='flex-1 py-3'
-          disabled={
-            isLoading ||
-            Boolean(monthError) ||
-            Boolean(weekError) ||
-            isCheckingSheet
-          }
+          disabled={isSubmitDisabled}
           loaderColor='#fff'
           loading={isLoading || isCheckingSheet}
           onPress={() =>

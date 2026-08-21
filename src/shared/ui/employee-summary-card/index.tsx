@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import type { AvatarColor } from '@/shared/config/avatar-color';
 import { cn } from '@/shared/lib/cn';
@@ -7,10 +7,12 @@ import { Text } from '@/shared/ui/text';
 
 interface EmployeeSummaryCardProps {
   avatarColor?: AvatarColor;
+  cashTotal?: string | number;
   className?: string;
   initials: string;
   monthTotal: string | number;
   name: string;
+  onCashPress?: () => void;
   values: readonly (string | number)[];
 }
 
@@ -20,6 +22,8 @@ export function EmployeeSummaryCard({
   avatarColor,
   values,
   monthTotal,
+  cashTotal = 0,
+  onCashPress,
   className,
 }: EmployeeSummaryCardProps) {
   return (
@@ -31,8 +35,10 @@ export function EmployeeSummaryCard({
     >
       <Avatar initials={initials} color={avatarColor} />
 
-      <View className='gap-1'>
-        <Text className='font-bold text-[14px] leading-[20px]'>{name}</Text>
+      <View className='gap-1 flex-1 min-w-0 px-2.5'>
+        <Text className='font-bold text-[14px] leading-[20px]' numberOfLines={1}>
+          {name}
+        </Text>
 
         <View className='flex-row gap-1'>
           {values.map((value, index) => (
@@ -57,20 +63,45 @@ export function EmployeeSummaryCard({
         </View>
       </View>
 
-      <View className='my-3 h-12.25 min-w-16 px-1.5 shrink-0 items-center justify-center rounded-12 bg-blue-light/70'>
-        <Text className='font-bold text-[9px] leading-[13.5px]'>МІСЯЦЬ</Text>
-        <Text
-          className={cn(
-            'font-bold text-primary text-center',
-            String(monthTotal).length > 4
-              ? 'text-[12px] leading-[16px]'
-              : 'text-[16px] leading-[20px]',
-          )}
-          numberOfLines={1}
-          adjustsFontSizeToFit
+      <View className='my-3 flex-row shrink-0 items-center overflow-hidden rounded-12'>
+        <Pressable
+          onPress={onCashPress}
+          className='h-12.25 min-w-14 px-1.5 items-center justify-center rounded-l-12 rounded-r-none bg-[#FEF3D6] active:opacity-80'
         >
-          {monthTotal}
-        </Text>
+          <Text className='font-bold text-[9px] leading-[13.5px] text-[#8A5E00]'>
+            КАСА
+          </Text>
+          <Text
+            className={cn(
+              'font-bold text-[#8A5E00] text-center',
+              String(cashTotal).length > 4
+                ? 'text-[12px] leading-[16px]'
+                : 'text-[16px] leading-[20px]',
+            )}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+            {cashTotal}
+          </Text>
+        </Pressable>
+
+        <View className='h-12.25 min-w-14 px-1.5 items-center justify-center rounded-r-12 rounded-l-none bg-blue-light/70'>
+          <Text className='font-bold text-[9px] leading-[13.5px] text-primary'>
+            МІСЯЦЬ
+          </Text>
+          <Text
+            className={cn(
+              'font-bold text-primary text-center',
+              String(monthTotal).length > 4
+                ? 'text-[12px] leading-[16px]'
+                : 'text-[16px] leading-[20px]',
+            )}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+            {monthTotal}
+          </Text>
+        </View>
       </View>
     </View>
   );
