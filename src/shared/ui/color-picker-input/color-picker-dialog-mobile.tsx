@@ -8,6 +8,7 @@ import ColorPicker, {
   OpacitySlider,
   Panel3,
 } from 'reanimated-color-picker';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ButtonBase } from '@/shared/ui/button-base';
 import { Header } from '@/shared/ui/header';
@@ -15,8 +16,7 @@ import { Text } from '@/shared/ui/text';
 
 import { type ColorPickerDialogProps } from './types';
 
-const PANEL_SIZE = 280;
-const PREVIEW_SIZE = 64;
+const COLOR_PREVIEW_SIZE = 64;
 
 export function ColorPickerDialogMobile({
   initialColor,
@@ -26,6 +26,7 @@ export function ColorPickerDialogMobile({
   const [draftColor, setDraftColor] = useState(() =>
     colorKit.HEX(initialColor, true).toUpperCase(),
   );
+  const insets = useSafeAreaInsets();
 
   return (
     <Modal
@@ -34,17 +35,25 @@ export function ColorPickerDialogMobile({
       presentationStyle='fullScreen'
       onRequestClose={onClose}
     >
-      <View className='flex-1 bg-background'>
-        <Header title='Вибір кольору' onBackPress={onClose} className='mb-2' />
+      <View
+        className='flex-1 bg-background'
+        style={{
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+        }}
+      >
+        <Header title='Вибір кольору' onBackPress={onClose} />
 
         <ScrollView
-          className='flex-1 px-6'
-          contentContainerClassName='pb-6 items-center'
           bounces={false}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'space-between',
+            padding: 24,
+          }}
         >
           <ColorPicker
-            style={{ width: '100%', alignItems: 'center' }}
             value={initialColor}
             onCompleteJS={(color) => {
               const hex8 = colorKit.HEX(color.rgba, true).toUpperCase();
@@ -53,45 +62,50 @@ export function ColorPickerDialogMobile({
           >
             <Panel3
               style={{
-                width: PANEL_SIZE,
-                height: PANEL_SIZE,
-                borderRadius: PANEL_SIZE / 2,
-                alignSelf: 'center',
+                width: '100%',
+                aspectRatio: 1,
+                borderRadius: 999,
               }}
             />
 
             <View className='h-3' />
 
             <HueSlider
-              sliderThickness={26}
-              thumbSize={34}
-              style={{ borderRadius: 13, width: '100%' }}
+              sliderThickness={28}
+              thumbSize={36}
+              style={{
+                borderRadius: 14,
+              }}
             />
 
             <View className='h-3' />
 
             <BrightnessSlider
-              sliderThickness={26}
-              thumbSize={34}
-              style={{ borderRadius: 13, width: '100%' }}
+              sliderThickness={28}
+              thumbSize={36}
+              style={{
+                borderRadius: 14,
+              }}
             />
 
             <View className='h-3' />
 
             <OpacitySlider
-              sliderThickness={26}
-              thumbSize={34}
-              style={{ borderRadius: 13, width: '100%' }}
+              sliderThickness={28}
+              thumbSize={36}
+              style={{
+                borderRadius: 14,
+              }}
             />
 
             <View className='h-3' />
 
-            <View className='items-center gap-1 mb-4'>
+            <View className='items-center gap-1 my-2'>
               <View
                 style={{
-                  width: PREVIEW_SIZE,
-                  height: PREVIEW_SIZE,
-                  borderRadius: PREVIEW_SIZE / 2,
+                  width: COLOR_PREVIEW_SIZE,
+                  height: COLOR_PREVIEW_SIZE,
+                  borderRadius: COLOR_PREVIEW_SIZE / 2,
                   backgroundColor: draftColor,
                 }}
               />
@@ -101,27 +115,27 @@ export function ColorPickerDialogMobile({
               </Text>
             </View>
           </ColorPicker>
+
+          <View className='flex-row gap-3 pt-4'>
+            <ButtonBase
+              variant='primary'
+              appearance='outline'
+              className='flex-1'
+              onPress={onClose}
+            >
+              Скасувати
+            </ButtonBase>
+
+            <ButtonBase
+              variant='primary'
+              appearance='solid'
+              className='flex-1'
+              onPress={() => onSelect(draftColor)}
+            >
+              Обрати
+            </ButtonBase>
+          </View>
         </ScrollView>
-
-        <View className='p-6 pt-0 flex-row gap-3'>
-          <ButtonBase
-            variant='primary'
-            appearance='outline'
-            className='flex-1'
-            onPress={onClose}
-          >
-            Скасувати
-          </ButtonBase>
-
-          <ButtonBase
-            variant='primary'
-            appearance='solid'
-            className='flex-1'
-            onPress={() => onSelect(draftColor)}
-          >
-            Обрати
-          </ButtonBase>
-        </View>
       </View>
     </Modal>
   );
