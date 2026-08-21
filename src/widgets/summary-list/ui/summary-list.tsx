@@ -22,7 +22,7 @@ export function SummaryList({
     <View className={className}>
       <SectionTitle
         text={`ПІДСУМКИ ЗА ${monthLabel.toUpperCase()}`}
-        className='ml-2'
+        className='ml-2 mb-3'
       />
 
       {employees.map((employee) => (

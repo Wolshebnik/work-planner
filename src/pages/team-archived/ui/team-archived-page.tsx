@@ -6,6 +6,7 @@ import { ROUTES } from '@/shared/config/routes';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import { DeleteConfirmationSheet } from '@/shared/ui/delete-confirmation-sheet';
 import { Header } from '@/shared/ui/header';
+import { ResponsiveContainer } from '@/shared/ui/responsive-container';
 import { SectionTitle } from '@/shared/ui/section-title';
 import { Text } from '@/shared/ui/text';
 
@@ -25,34 +26,40 @@ export function TeamArchivedPage() {
 
   return (
     <View className='flex-1'>
-      <Header title='Архів' onBackPress={() => router.push(ROUTES.TEAM)} />
-
-      <View className='px-6 mb-3'>
-        <SectionTitle
-          text={`${archivedEmployees.length} АРХІВОВАНИХ ПРАЦІВНИКІВ`}
-          className='font-bold text-[14px]'
-        />
-      </View>
+      <Header
+        title='Архів'
+        onBackPress={() => router.push(ROUTES.TEAM)}
+        className='mb-3'
+      />
 
       {isLoading ? (
         <View className='flex-1 items-center justify-center'>
           <CircularProgressLoader size='large' />
         </View>
       ) : (
-        <ScrollView className='px-4' contentContainerClassName='gap-3 pb-6'>
-          {archivedEmployees.map((employee) => (
-            <EmployeeCard
-              isArchived
-              key={employee.id}
-              employee={employee}
-              onPress={() =>
-                setRestoringEmployee({
-                  id: employee.id,
-                  name: employee.name,
-                })
-              }
+        <ScrollView className='flex-1' contentContainerClassName='px-4'>
+          <ResponsiveContainer>
+            <SectionTitle
+              text={`${archivedEmployees.length} АРХІВОВАНИХ ПРАЦІВНИКІВ`}
+              className='font-bold text-[14px] pl-2 mb-3'
             />
-          ))}
+
+            <View className='gap-3 mb-5'>
+              {archivedEmployees.map((employee) => (
+                <EmployeeCard
+                  isArchived
+                  key={employee.id}
+                  employee={employee}
+                  onPress={() =>
+                    setRestoringEmployee({
+                      id: employee.id,
+                      name: employee.name,
+                    })
+                  }
+                />
+              ))}
+            </View>
+          </ResponsiveContainer>
         </ScrollView>
       )}
 

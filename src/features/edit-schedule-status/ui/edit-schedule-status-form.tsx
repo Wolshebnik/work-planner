@@ -43,7 +43,7 @@ export const EditScheduleStatusForm = ({
   const isLocked = useWatch({ control, name: 'isLocked' });
 
   return (
-    <View className='flex-1 gap-4'>
+    <View className='w-full gap-4'>
       <Controller
         control={control}
         name='name'

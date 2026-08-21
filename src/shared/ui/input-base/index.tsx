@@ -1,5 +1,5 @@
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
-import { TextInput, type TextInputProps, View } from 'react-native';
+import { TextInput, type TextInputProps, useWindowDimensions, View } from 'react-native';
 
 import { cn } from '@/shared/lib/cn';
 
@@ -23,8 +23,10 @@ export function InputBase({
   ...props
 }: InputBaseProps) {
   const hasError = Boolean(error);
+  const { width: windowWidth } = useWindowDimensions();
+  const isWide = windowWidth > 640;
 
-  const InputComponent = bottomSheet ? BottomSheetTextInput : TextInput;
+  const InputComponent = bottomSheet && !isWide ? BottomSheetTextInput : TextInput;
 
   const borderClassName = hasError ? 'border-danger' : 'border-primary';
 

@@ -8,7 +8,7 @@ export function GoogleSheetsInfoCard() {
     <>
       <SectionTitle
         text='ІНФОРМАЦІЯ'
-        className='font-bold text-[12px] pl-2 mt-4 mb-1'
+        className='font-bold text-[12px] pl-2 mb-2'
       />
 
       <View className='bg-white rounded-12 border border-border p-4 gap-2 shadow-card'>

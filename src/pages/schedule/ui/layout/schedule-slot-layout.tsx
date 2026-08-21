@@ -4,6 +4,7 @@ import { ScrollView, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { preparePagerMonths } from '@/entities/schedule';
+import { ResponsiveContainer } from '@/shared/ui/responsive-container';
 
 import {
   ScheduleSlotProvider,
@@ -24,9 +25,11 @@ function ScheduleSlotLayoutContent({ children }: { children: ReactNode }) {
     <View className='flex-1'>
       <ScheduleSlotHeader />
 
-      <ScrollView className='flex-1'>
-        <ScheduleSlotControls />
-        {children}
+      <ScrollView className='flex-1' contentContainerClassName='pb-6'>
+        <ResponsiveContainer>
+          <ScheduleSlotControls />
+          {children}
+        </ResponsiveContainer>
       </ScrollView>
     </View>
   );

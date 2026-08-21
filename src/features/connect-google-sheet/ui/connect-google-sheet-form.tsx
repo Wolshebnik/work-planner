@@ -32,7 +32,7 @@ export function ConnectGoogleSheetForm({
   });
 
   return (
-    <View className='flex-1 gap-4 pb-2'>
+    <View className='w-full gap-4 pb-2'>
       <Controller
         control={control}
         name='title'
