@@ -5,7 +5,7 @@ import { ScheduleViewSwitcher } from './schedule-view-switcher';
 
 export function ScheduleSlotControls() {
   return (
-    <View className='mt-2 mb-3 px-4'>
+    <View className='mb-3 px-4'>
       <SchedulePeriodSwitcher className='mb-5' />
       <ScheduleViewSwitcher />
     </View>

@@ -18,6 +18,7 @@ import {
 import { ButtonBase } from '@/shared/ui/button-base';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import { Header } from '@/shared/ui/header';
+import { ResponsiveContainer } from '@/shared/ui/responsive-container';
 import { SectionTitle } from '@/shared/ui/section-title';
 import { SortableList } from '@/shared/ui/sortable-list';
 
@@ -51,12 +52,12 @@ export function TeamPage() {
           onDrop={handleDrop}
           {...rest}
         >
-          <View className='pb-3 px-4'>
+          <ResponsiveContainer className='pb-3 px-4'>
             <EmployeeCard
               employee={cardData}
               onPress={() => setSelectedEmployee(cardData)}
             />
-          </View>
+          </ResponsiveContainer>
         </SortableItem>
       );
     },
@@ -65,9 +66,9 @@ export function TeamPage() {
 
   return (
     <View className='flex-1'>
-      <Header title='Команда' />
+      <Header title='Команда' className='mb-4' />
 
-      <View className='flex-row items-center justify-between px-6 mb-5'>
+      <ResponsiveContainer className='flex-row items-center justify-between px-6 mb-5'>
         <SectionTitle
           text={`${activeEmployees.length} активних працівників`}
           className='font-bold text-[18px]'
@@ -79,7 +80,7 @@ export function TeamPage() {
         >
           + Додати
         </ButtonBase>
-      </View>
+      </ResponsiveContainer>
 
       {isLoading ? (
         <View className='flex-1 items-center justify-center'>
@@ -96,9 +97,9 @@ export function TeamPage() {
             contentContainerStyle={{ paddingBottom: 24 }}
             ListFooterComponent={
               archivedEmployeesCount > 0 ? (
-                <View className='pt-2 pb-6 px-4'>
+                <ResponsiveContainer className='pt-2 pb-6 px-4'>
                   <ArchivedEmployeesCard count={archivedEmployeesCount} />
-                </View>
+                </ResponsiveContainer>
               ) : null
             }
           />

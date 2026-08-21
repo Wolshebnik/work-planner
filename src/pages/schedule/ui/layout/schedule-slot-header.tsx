@@ -13,6 +13,7 @@ export function ScheduleSlotHeader() {
   return (
     <Header
       title='Графік роботи'
+      className='mb-2'
       rightAction={
         isExportVisible ? (
           <Pressable
