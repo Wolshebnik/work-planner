@@ -33,7 +33,7 @@ export function ColorPickerInput({
   const initialColor = value || '#E1E2E5FF';
 
   return (
-    <View className='w-full'>
+    <View className={cn('w-full', label && 'pt-2.5')}>
       <Pressable
         className={cn(
           'relative h-14 justify-center rounded-8 border px-4',

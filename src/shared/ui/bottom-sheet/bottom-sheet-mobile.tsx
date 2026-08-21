@@ -1,0 +1,117 @@
+import { useCallback, useEffect, useRef } from 'react';
+
+import {
+  BottomSheetBackdrop,
+  type BottomSheetBackdropProps,
+  BottomSheetModal,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet';
+import { Pressable, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { X } from '@/assets/svg';
+import { Text } from '@/shared/ui/text';
+
+import { type BottomSheetProps } from './types';
+
+export function BottomSheetMobile({
+  children,
+  isOpen,
+  title,
+  onClose,
+}: BottomSheetProps) {
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const hasPresentedRef = useRef(false);
+  const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    if (isOpen) {
+      bottomSheetModalRef.current?.present();
+      hasPresentedRef.current = true;
+      return;
+    }
+
+    if (hasPresentedRef.current) {
+      bottomSheetModalRef.current?.dismiss();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    const modalRef = bottomSheetModalRef.current;
+    return () => {
+      if (hasPresentedRef.current) {
+        modalRef?.dismiss();
+      }
+    };
+  }, []);
+
+  const handleDismiss = useCallback(() => {
+    hasPresentedRef.current = false;
+    onClose();
+  }, [onClose]);
+
+  const handleClose = useCallback(() => {
+    bottomSheetModalRef.current?.dismiss();
+  }, []);
+
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        opacity={0.5}
+        pressBehavior='close'
+      />
+    ),
+    [],
+  );
+
+  return (
+    <BottomSheetModal
+      ref={bottomSheetModalRef}
+      enableDynamicSizing
+      backdropComponent={renderBackdrop}
+      onDismiss={handleDismiss}
+      enablePanDownToClose
+      handleIndicatorStyle={{
+        backgroundColor: '#c8d5e0',
+        width: 48,
+        height: 6,
+      }}
+      backgroundStyle={{
+        borderRadius: 28,
+        backgroundColor: '#FFFFFF',
+      }}
+    >
+      <BottomSheetView
+        className='px-5'
+        style={{
+          paddingBottom: insets.bottom,
+        }}
+      >
+        <View className='mb-2 flex-row items-center justify-between'>
+          {title ? (
+            <Text
+              className='min-w-0 flex-1 font-bold leading-[24px] text-primary text-[18px]'
+              numberOfLines={1}
+            >
+              {title}
+            </Text>
+          ) : null}
+
+          <Pressable
+            accessibilityLabel='Закрити панель'
+            accessibilityRole='button'
+            className='ml-auto h-8 w-8 shrink-0 items-center justify-center rounded-full active:bg-neutral/10'
+            onPress={handleClose}
+          >
+            <X className='text-primary' height={14} width={14} />
+          </Pressable>
+        </View>
+
+        {children}
+      </BottomSheetView>
+    </BottomSheetModal>
+  );
+}

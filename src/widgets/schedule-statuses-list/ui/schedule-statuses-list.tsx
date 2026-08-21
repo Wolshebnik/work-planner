@@ -1,6 +1,7 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
-import { View } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
+import { RefreshControl, View } from 'react-native';
 import {
   SortableItem,
   type SortableRenderItemProps,
@@ -10,8 +11,10 @@ import {
   ArchivedScheduleStatusesCard,
   type ScheduleStatus,
   ScheduleStatusItem,
+  scheduleStatusesQueryKey,
 } from '@/entities/schedule-status';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
+import { ResponsiveContainer } from '@/shared/ui/responsive-container';
 import { SortableList } from '@/shared/ui/sortable-list';
 import { Text } from '@/shared/ui/text';
 
@@ -21,7 +24,12 @@ import { useScheduleStatusesList } from '../model/use-schedule-statuses-list';
 export const ScheduleStatusesList = ({
   onStatusPress,
   onDeleteStatus,
+  refreshControl: externalRefreshControl,
+  scrollEnabled,
 }: ScheduleStatusesListProps) => {
+  const queryClient = useQueryClient();
+  const [refreshing, setRefreshing] = useState(false);
+
   const {
     activeStatuses,
     archivedStatusesCount,
@@ -29,6 +37,15 @@ export const ScheduleStatusesList = ({
     handleDrop,
     isLoading,
   } = useScheduleStatusesList();
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await queryClient.invalidateQueries({ queryKey: scheduleStatusesQueryKey });
+    } finally {
+      setRefreshing(false);
+    }
+  }, [queryClient]);
 
   const renderItem = useCallback(
     (props: SortableRenderItemProps<ScheduleStatus>) => {
@@ -41,7 +58,7 @@ export const ScheduleStatusesList = ({
           onDrop={handleDrop}
           {...rest}
         >
-          <View className='pb-3 px-4'>
+          <ResponsiveContainer className='pb-3 px-4'>
             <ScheduleStatusItem
               title={item.name}
               description={item.description ?? ''}
@@ -51,7 +68,7 @@ export const ScheduleStatusesList = ({
               onPress={() => onStatusPress(item)}
               onDelete={() => onDeleteStatus(item)}
             />
-          </View>
+          </ResponsiveContainer>
         </SortableItem>
       );
     },
@@ -74,6 +91,16 @@ export const ScheduleStatusesList = ({
     );
   }
 
+  const effectiveRefreshControl =
+    externalRefreshControl ?? (
+      <RefreshControl
+        refreshing={refreshing}
+        onRefresh={handleRefresh}
+        colors={['#02658B']}
+        tintColor='#02658B'
+      />
+    );
+
   return (
     <View className='flex-1'>
       <SortableList
@@ -81,13 +108,15 @@ export const ScheduleStatusesList = ({
         itemHeight={78}
         useFlatList={false}
         renderItem={renderItem}
+        scrollEnabled={scrollEnabled}
         style={{ backgroundColor: 'transparent' }}
         contentContainerStyle={{ paddingBottom: 24 }}
+        refreshControl={effectiveRefreshControl}
         ListFooterComponent={
           archivedStatusesCount > 0 ? (
-            <View className='pt-2 pb-6 px-4'>
+            <ResponsiveContainer className='pt-2 pb-6 px-4'>
               <ArchivedScheduleStatusesCard count={archivedStatusesCount} />
-            </View>
+            </ResponsiveContainer>
           ) : null
         }
       />

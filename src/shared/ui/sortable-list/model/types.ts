@@ -16,7 +16,9 @@ export interface SortableListProps<TData extends SortableData> {
   itemHeight?: number;
   itemKeyExtractor?: (item: TData, index: number) => string;
   onHeightsMeasured?: (heights: Record<string, number>) => void;
+  refreshControl?: ReactNode;
   renderItem: (props: SortableRenderItemProps<TData>) => ReactNode;
+  scrollEnabled?: boolean;
   style?: StyleProp<ViewStyle>;
   useFlatList?: boolean;
 }

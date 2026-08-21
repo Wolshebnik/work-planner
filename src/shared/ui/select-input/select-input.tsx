@@ -15,7 +15,7 @@ export function SelectInput<T = string | number>({
   disabled = false,
   error,
   label,
-  labelColor = '#f8f9fc',
+  labelColor = '#FFFFFF',
   leftIcon,
   onChange,
   options,
@@ -32,7 +32,7 @@ export function SelectInput<T = string | number>({
   const borderClassName = hasError ? 'border-danger' : 'border-primary';
 
   return (
-    <View className={cn('w-full', className)}>
+    <View className={cn('w-full', label && 'pt-2.5', className)}>
       <Pressable
         accessibilityRole='combobox'
         disabled={disabled}
