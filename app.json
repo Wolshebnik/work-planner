@@ -1,9 +1,11 @@
 {
   "expo": {
-    "name": "work-planner",
+    "name": "Графік змін",
     "slug": "work-planner",
     "scheme": "workplanner",
     "version": "1.0.0",
+    "userInterfaceStyle": "light",
+    "icon": "./src/assets/png/icon-app.png",
     "plugins": [
       "expo-router",
       [
@@ -11,12 +13,13 @@
         {
           "enforceContrast": false,
           "hidden": false,
-          "style": "light"
+          "style": "dark"
         }
       ]
     ],
     "android": {
-      "package": "com.workplanner.app"
+      "package": "com.workplanner.app",
+      "icon": "./src/assets/png/icon-app.png"
     },
     "web": {
       "bundler": "metro"

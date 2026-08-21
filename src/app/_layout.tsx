@@ -1,10 +1,12 @@
+import { useEffect } from 'react';
+
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
+import { NavigationBar } from 'expo-navigation-bar';
 import { Stack } from 'expo-router';
 import { styled } from 'nativewind';
-import { NavigationBar } from 'expo-navigation-bar';
-import { StatusBar, View } from 'react-native';
+import { Platform, StatusBar, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
@@ -25,6 +27,12 @@ export default function RootLayout() {
     RobotoFlex_700Bold: require('@/assets/fonts/RobotoFlex-700.ttf'),
     RobotoFlex_800ExtraBold: require('@/assets/fonts/RobotoFlex-800.ttf'),
   });
+
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      NavigationBar.setStyle('dark');
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -57,3 +65,7 @@ export default function RootLayout() {
     </QueryClientProvider>
   );
 }
+
+
+
+
