@@ -131,3 +131,15 @@ Do not assume the file content based on conversation history or cached context. 
 - **Strict Scope Boundaries (No Leaky Modals)**: NEVER render or mount modal dialogs, bottom sheets, or action buttons on screens or entities where they were not explicitly requested. Each feature/modal must exist strictly within its designated consumer scope.
 - **Single Source of Truth for Mounting (No Ghost / Double Mounts)**: A modal/sheet component must be mounted in exactly ONE place in the React render tree. NEVER mount a sheet inside a trigger button AND simultaneously hoist/mount it at the page level. Trigger buttons must only trigger state/actions; the modal must be mounted once at its intended owner component.
 
+## 20. Layout Margins & Paddings Principle
+
+- **Downwards Margin Flow (`mb-*`)**: Always use `mb-*` (margin-bottom) on upper elements to push subsequent elements downwards. NEVER use `mt-*` on child elements to push away from parents or previous siblings when `mb-*` on the upper element can define the rhythm.
+- **Paddings for Internal Spacing & Horizontal Insets Only**: Use `padding` (`p-*`, `px-*`, `py-*`) STRICTLY for internal element padding (such as inside cards, buttons, containers, or horizontal screen boundaries `px-*`). NEVER use `padding-bottom` or `padding-top` on a container solely to space out sibling components.
+
+## 21. Clean JSX Conditional Rendering (`{condition && <Component />}`)
+
+- **No Ternaries with Null**: NEVER write `{condition ? <Component /> : null}` when a simple boolean short-circuit suffices.
+- **Short-circuit Syntax**: Always write `{condition && <Component />}` or `{Boolean(condition) && <Component />}` for clean, concise, and readable conditional rendering.
+
+
+

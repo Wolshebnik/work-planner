@@ -11,6 +11,10 @@ export {
   type UpdateEmployeeDto,
 } from './api/update-employee';
 export {
+  findEmployeeRowIndex,
+  matchEmployeesWithSheet,
+} from './lib/match-employee-row';
+export {
   employeeKeys,
   employeeQueryOptions,
 } from './model/query-keys';

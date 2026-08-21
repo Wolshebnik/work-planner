@@ -1,19 +1,15 @@
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 
 import type dayjs from 'dayjs';
 import { View } from 'react-native';
 
 import type { Employee } from '@/entities/employee';
-import { useScheduleByMonth } from '@/entities/schedule';
+import { CashSheet } from '@/features/cash-sheet';
 import type { AvatarColor } from '@/shared/config/avatar-color';
-import { getEmployeeAvatarColor } from '@/shared/config/get-avatar-color';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
-import {
-  buildMonthSummaries,
-  formatMonthTotal,
-  type EmployeeSummaryItem,
-  SummaryList,
-} from '@/widgets/summary-list';
+import { SummaryList } from '@/widgets/summary-list';
+
+import { useScheduleSummaryData } from '../../model/summary/use-schedule-summary-data';
 
 interface ScheduleSummaryContentProps {
   activeEmployees: Employee[];
@@ -27,61 +23,17 @@ export const ScheduleSummaryContent = memo(function ScheduleSummaryContent({
   colorMap,
 }: ScheduleSummaryContentProps) {
   const {
-    data: scheduleEntries,
-    isPending,
+    summaryEmployees,
+    monthLabel,
     isLoading,
-    isFetching,
-  } = useScheduleByMonth(date);
+    isCashSheetOpen,
+    selectedEmployee,
+    handleCashPress,
+    handleCloseCashSheet,
+    handleSaveCash,
+  } = useScheduleSummaryData({ activeEmployees, colorMap, date });
 
-  const summaries = useMemo(
-    () => buildMonthSummaries(activeEmployees, scheduleEntries ?? [], date),
-    [activeEmployees, scheduleEntries, date],
-  );
-
-  const summaryEmployees: EmployeeSummaryItem[] = useMemo(() => {
-    return summaries.map((summary) => {
-      const employee = activeEmployees.find((e) => e.id === summary.employeeId);
-      const name = employee
-        ? [employee.last_name, employee.first_name]
-            .filter(Boolean)
-            .join(' ')
-        : '';
-      const initials = employee
-        ? [employee.last_name, employee.first_name]
-            .filter(Boolean)
-            .map((n) => n[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2)
-        : '';
-
-      return {
-        id: summary.employeeId,
-        name,
-        initials,
-        avatarColor: getEmployeeAvatarColor(summary.employeeId, colorMap),
-        weeklyHours: summary.weeklyHours.map((hours) => formatMonthTotal(hours)),
-        monthlyHours: summary.monthlyHours,
-        monthTotal: formatMonthTotal(summary.monthlyHours),
-      };
-    });
-  }, [summaries, activeEmployees, colorMap]);
-
-  const monthLabel = useMemo(() => {
-    return (
-      date.format('MMMM').charAt(0).toUpperCase() +
-      date.format('MMMM').slice(1) +
-      ' ' +
-      date.format('YYYY')
-    );
-  }, [date]);
-
-  if (
-    isPending ||
-    isLoading ||
-    !scheduleEntries ||
-    (isFetching && scheduleEntries.length === 0)
-  ) {
+  if (isLoading) {
     return (
       <View className='h-96 items-center justify-center'>
         <CircularProgressLoader size='large' />
@@ -89,12 +41,22 @@ export const ScheduleSummaryContent = memo(function ScheduleSummaryContent({
     );
   }
 
-
   return (
-    <SummaryList
-      employees={summaryEmployees}
-      monthLabel={monthLabel}
-      className='px-4'
-    />
+    <>
+      <SummaryList
+        employees={summaryEmployees}
+        monthLabel={monthLabel}
+        onCashPress={handleCashPress}
+        className='px-4'
+      />
+      <CashSheet
+        isOpen={isCashSheetOpen}
+        onClose={handleCloseCashSheet}
+        employeeName={selectedEmployee?.name}
+        initialAmount={selectedEmployee?.cashTotal}
+        onSave={handleSaveCash}
+      />
+    </>
   );
 });
+

@@ -43,7 +43,7 @@ export function SelectInput<T = string | number>({
         )}
         onPress={() => setIsOpen((prev) => !prev)}
       >
-        {label ? (
+        {label && (
           <View
             className='absolute -top-2.5 left-3 z-10 flex-row items-center px-1'
             style={{ backgroundColor: labelColor }}
@@ -61,9 +61,9 @@ export function SelectInput<T = string | number>({
               <Text className='ml-0.5 text-[12px] text-danger'>*</Text>
             )}
           </View>
-        ) : null}
+        )}
 
-        {leftIcon ? <View className='mr-3 shrink-0'>{leftIcon}</View> : null}
+        {leftIcon && <View className='mr-3 shrink-0'>{leftIcon}</View>}
 
         <Text
           className={cn(
