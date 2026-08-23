@@ -18,24 +18,44 @@ export const supabase = createClient(
 );
 
 focusManager.setEventListener((onFocus) => {
+  let isListenerActive = true;
+  let focusOperation = 0;
+
   const subscription = AppState.addEventListener(
     'change',
     (status: AppStateStatus) => {
-      if (Platform.OS !== 'web') {
-        if (status === 'active') {
-          void supabase.auth.startAutoRefresh();
-          void supabase.auth.getSession().finally(() => {
-            onFocus(true);
-          });
-        } else {
-          void supabase.auth.stopAutoRefresh();
-          onFocus(false);
-        }
+      if (Platform.OS === 'web') {
+        return;
       }
+
+      focusOperation += 1;
+      const currentOperation = focusOperation;
+
+      if (status !== 'active') {
+        void supabase.auth.stopAutoRefresh();
+        onFocus(false);
+        return;
+      }
+
+      void supabase.auth.startAutoRefresh();
+      void supabase.auth
+        .getSession()
+        .catch(() => undefined)
+        .finally(() => {
+          if (
+            isListenerActive &&
+            currentOperation === focusOperation &&
+            AppState.currentState === 'active'
+          ) {
+            onFocus(true);
+          }
+        });
     },
   );
 
   return () => {
+    isListenerActive = false;
+    focusOperation += 1;
     subscription.remove();
   };
 });
