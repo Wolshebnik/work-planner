@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { Text, TouchableOpacity, View } from 'react-native';
 
+import { getNetworkErrorMessage } from '@/shared/lib/get-network-error-message';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import { showToast } from '@/shared/ui/toast';
 
@@ -35,15 +36,16 @@ export function SessionInitializer({ children }: SessionInitializerProps) {
         }
       })
       .catch((error: unknown) => {
-        const err =
-          error instanceof Error ? error : new Error('Невідома помилка');
+        const message =
+          getNetworkErrorMessage(error) ??
+          (error instanceof Error ? error.message : 'Невідома помилка');
         if (!mounted) return;
         setStatus('error');
-        setErrorMessage(err.message);
+        setErrorMessage(message);
         showToast({
           type: 'error',
           text1: 'Не вдалося авторизуватись',
-          text2: err.message,
+          text2: message,
         });
       });
 
