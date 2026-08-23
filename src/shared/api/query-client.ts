@@ -1,9 +1,18 @@
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 
+import { getNetworkErrorMessage } from '@/shared/lib/get-network-error-message';
 import { showToast } from '@/shared/ui/toast';
 
 function formatErrorMessage(error: unknown): { title: string; message: string } {
+  const networkErrorMessage = getNetworkErrorMessage(error);
+  if (networkErrorMessage) {
+    return {
+      title: 'Помилка',
+      message: networkErrorMessage,
+    };
+  }
+
   if (error instanceof z.ZodError) {
     const issues = error.issues
       .map((issue) => `${issue.path.join('.') || 'root'}: ${issue.message}`)
