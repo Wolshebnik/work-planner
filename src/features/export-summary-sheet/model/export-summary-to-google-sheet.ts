@@ -4,7 +4,9 @@ import { getCashierHours } from '@/entities/cashier-hours';
 import { findEmployeeRowIndex, getEmployees } from '@/entities/employee';
 import {
   batchUpdateSpreadsheetValues,
+  fetchSpreadsheetSheetTitles,
   fetchSpreadsheetValues,
+  findSpreadsheetSheetTitle,
 } from '@/entities/google-sheets';
 
 
@@ -40,26 +42,24 @@ export async function exportSummaryToGoogleSheet({
     ' ' +
     date.format('YYYY');
 
-  let sheetRows: (string | number)[][] = [];
-  let targetSheetName = monthName;
+  const sheetTitles = await fetchSpreadsheetSheetTitles({
+    accessToken,
+    spreadsheetId,
+  });
+  const sheetTitle = findSpreadsheetSheetTitle(sheetTitles, monthLabel);
 
-  try {
-    sheetRows = await fetchSpreadsheetValues({
-      accessToken,
-      range: `'${monthName}'!A1:AZ100`,
-      spreadsheetId,
-    });
-  } catch {
-    sheetRows = await fetchSpreadsheetValues({
-      accessToken,
-      range: `'${monthLabel}'!A1:AZ100`,
-      spreadsheetId,
-    });
-    targetSheetName = monthLabel;
+  if (!sheetTitle) {
+    throw new Error(`Вкладку "${monthLabel}" не знайдено в таблиці`);
   }
 
+  const sheetRows = await fetchSpreadsheetValues({
+    accessToken,
+    range: `'${sheetTitle}'!A1:AZ100`,
+    spreadsheetId,
+  });
+
   if (sheetRows.length === 0) {
-    throw new Error(`Вкладка "${targetSheetName}" порожня`);
+    throw new Error(`Вкладка "${sheetTitle}" порожня`);
   }
 
   const [employees, cashierEntries] = await Promise.all([
@@ -110,7 +110,7 @@ export async function exportSummaryToGoogleSheet({
 
     const cashHours = cashierMap.get(employee.id) ?? 0;
     const colLetter = getColumnLetter(cashColIndex);
-    const cellAddress = `'${targetSheetName}'!${colLetter}${targetRowIndex + 1}`;
+    const cellAddress = `'${sheetTitle}'!${colLetter}${targetRowIndex + 1}`;
 
     updates.push({
       range: cellAddress,

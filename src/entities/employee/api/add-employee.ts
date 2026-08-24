@@ -1,12 +1,14 @@
 import { supabase } from '@/shared/api/supabase';
 
+import { employeeSchema, type Employee } from '../model/schema';
+
 export type AddEmployeeInput = {
   lastName: string;
   firstName: string;
   patronymic?: string | null;
 };
 
-export async function addEmployee(input: AddEmployeeInput) {
+export async function addEmployee(input: AddEmployeeInput): Promise<Employee> {
   const { data: lastEmployee, error: orderError } = await supabase
     .from('employees')
     .select('sort_order')
@@ -38,4 +40,6 @@ export async function addEmployee(input: AddEmployeeInput) {
   if (!data || data.length === 0) {
     throw new Error('Не вдалося додати працівника: операцію відхилено базою даних (RLS).');
   }
+
+  return employeeSchema.parse(data[0]);
 }

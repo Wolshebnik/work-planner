@@ -10,7 +10,7 @@ import { exportScheduleToGoogleSheet } from './export-schedule-to-google-sheet';
 
 interface ExportParams {
   endDate: dayjs.Dayjs;
-  monthName: string;
+  monthLabel: string;
   startDate: dayjs.Dayjs;
 }
 
@@ -20,7 +20,7 @@ export function useExportSchedule(onSuccess?: () => void) {
   const { ensureSheetsScopeAndGetToken } = useGoogleAuth();
 
   const handleExport = useCallback(
-    async ({ endDate, monthName, startDate }: ExportParams) => {
+    async ({ endDate, monthLabel, startDate }: ExportParams) => {
       if (isLoading) return;
 
       const activeSheet = sheets[0];
@@ -49,7 +49,7 @@ export function useExportSchedule(onSuccess?: () => void) {
         await exportScheduleToGoogleSheet({
           accessToken,
           endDate,
-          monthName,
+          monthLabel,
           spreadsheetId,
           startDate,
         });

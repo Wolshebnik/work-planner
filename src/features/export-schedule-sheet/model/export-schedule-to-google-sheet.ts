@@ -3,7 +3,9 @@ import type dayjs from 'dayjs';
 import { getEmployees } from '@/entities/employee';
 import {
   batchUpdateSpreadsheetValues,
+  fetchSpreadsheetSheetTitles,
   fetchSpreadsheetValues,
+  findSpreadsheetSheetTitle,
 } from '@/entities/google-sheets';
 import { getScheduleByMonth } from '@/entities/schedule';
 
@@ -20,7 +22,7 @@ function getColumnLetter(colIndex: number): string {
 export interface ExportScheduleParams {
   accessToken: string;
   endDate: dayjs.Dayjs;
-  monthName: string;
+  monthLabel: string;
   spreadsheetId: string;
   startDate: dayjs.Dayjs;
 }
@@ -28,14 +30,24 @@ export interface ExportScheduleParams {
 export async function exportScheduleToGoogleSheet({
   accessToken,
   endDate,
-  monthName,
+  monthLabel,
   spreadsheetId,
   startDate,
 }: ExportScheduleParams): Promise<void> {
+  const sheetTitles = await fetchSpreadsheetSheetTitles({
+    accessToken,
+    spreadsheetId,
+  });
+  const sheetTitle = findSpreadsheetSheetTitle(sheetTitles, monthLabel);
+
+  if (!sheetTitle) {
+    throw new Error(`Вкладку "${monthLabel}" не знайдено в таблиці`);
+  }
+
   const [sheetRows, employees, scheduleEntries] = await Promise.all([
     fetchSpreadsheetValues({
       accessToken,
-      range: `'${monthName}'!A1:AZ100`,
+      range: `'${sheetTitle}'!A1:AZ100`,
       spreadsheetId,
     }),
     getEmployees(),
@@ -43,7 +55,7 @@ export async function exportScheduleToGoogleSheet({
   ]);
 
   if (sheetRows.length === 0) {
-    throw new Error(`Вкладка "${monthName}" порожня`);
+    throw new Error(`Вкладка "${sheetTitle}" порожня`);
   }
 
   const dateColMap = new Map<string, number>();
@@ -148,7 +160,7 @@ export async function exportScheduleToGoogleSheet({
         );
         const mark = entry?.status?.excel_mark ?? '';
         const colLetter = getColumnLetter(colIndex);
-        const cellAddress = `'${monthName}'!${colLetter}${targetRowIndex + 1}`;
+        const cellAddress = `'${sheetTitle}'!${colLetter}${targetRowIndex + 1}`;
 
         updates.push({
           range: cellAddress,

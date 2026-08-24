@@ -10,3 +10,4 @@ node_modules
 /android
 /builds
 /scripts
+/graphify-out/

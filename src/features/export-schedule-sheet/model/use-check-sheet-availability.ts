@@ -5,7 +5,9 @@ import { getEmployees, matchEmployeesWithSheet } from '@/entities/employee';
 import { useGoogleAuth } from '@/entities/google-auth';
 import {
   extractSpreadsheetId,
+  fetchSpreadsheetSheetTitles,
   fetchSpreadsheetValues,
+  findSpreadsheetSheetTitle,
   useGoogleSheets,
 } from '@/entities/google-sheets';
 import { getScheduleByMonth } from '@/entities/schedule';
@@ -15,7 +17,6 @@ import { type CheckPeriodParams } from './types';
 export function useCheckSheetAvailability({
   endDate,
   monthLabel,
-  monthName,
   startDate,
 }: CheckPeriodParams) {
   const { data: sheets = [], isLoading: isLoadingSheets } = useGoogleSheets();
@@ -26,8 +27,6 @@ export function useCheckSheetAvailability({
     ? extractSpreadsheetId(activeSheet.url)
     : null;
 
-  const range = `'${monthName}'!A1:AZ100`;
-
   const {
     data: queryResult,
     error: queryError,
@@ -37,7 +36,7 @@ export function useCheckSheetAvailability({
     queryKey: [
       'spreadsheet-period-check',
       spreadsheetId,
-      monthName,
+      monthLabel,
       startDate.format('YYYY-MM-DD'),
       endDate.format('YYYY-MM-DD'),
     ],
@@ -45,26 +44,20 @@ export function useCheckSheetAvailability({
       if (!spreadsheetId) return null;
       const accessToken = await ensureSheetsScopeAndGetToken();
 
-      let rows: (string | number)[][] = [];
-      try {
-        rows = await fetchSpreadsheetValues({
-          accessToken,
-          range,
-          spreadsheetId,
-        });
-      } catch (err) {
-        try {
-          rows = await fetchSpreadsheetValues({
-            accessToken,
-            range: `'${monthLabel}'!A1:AZ100`,
-            spreadsheetId,
-          });
-        } catch {
-          throw err;
-        }
-      }
+      const sheetTitles = await fetchSpreadsheetSheetTitles({
+        accessToken,
+        spreadsheetId,
+      });
+      const sheetTitle = findSpreadsheetSheetTitle(sheetTitles, monthLabel);
 
-      const [employees, scheduleEntries] = await Promise.all([
+      if (!sheetTitle) return null;
+
+      const [rows, employees, scheduleEntries] = await Promise.all([
+        fetchSpreadsheetValues({
+          accessToken,
+          range: `'${sheetTitle}'!A1:AZ100`,
+          spreadsheetId,
+        }),
         getEmployees(),
         getScheduleByMonth(startDate),
       ]);
