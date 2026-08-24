@@ -92,6 +92,19 @@ export async function fetchSpreadsheetSheetTitles({
   );
 }
 
+export function findSpreadsheetSheetTitle(
+  sheetTitles: string[],
+  expectedTitle: string,
+): string | null {
+  const normalizedExpectedTitle = expectedTitle.trim().toLowerCase();
+
+  return (
+    sheetTitles.find(
+      (title) => title.trim().toLowerCase() === normalizedExpectedTitle,
+    ) ?? null
+  );
+}
+
 export async function batchUpdateSpreadsheetValues({
   accessToken,
   data,

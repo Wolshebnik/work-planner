@@ -10,6 +10,7 @@ export {
 export {
   batchUpdateSpreadsheetValues,
   extractSpreadsheetId,
+  findSpreadsheetSheetTitle,
   fetchSpreadsheetSheetTitles,
   fetchSpreadsheetValues,
 } from './api/google-sheets-api';

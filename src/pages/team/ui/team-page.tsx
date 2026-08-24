@@ -116,6 +116,7 @@ export function TeamPage() {
         ) : (
           <View className='flex-1'>
             <SortableList
+              key={activeEmployees.map((employee) => employee.id).sort().join(':')}
               data={activeEmployees}
               itemHeight={78}
               useFlatList={false}

@@ -20,7 +20,7 @@ export interface ExportScheduleConfirmationProps {
   onCancel: () => void;
   onConfirm: (params: {
     endDate: dayjs.Dayjs;
-    monthName: string;
+    monthLabel: string;
     startDate: dayjs.Dayjs;
   }) => void;
   sourceLabel?: string;
@@ -47,7 +47,6 @@ export function ExportScheduleConfirmation({
   } = useCheckSheetAvailability({
     endDate: currentOption.endDate,
     monthLabel: currentOption.monthLabel,
-    monthName: currentOption.monthName,
     startDate: currentOption.startDate,
   });
 
@@ -156,7 +155,7 @@ export function ExportScheduleConfirmation({
           onPress={() =>
             onConfirm({
               endDate: currentOption.endDate,
-              monthName: currentOption.monthName,
+              monthLabel: currentOption.monthLabel,
               startDate: currentOption.startDate,
             })
           }

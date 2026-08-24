@@ -6,7 +6,9 @@ import { getEmployees, matchEmployeesWithSheet } from '@/entities/employee';
 import { useGoogleAuth } from '@/entities/google-auth';
 import {
   extractSpreadsheetId,
+  fetchSpreadsheetSheetTitles,
   fetchSpreadsheetValues,
+  findSpreadsheetSheetTitle,
   useGoogleSheets,
 } from '@/entities/google-sheets';
 
@@ -38,8 +40,6 @@ export function useCheckSummarySheet({
     ' ' +
     date.format('YYYY');
 
-  const range = `'${monthName}'!A1:AZ100`;
-
   const {
     data: queryResult,
     error: queryError,
@@ -49,33 +49,27 @@ export function useCheckSummarySheet({
     queryKey: [
       'spreadsheet-summary-check',
       spreadsheetId,
-      monthName,
+      monthLabel,
       columnTitle,
     ],
     queryFn: async () => {
       if (!spreadsheetId) return null;
       const accessToken = await ensureSheetsScopeAndGetToken();
 
-      let rows: (string | number)[][] = [];
-      try {
-        rows = await fetchSpreadsheetValues({
-          spreadsheetId,
-          range,
-          accessToken,
-        });
-      } catch (err) {
-        try {
-          rows = await fetchSpreadsheetValues({
-            spreadsheetId,
-            range: `'${monthLabel}'!A1:AZ100`,
-            accessToken,
-          });
-        } catch {
-          throw err;
-        }
-      }
+      const sheetTitles = await fetchSpreadsheetSheetTitles({
+        accessToken,
+        spreadsheetId,
+      });
+      const sheetTitle = findSpreadsheetSheetTitle(sheetTitles, monthLabel);
 
-      const [employees, cashierEntries] = await Promise.all([
+      if (!sheetTitle) return null;
+
+      const [rows, employees, cashierEntries] = await Promise.all([
+        fetchSpreadsheetValues({
+          spreadsheetId,
+          range: `'${sheetTitle}'!A1:AZ100`,
+          accessToken,
+        }),
         getEmployees(),
         getCashierHours(year, month),
       ]);
