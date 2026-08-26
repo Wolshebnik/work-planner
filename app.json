@@ -5,7 +5,8 @@
     "scheme": "workplanner",
     "version": "1.0.0",
     "userInterfaceStyle": "light",
-    "icon": "./src/assets/png/icon-app.png",
+    "platforms": ["android"],
+
     "plugins": [
       "expo-router",
       [
@@ -17,12 +18,13 @@
         }
       ]
     ],
+
     "android": {
       "package": "com.workplanner.app",
-      "icon": "./src/assets/png/icon-app.png"
-    },
-    "web": {
-      "bundler": "metro"
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/png/icon-app.png",
+        "backgroundColor": "#0A2F46"
+      }
     }
   }
 }
