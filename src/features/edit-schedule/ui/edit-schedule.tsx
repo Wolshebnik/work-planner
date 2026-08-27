@@ -71,21 +71,25 @@ export function EditSchedule({
 
       <View className='flex-row items-center gap-2'>
         <ButtonLoader
+          key={isFillingDay ? 'outline' : 'solid'}
           variant='primary'
           appearance={isFillingDay ? 'outline' : 'solid'}
-          className='h-11 min-w-0 flex-1 flex-row gap-1 px-2'
+          className='h-11 min-w-0 flex-1 flex-row gap-2 px-2'
           onPress={onFillDayForAll}
         >
           <Team
             className={cn(
               'h-5 w-5',
-              isFillingDay ? 'text-button' : 'text-white',
+              'text-white',
+              isFillingDay && 'text-button',
             )}
           />
           <Text
+            numberOfLines={1}
             className={cn(
-              'flex-shrink text-center text-[12px] font-bold leading-4',
-              isFillingDay ? 'text-button' : 'text-white',
+              'text-center text-[12px] font-bold leading-4',
+              'text-white',
+              isFillingDay && 'text-button',
             )}
           >
             {isFillingDay ? 'Оберіть статус усім' : 'Статус усім'}
