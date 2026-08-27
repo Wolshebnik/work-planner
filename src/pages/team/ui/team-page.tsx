@@ -66,7 +66,7 @@ export function TeamPage() {
           onDrop={handleDrop}
           {...rest}
         >
-          <ResponsiveContainer className='pb-3 px-4'>
+          <ResponsiveContainer className='pb-1 px-4'>
             <EmployeeCard
               employee={cardData}
               onPress={() => setSelectedEmployee(cardData)}
@@ -118,7 +118,7 @@ export function TeamPage() {
             <SortableList
               key={activeEmployees.map((employee) => employee.id).sort().join(':')}
               data={activeEmployees}
-              itemHeight={78}
+              itemHeight={70}
               useFlatList={false}
               renderItem={renderItem}
               scrollEnabled={false}

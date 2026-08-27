@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 
-import { Lock } from '@/assets/svg';
+import { Lock, Team } from '@/assets/svg';
+import { cn } from '@/shared/lib/cn';
 import {
   type ScheduleStatus,
   useGetScheduleStatuses,
@@ -12,16 +13,20 @@ import { Text } from '@/shared/ui/text';
 
 interface EditScheduleProps {
   isClearing?: boolean;
+  isFillingDay?: boolean;
   loadingStatusId?: string | null;
   onClear?: () => void;
+  onFillDayForAll?: () => void;
   onSelectStatus?: (status: ScheduleStatus) => void;
 }
 
 export function EditSchedule({
   onSelectStatus,
   loadingStatusId,
+  isFillingDay = false,
   isClearing = false,
   onClear,
+  onFillDayForAll,
 }: EditScheduleProps) {
   const { data: statuses = [], isLoading, error } = useGetScheduleStatuses();
 
@@ -64,15 +69,39 @@ export function EditSchedule({
         ))}
       </View>
 
-      <ButtonLoader
-        variant='primary'
-        appearance='outline'
-        className='w-full py-2.5 mt-3'
-        loading={isClearing}
-        onPress={onClear}
-      >
-        Очистити поле
-      </ButtonLoader>
+      <View className='flex-row items-center gap-2'>
+        <ButtonLoader
+          variant='primary'
+          appearance={isFillingDay ? 'outline' : 'solid'}
+          className='h-11 min-w-0 flex-1 flex-row gap-1 px-2'
+          onPress={onFillDayForAll}
+        >
+          <Team
+            className={cn(
+              'h-5 w-5',
+              isFillingDay ? 'text-button' : 'text-white',
+            )}
+          />
+          <Text
+            className={cn(
+              'flex-shrink text-center text-[12px] font-bold leading-4',
+              isFillingDay ? 'text-button' : 'text-white',
+            )}
+          >
+            {isFillingDay ? 'Оберіть статус усім' : 'Статус усім'}
+          </Text>
+        </ButtonLoader>
+
+        <ButtonLoader
+          variant='primary'
+          appearance='outline'
+          className='h-11 min-w-0 flex-1 px-2'
+          loading={isClearing}
+          onPress={onClear}
+        >
+          Очистити поле
+        </ButtonLoader>
+      </View>
     </View>
   );
 }

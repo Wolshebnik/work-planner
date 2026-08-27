@@ -9,7 +9,9 @@ export function ScheduleWeekEditSheet() {
     bottomSheetTitle,
     handleClose,
     handleClearCell,
+    handleFillDayForAll,
     handleStatusSelect,
+    isFillingDay,
   } = useScheduleSlotContext();
 
   return (
@@ -19,7 +21,9 @@ export function ScheduleWeekEditSheet() {
       onClose={handleClose}
     >
       <EditSchedule
+        isFillingDay={isFillingDay}
         onClear={handleClearCell}
+        onFillDayForAll={handleFillDayForAll}
         onSelectStatus={handleStatusSelect}
       />
     </BottomSheet>

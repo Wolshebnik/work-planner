@@ -32,6 +32,7 @@ export function useScheduleSlot() {
     dayIndex: number;
     employeeIndex: number;
   } | null>(null);
+  const [isFillingDay, setIsFillingDay] = useState(false);
 
   const [isExportOpen, setIsExportOpen] = useState(false);
 
@@ -65,6 +66,7 @@ export function useScheduleSlot() {
       const clickedDate = startOfWeek.add(dayIndex, 'day');
       setSelectedDate(clickedDate);
       setEditingCell({ employeeIndex, dayIndex });
+      setIsFillingDay(false);
       setIsBottomSheetOpen(true);
     },
     [startOfWeek],
@@ -73,6 +75,7 @@ export function useScheduleSlot() {
   const handleClose = useCallback(() => {
     setIsBottomSheetOpen(false);
     setEditingCell(null);
+    setIsFillingDay(false);
   }, []);
 
   const activeEmployees = useMemo(
@@ -132,13 +135,27 @@ export function useScheduleSlot() {
 
   const handleStatusSelect = (status: ScheduleStatus) => {
     if (!editingCell) return;
-    const employee = activeEmployees[editingCell.employeeIndex];
-    if (!employee) return;
     const day = startOfWeek.add(editingCell.dayIndex, 'day');
     const dateStr = day.format('YYYY-MM-DD');
 
     setIsBottomSheetOpen(false);
     setEditingCell(null);
+    setIsFillingDay(false);
+
+    if (isFillingDay) {
+      activeEmployees.forEach((employee) => {
+        setScheduleEntryMutation.mutate({
+          employeeId: employee.id,
+          workDate: dateStr,
+          statusId: status.id,
+          status,
+        });
+      });
+      return;
+    }
+
+    const employee = activeEmployees[editingCell.employeeIndex];
+    if (!employee) return;
 
     setScheduleEntryMutation.mutate({
       employeeId: employee.id,
@@ -150,18 +167,34 @@ export function useScheduleSlot() {
 
   const handleClearCell = () => {
     if (!editingCell) return;
-    const employee = activeEmployees[editingCell.employeeIndex];
-    if (!employee) return;
     const day = startOfWeek.add(editingCell.dayIndex, 'day');
     const dateStr = day.format('YYYY-MM-DD');
 
     setIsBottomSheetOpen(false);
     setEditingCell(null);
+    setIsFillingDay(false);
+
+    if (isFillingDay) {
+      activeEmployees.forEach((employee) => {
+        clearScheduleEntryMutation.mutate({
+          employeeId: employee.id,
+          workDate: dateStr,
+        });
+      });
+      return;
+    }
+
+    const employee = activeEmployees[editingCell.employeeIndex];
+    if (!employee) return;
 
     clearScheduleEntryMutation.mutate({
       employeeId: employee.id,
       workDate: dateStr,
     });
+  };
+
+  const handleFillDayForAll = () => {
+    if (editingCell) setIsFillingDay(true);
   };
 
   const bottomSheetTitle = (() => {
@@ -180,6 +213,7 @@ export function useScheduleSlot() {
     currentDate,
     setCurrentDate,
     isBottomSheetOpen,
+    isFillingDay,
     isExportOpen,
     selectedCell: editingCell,
     selectedDate,
@@ -199,6 +233,7 @@ export function useScheduleSlot() {
     handleCellPress,
     handleClose,
     handleStatusSelect,
+    handleFillDayForAll,
     handleClearCell,
   };
 }

@@ -58,7 +58,7 @@ export const ScheduleStatusesList = ({
           onDrop={handleDrop}
           {...rest}
         >
-          <ResponsiveContainer className='pb-3 px-4'>
+          <ResponsiveContainer className='pb-0 px-4'>
             <ScheduleStatusItem
               title={item.name}
               description={item.description ?? ''}
@@ -105,7 +105,7 @@ export const ScheduleStatusesList = ({
     <View className='flex-1'>
       <SortableList
         data={activeStatuses}
-        itemHeight={78}
+        itemHeight={66}
         useFlatList={false}
         renderItem={renderItem}
         scrollEnabled={scrollEnabled}
