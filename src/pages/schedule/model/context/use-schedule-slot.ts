@@ -194,7 +194,7 @@ export function useScheduleSlot() {
   };
 
   const handleFillDayForAll = () => {
-    if (editingCell) setIsFillingDay(true);
+    if (editingCell) setIsFillingDay((isActive) => !isActive);
   };
 
   const bottomSheetTitle = (() => {
