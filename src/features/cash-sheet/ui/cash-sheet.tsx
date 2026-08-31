@@ -7,6 +7,7 @@ import { type CashFormValues } from '../model/schema';
 import { CashForm } from './cash-form';
 
 interface CashSheetProps {
+  allowZero?: boolean;
   employeeName?: string;
   initialAmount?: string | number;
   isOpen: boolean;
@@ -15,6 +16,7 @@ interface CashSheetProps {
 }
 
 export function CashSheet({
+  allowZero = false,
   isOpen,
   onClose,
   employeeName,
@@ -28,7 +30,7 @@ export function CashSheet({
 
   return (
     <BottomSheet title='Введення каси' isOpen={isOpen} onClose={onClose}>
-      <View className='mb-4'>
+      <View className='mb-2'>
         <Text className='text-[14px] leading-5 text-grey mb-5'>
           Вкажіть суму каси працівника для збереження
         </Text>
@@ -40,6 +42,7 @@ export function CashSheet({
       </View>
 
       <CashForm
+        allowZero={allowZero}
         initialValues={{
           amount: initialAmount !== undefined ? String(initialAmount) : '',
         }}

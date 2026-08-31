@@ -85,6 +85,8 @@ export function useScheduleSummaryData({
         weeklyHours: summary.weeklyHours.map((hours) =>
           formatMonthTotal(hours),
         ),
+        weeklyWorkDays: summary.weeklyWorkDays,
+        weekLabels: summary.weekLabels,
         monthlyHours: summary.monthlyHours,
         monthTotal: formatMonthTotal(summary.monthlyHours),
         cashTotal,
@@ -110,6 +112,11 @@ export function useScheduleSummaryData({
     setIsCashSheetOpen(false);
     setSelectedEmployee(undefined);
   }, []);
+
+  const canResetCash = Boolean(
+    selectedEmployee &&
+      (cashierHoursMap.get(selectedEmployee.id)?.cashier_hours ?? 0) > 0,
+  );
 
   const handleSaveCash = useCallback(
     async (data: { amount: string }) => {
@@ -143,6 +150,7 @@ export function useScheduleSummaryData({
     handleCashPress,
     handleCloseCashSheet,
     handleSaveCash,
+    canResetCash,
     isCashSheetOpen,
     isLoading,
     monthLabel,

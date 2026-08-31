@@ -1,5 +1,5 @@
-/* eslint-disable react-hooks/immutability, react-hooks/set-state-in-effect */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+/* eslint-disable react-hooks/immutability, react-hooks/refs, react-hooks/set-state-in-effect */
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
@@ -44,6 +44,7 @@ export function useScheduleWeekPager({
     currentSlotIndex: 0,
     logicalPageIndex: 0,
   });
+  const urgentStateRef = useRef(urgentState);
 
   const [slotMapping, setSlotMapping] = useState<
     Record<
@@ -89,6 +90,11 @@ export function useScheduleWeekPager({
         currentSlotIndex: 0,
         logicalPageIndex: 0,
       });
+      urgentStateRef.current = {
+        currentDate,
+        currentSlotIndex: 0,
+        logicalPageIndex: 0,
+      };
       setSlotMapping({
         0: { date: currentDate, logicalPage: 0, isReady: true },
         1: { date: currentDate.add(1, 'week'), logicalPage: 1, isReady: true },
@@ -115,23 +121,26 @@ export function useScheduleWeekPager({
 
   const commitNavigation = useCallback(
     (direction: -1 | 1) => {
-      const nextDate = urgentState.currentDate.add(direction, 'week');
+      const currentState = urgentStateRef.current;
+      const nextDate = currentState.currentDate.add(direction, 'week');
       setSyncedPropDate(nextDate);
 
-      const nextSlotIndex = ((urgentState.currentSlotIndex + direction + 3) %
+      const nextSlotIndex = ((currentState.currentSlotIndex + direction + 3) %
         3) as CurrentSlotIndex;
-      const nextLogicalPage = urgentState.logicalPageIndex + direction;
+      const nextLogicalPage = currentState.logicalPageIndex + direction;
 
       const farSlotIndex = ((nextSlotIndex + direction + 3) %
         3) as CurrentSlotIndex;
       const farLogicalPage = nextLogicalPage + direction;
       const farDate = nextDate.add(direction, 'week');
 
-      setUrgentState({
+      const nextState = {
         currentDate: nextDate,
         currentSlotIndex: nextSlotIndex,
         logicalPageIndex: nextLogicalPage,
-      });
+      };
+      urgentStateRef.current = nextState;
+      setUrgentState(nextState);
       setSlotMapping((prev) => ({
         ...prev,
         [farSlotIndex]: {
@@ -142,7 +151,7 @@ export function useScheduleWeekPager({
       }));
       onDateChange?.(nextDate);
     },
-    [onDateChange, urgentState, setSyncedPropDate],
+    [onDateChange, setSyncedPropDate],
   );
 
   const navigate = useCallback(

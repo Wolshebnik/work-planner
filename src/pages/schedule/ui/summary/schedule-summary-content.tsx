@@ -31,6 +31,7 @@ export const ScheduleSummaryContent = memo(function ScheduleSummaryContent({
     handleCashPress,
     handleCloseCashSheet,
     handleSaveCash,
+    canResetCash,
   } = useScheduleSummaryData({ activeEmployees, colorMap, date });
 
   if (isLoading) {
@@ -50,6 +51,7 @@ export const ScheduleSummaryContent = memo(function ScheduleSummaryContent({
         className='px-4'
       />
       <CashSheet
+        allowZero={canResetCash}
         isOpen={isCashSheetOpen}
         onClose={handleCloseCashSheet}
         employeeName={selectedEmployee?.name}

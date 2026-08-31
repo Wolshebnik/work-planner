@@ -31,7 +31,8 @@ export function SummaryList({
           initials={employee.initials}
           name={employee.name}
           avatarColor={employee.avatarColor}
-          values={employee.weeklyHours}
+          values={employee.weeklyWorkDays}
+          weekLabels={employee.weekLabels}
           cashTotal={employee.cashTotal ?? 0}
           monthTotal={employee.monthTotal ?? employee.monthlyHours}
           onCashPress={() => onCashPress?.(employee)}

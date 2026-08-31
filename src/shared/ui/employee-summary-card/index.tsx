@@ -13,6 +13,7 @@ interface EmployeeSummaryCardProps {
   monthTotal: string | number;
   name: string;
   onCashPress?: () => void;
+  weekLabels: readonly string[];
   values: readonly (string | number)[];
 }
 
@@ -24,6 +25,7 @@ export function EmployeeSummaryCard({
   monthTotal,
   cashTotal = 0,
   onCashPress,
+  weekLabels,
   className,
 }: EmployeeSummaryCardProps) {
   return (
@@ -42,21 +44,14 @@ export function EmployeeSummaryCard({
 
         <View className='flex-row gap-1'>
           {values.map((value, index) => (
-            <View
-              key={`${value}-${index}`}
-              className='h-6 min-w-7.5 px-1 items-center justify-center rounded-6 bg-neutral'
-            >
-              <Text
-                className={cn(
-                  'font-medium text-primary text-center',
-                  String(value).length > 3
-                    ? 'text-[9px] leading-[13px]'
-                    : 'text-[11px] leading-[16px]',
-                )}
-                numberOfLines={1}
-                adjustsFontSizeToFit
-              >
-                {value}
+            <View key={`${value}-${index}`} className='items-center'>
+              <View className='h-6 min-w-7.5 px-1 items-center justify-center rounded-6 bg-neutral'>
+                <Text className='font-medium text-[11px] leading-[16px] text-primary text-center'>
+                  {value}
+                </Text>
+              </View>
+              <Text className='text-[8px] leading-[11px] text-grey' numberOfLines={1}>
+                {weekLabels[index]}
               </Text>
             </View>
           ))}
