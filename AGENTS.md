@@ -42,6 +42,9 @@ The repository is the source of truth for project style. Inspect similar code be
 
 Do not replace established conventions with personal preferences unless explicitly asked.
 
+Keep code blocks readable: leave a blank line before `return`, visually separate
+`if` blocks with blank lines above and below, and leave blank lines between functions.
+
 ## 6. Plan multi-step work
 
 For non-trivial work, make a short, verifiable plan:

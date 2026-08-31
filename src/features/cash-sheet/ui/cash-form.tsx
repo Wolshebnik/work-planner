@@ -7,22 +7,33 @@ import { ButtonLoader } from '@/shared/ui/button-loader';
 import { InputBase } from '@/shared/ui/input-base';
 import { showToast } from '@/shared/ui/toast';
 
-import { type CashFormValues, cashFormSchema } from '../model/schema';
+import {
+  type CashFormValues,
+  cashFormResetSchema,
+  cashFormSchema,
+} from '../model/schema';
 
 interface CashFormProps {
+  allowZero?: boolean;
   initialValues?: CashFormValues;
   onCancel: () => void;
   onSave: (data: CashFormValues) => void | Promise<void>;
 }
 
-export function CashForm({ initialValues, onCancel, onSave }: CashFormProps) {
+export function CashForm({
+  allowZero = false,
+  initialValues,
+  onCancel,
+  onSave,
+}: CashFormProps) {
   const {
     control,
+    getValues,
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
   } = useForm<CashFormValues>({
-    resolver: zodResolver(cashFormSchema),
+    resolver: zodResolver(allowZero ? cashFormResetSchema : cashFormSchema),
     values: initialValues ?? { amount: '' },
   });
 
@@ -43,6 +54,18 @@ export function CashForm({ initialValues, onCancel, onSave }: CashFormProps) {
         type: 'error',
       });
     }
+  };
+
+  const handlePress = () => {
+    const amount = getValues('amount').trim().replace(',', '.');
+    if (!allowZero && amount !== '' && Number(amount) === 0) {
+      setError('amount', {
+        type: 'manual',
+        message: 'Введіть суму більше 0',
+      });
+      return;
+    }
+    void handleSubmit(onSubmit)();
   };
 
   return (
@@ -81,7 +104,7 @@ export function CashForm({ initialValues, onCancel, onSave }: CashFormProps) {
           className='w-35'
           loaderColor='#fff'
           loading={isSubmitting}
-          onPress={handleSubmit(onSubmit)}
+          onPress={handlePress}
         >
           Відправити
         </ButtonLoader>
