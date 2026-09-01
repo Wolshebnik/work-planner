@@ -78,6 +78,7 @@ export function CashForm({
             bottomSheet
             label='Сума каси за місяць'
             placeholder='0'
+            placeholderTextColor='#94A3B8'
             labelColor='#ffffff'
             required
             value={value}
@@ -92,6 +93,7 @@ export function CashForm({
         <ButtonBase
           variant='primary'
           appearance='outline'
+          className='px-6'
           disabled={isSubmitting}
           onPress={onCancel}
         >
@@ -101,7 +103,7 @@ export function CashForm({
         <ButtonLoader
           variant='primary'
           appearance='solid'
-          className='w-35'
+          className='px-6'
           loaderColor='#fff'
           loading={isSubmitting}
           onPress={handlePress}
