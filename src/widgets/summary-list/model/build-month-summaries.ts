@@ -39,7 +39,10 @@ export function buildMonthSummaries(
     const visibleStart = start.isBefore(monthStart) ? monthStart : start;
     const visibleEnd = end.isAfter(monthEnd) ? monthEnd : end;
 
-    return `${visibleStart.format('D')}–${visibleEnd.format('D')}`;
+    const startLabel = visibleStart.format('D');
+    const endLabel = visibleEnd.format('D');
+
+    return startLabel === endLabel ? startLabel : `${startLabel}–${endLabel}`;
   });
 
   return employees.map((employee) => {

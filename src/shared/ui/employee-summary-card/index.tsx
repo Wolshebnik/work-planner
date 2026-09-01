@@ -1,9 +1,13 @@
-import { Pressable, View } from 'react-native';
+import { useState } from 'react';
+
+import { Pressable, View, type LayoutChangeEvent } from 'react-native';
 
 import type { AvatarColor } from '@/shared/config/avatar-color';
 import { cn } from '@/shared/lib/cn';
 import { Avatar } from '@/shared/ui/avatar';
 import { Text } from '@/shared/ui/text';
+
+import { getWeeklyChipMetrics } from './get-weekly-chip-metrics';
 
 interface EmployeeSummaryCardProps {
   avatarColor?: AvatarColor;
@@ -28,40 +32,76 @@ export function EmployeeSummaryCard({
   weekLabels,
   className,
 }: EmployeeSummaryCardProps) {
+  const [weeklyRowWidth, setWeeklyRowWidth] = useState(0);
+  const weeklyChipMetrics = getWeeklyChipMetrics(values.length, weeklyRowWidth);
+
+  const handleWeeklyRowLayout = ({
+    nativeEvent: { layout },
+  }: LayoutChangeEvent) => {
+    setWeeklyRowWidth((previousWidth) =>
+      previousWidth === layout.width ? previousWidth : layout.width,
+    );
+  };
+
   return (
     <View
       className={cn(
-        'h-18.75 flex-row justify-between items-center rounded-12 border border-border bg-white px-3 shadow-card',
+        'h-34 flex-row justify-between items-center rounded-12 border border-border bg-white px-3 shadow-card',
         className,
       )}
     >
       <Avatar initials={initials} color={avatarColor} />
 
-      <View className='gap-1 flex-1 min-w-0 px-2.5'>
-        <Text className='font-bold text-[14px] leading-[20px]' numberOfLines={1}>
+      <View className='gap-1 flex-1 min-w-0 px-1.5'>
+        <Text className='font-bold text-[20px] leading-[26px]' numberOfLines={1}>
           {name}
         </Text>
 
-        <View className='flex-row gap-1'>
+        <View
+          className={cn(
+            'flex-row',
+            weeklyChipMetrics.isCompact ? 'gap-0.5' : 'gap-0.75',
+          )}
+          onLayout={handleWeeklyRowLayout}
+        >
           {values.map((value, index) => (
-            <View key={`${value}-${index}`} className='items-center'>
-              <View className='h-6 min-w-7.5 px-1 items-center justify-center rounded-6 bg-neutral'>
-                <Text className='font-medium text-[11px] leading-[16px] text-primary text-center'>
+            <View key={`${value}-${index}`} className='flex-1 min-w-0 items-center'>
+              <View
+                className='w-full items-center justify-center rounded-6 bg-neutral'
+                style={{
+                  height: weeklyChipMetrics.chipHeight,
+                  paddingHorizontal: weeklyChipMetrics.chipPadding,
+                }}
+              >
+                <Text
+                  className='font-medium text-primary text-center'
+                  style={{
+                    fontSize: weeklyChipMetrics.valueFontSize,
+                    lineHeight: weeklyChipMetrics.valueLineHeight,
+                  }}
+                >
                   {value}
                 </Text>
+                <Text
+                  className='text-primary text-center'
+                  style={{
+                    fontSize: weeklyChipMetrics.labelFontSize,
+                    lineHeight: weeklyChipMetrics.labelLineHeight,
+                  }}
+                  numberOfLines={1}
+                >
+                  {weekLabels[index]}
+                </Text>
               </View>
-              <Text className='text-[8px] leading-[11px] text-grey' numberOfLines={1}>
-                {weekLabels[index]}
-              </Text>
             </View>
           ))}
         </View>
       </View>
 
-      <View className='my-3 flex-row shrink-0 items-center overflow-hidden rounded-12'>
+      <View className='my-3 flex-col shrink-0 items-center overflow-hidden rounded-12'>
         <Pressable
           onPress={onCashPress}
-          className='h-12.25 min-w-14 px-1.5 items-center justify-center rounded-l-12 rounded-r-none bg-[#FEF3D6] active:opacity-80'
+          className='h-12.25 min-w-17 px-1.5 items-center justify-center rounded-t-12 rounded-b-none bg-[#FEF3D6] active:opacity-80'
         >
           <Text className='font-bold text-[9px] leading-[13.5px] text-[#8A5E00]'>
             КАСА
@@ -80,7 +120,7 @@ export function EmployeeSummaryCard({
           </Text>
         </Pressable>
 
-        <View className='h-12.25 min-w-14 px-1.5 items-center justify-center rounded-r-12 rounded-l-none bg-blue-light/70'>
+        <View className='h-12.25 min-w-17 px-1.5 items-center justify-center rounded-b-12 rounded-t-none bg-blue-light/70'>
           <Text className='font-bold text-[9px] leading-[13.5px] text-primary'>
             МІСЯЦЬ
           </Text>

@@ -44,7 +44,10 @@ export function CashSheet({
       <CashForm
         allowZero={allowZero}
         initialValues={{
-          amount: initialAmount !== undefined ? String(initialAmount) : '',
+          amount:
+            initialAmount !== undefined && Number(initialAmount) !== 0
+              ? String(initialAmount)
+              : '',
         }}
         onCancel={onClose}
         onSave={handleSave}
