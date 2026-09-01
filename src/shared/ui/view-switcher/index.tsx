@@ -46,7 +46,7 @@ export function ViewSwitcher({
         duration: 150,
       });
     }
-  }, [selectedIndex, containerWidth, indicatorX, indicatorWidth]);
+  }, [selectedIndex, containerWidth, indicatorX, indicatorWidth, value]);
 
   const handleLayout = ({ nativeEvent }: LayoutChangeEvent) => {
     const width = nativeEvent.layout.width;

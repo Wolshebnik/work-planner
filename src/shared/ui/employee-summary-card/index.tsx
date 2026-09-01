@@ -79,6 +79,9 @@ export function EmployeeSummaryCard({
                     fontSize: weeklyChipMetrics.valueFontSize,
                     lineHeight: weeklyChipMetrics.valueLineHeight,
                   }}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.7}
                 >
                   {value}
                 </Text>
@@ -89,6 +92,8 @@ export function EmployeeSummaryCard({
                     lineHeight: weeklyChipMetrics.labelLineHeight,
                   }}
                   numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.6}
                 >
                   {weekLabels[index]}
                 </Text>
