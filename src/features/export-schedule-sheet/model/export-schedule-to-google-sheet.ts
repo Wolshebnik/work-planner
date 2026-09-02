@@ -5,6 +5,7 @@ import {
   batchUpdateSpreadsheetValues,
   fetchSpreadsheetSheetTitles,
   fetchSpreadsheetValues,
+  findSpreadsheetDateColumns,
   findSpreadsheetSheetTitle,
 } from '@/entities/google-sheets';
 import { getScheduleByMonth } from '@/entities/schedule';
@@ -47,7 +48,7 @@ export async function exportScheduleToGoogleSheet({
   const [sheetRows, employees, scheduleEntries] = await Promise.all([
     fetchSpreadsheetValues({
       accessToken,
-      range: `'${sheetTitle}'!A1:AZ100`,
+      range: `'${sheetTitle}'`,
       spreadsheetId,
     }),
     getEmployees(),
@@ -58,44 +59,11 @@ export async function exportScheduleToGoogleSheet({
     throw new Error(`Вкладка "${sheetTitle}" порожня`);
   }
 
-  const dateColMap = new Map<string, number>();
-  let curr = startDate;
-
-  while (curr.isBefore(endDate, 'day') || curr.isSame(endDate, 'day')) {
-    const dayNum = curr.date();
-    const dayNumStr = String(dayNum);
-    const dayPadStr = curr.format('DD');
-    const dayDotStr = curr.format('DD.MM');
-    const dateKey = curr.format('YYYY-MM-DD');
-
-    for (let r = 0; r < Math.min(5, sheetRows.length); r++) {
-      const row = sheetRows[r] ?? [];
-      for (let c = 0; c < row.length; c++) {
-        const cell = String(row[c] ?? '').trim().toLowerCase();
-        if (
-          cell === dayNumStr ||
-          cell === dayPadStr ||
-          cell === dayDotStr ||
-          cell.includes(dayDotStr) ||
-          cell.startsWith(`${dayNumStr} `) ||
-          cell.endsWith(` ${dayNumStr}`) ||
-          cell.startsWith(`${dayPadStr} `) ||
-          cell.endsWith(` ${dayPadStr}`)
-        ) {
-          dateColMap.set(dateKey, c);
-          break;
-        }
-      }
-      if (dateColMap.has(dateKey)) {
-        break;
-      }
-    }
-
-    curr = curr.add(1, 'day');
-  }
+  const dateColMap = findSpreadsheetDateColumns(sheetRows, startDate, endDate);
 
   const updates: { range: string; values: string[][] }[] = [];
   const usedRows = new Set<number>();
+  let curr = startDate;
 
   for (const employee of employees) {
     const lastName = employee.last_name.trim().toLowerCase();
