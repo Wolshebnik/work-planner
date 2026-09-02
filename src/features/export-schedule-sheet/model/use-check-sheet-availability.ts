@@ -7,6 +7,7 @@ import {
   extractSpreadsheetId,
   fetchSpreadsheetSheetTitles,
   fetchSpreadsheetValues,
+  findSpreadsheetDateColumns,
   findSpreadsheetSheetTitle,
   useGoogleSheets,
 } from '@/entities/google-sheets';
@@ -55,7 +56,7 @@ export function useCheckSheetAvailability({
       const [rows, employees, scheduleEntries] = await Promise.all([
         fetchSpreadsheetValues({
           accessToken,
-          range: `'${sheetTitle}'!A1:AZ100`,
+          range: `'${sheetTitle}'`,
           spreadsheetId,
         }),
         getEmployees(),
@@ -91,39 +92,14 @@ export function useCheckSheetAvailability({
     } else {
       const { rows, employees, scheduleEntries } = queryResult;
 
-      const headerCells = rows
-        .slice(0, 5)
-        .flat()
-        .map((c) => String(c).trim().toLowerCase());
+      const dateColumns = findSpreadsheetDateColumns(rows, startDate, endDate);
 
       let missingDay: number | null = null;
       let curr = startDate;
 
       while (curr.isBefore(endDate, 'day') || curr.isSame(endDate, 'day')) {
         const dayNum = curr.date();
-        const dayNumStr = String(dayNum);
-        const dayPadStr = curr.format('DD');
-        const dayDotStr = curr.format('DD.MM');
-
-        const hasDay = headerCells.some((cell) => {
-          if (
-            cell === dayNumStr ||
-            cell === dayPadStr ||
-            cell === dayDotStr ||
-            cell.includes(dayDotStr)
-          ) {
-            return true;
-          }
-          if (
-            cell.startsWith(`${dayNumStr} `) ||
-            cell.endsWith(` ${dayNumStr}`) ||
-            cell.startsWith(`${dayPadStr} `) ||
-            cell.endsWith(` ${dayPadStr}`)
-          ) {
-            return true;
-          }
-          return false;
-        });
+        const hasDay = dateColumns.has(curr.format('YYYY-MM-DD'));
 
         if (!hasDay) {
           missingDay = dayNum;

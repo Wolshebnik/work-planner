@@ -10,6 +10,7 @@ export {
 export {
   batchUpdateSpreadsheetValues,
   extractSpreadsheetId,
+  findSpreadsheetDateColumns,
   findSpreadsheetSheetTitle,
   fetchSpreadsheetSheetTitles,
   fetchSpreadsheetValues,
