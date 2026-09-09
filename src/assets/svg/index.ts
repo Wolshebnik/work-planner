@@ -11,6 +11,7 @@ import LockIcon from './lock.svg';
 import OffPeopleIcon from './off-people.svg';
 import PaintIcon from './paint.svg';
 import TableIcon from './table.svg';
+import TableSearchIcon from './table-search.svg';
 import TeamIcon from './team.svg';
 import TrashIcon from './trash.svg';
 import UploadCloudIcon from './upload-cloud.svg';
@@ -39,6 +40,8 @@ export const OffPeople = styledSvg(OffPeopleIcon);
 export const Paint = styledSvg(PaintIcon);
 
 export const Table = styledSvg(TableIcon);
+
+export const TableSearch = styledSvg(TableSearchIcon);
 
 export const Team = styledSvg(TeamIcon);
 

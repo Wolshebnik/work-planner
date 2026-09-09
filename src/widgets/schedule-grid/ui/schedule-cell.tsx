@@ -9,6 +9,7 @@ import type { DayCell } from '../model/types';
 
 interface ScheduleCellProps {
   className?: string;
+  isMismatch?: boolean;
   isSelected?: boolean;
   onPress?: () => void;
   value?: DayCell | null;
@@ -17,6 +18,7 @@ interface ScheduleCellProps {
 export const ScheduleCell = memo(function ScheduleCell({
   value,
   className,
+  isMismatch,
   onPress,
   isSelected,
 }: ScheduleCellProps) {
@@ -29,6 +31,7 @@ export const ScheduleCell = memo(function ScheduleCell({
       className={cn(
         'h-8.5 w-8.5',
         isSelected && 'ring-2 ring-primary ring-offset-1',
+        isMismatch && 'ring-2 ring-orange-500 ring-offset-1',
         isEmpty && 'shadow-none border border-primary',
         className,
       )}

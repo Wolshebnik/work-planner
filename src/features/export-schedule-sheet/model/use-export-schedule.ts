@@ -7,6 +7,7 @@ import { extractSpreadsheetId, useGoogleSheets } from '@/entities/google-sheets'
 import { showToast } from '@/shared/ui/toast';
 
 import { exportScheduleToGoogleSheet } from './export-schedule-to-google-sheet';
+import { clearScheduleSheetDifferences } from './schedule-sheet-check-store';
 
 interface ExportParams {
   endDate: dayjs.Dayjs;
@@ -53,6 +54,21 @@ export function useExportSchedule(onSuccess?: () => void) {
           spreadsheetId,
           startDate,
         });
+
+        const firstMonth = startDate.startOf('month');
+        const lastMonth = endDate.startOf('month');
+        const startDateKey = startDate.format('YYYY-MM-DD');
+        const endDateKey = endDate.format('YYYY-MM-DD');
+        const monthCount = lastMonth.diff(firstMonth, 'month');
+
+        for (let monthIndex = 0; monthIndex <= monthCount; monthIndex += 1) {
+          clearScheduleSheetDifferences(
+            spreadsheetId,
+            firstMonth.add(monthIndex, 'month').format('YYYY-MM'),
+            startDateKey,
+            endDateKey,
+          );
+        }
 
         showToast({
           text1: 'Графік успішно відправлено',

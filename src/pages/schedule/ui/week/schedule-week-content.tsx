@@ -6,17 +6,19 @@ import { View } from 'react-native';
 import type { Employee } from '@/entities/employee';
 import { useScheduleByWeek } from '@/entities/schedule';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
-import {
-  type DayCell,
-  type EmployeeRow,
-  ScheduleGrid,
-} from '@/widgets/schedule-grid';
+import { ScheduleGrid } from '@/widgets/schedule-grid';
+
+import { buildScheduleWeeklyData } from '../../model/week/build-schedule-weekly-data';
+import { useScheduleWeekMismatches } from '../../model/week/use-schedule-week-mismatches';
 
 interface ScheduleWeekContentProps {
   activeEmployees: Employee[];
   date: dayjs.Dayjs;
   onCellPress: (employeeIndex: number, dayIndex: number) => void;
-  selectedCell: { dayIndex: number; employeeIndex: number } | null;
+  selectedCell: {
+    dayIndex: number;
+    employeeIndex: number;
+  } | null;
   selectedDate?: dayjs.Dayjs | null;
 }
 
@@ -28,38 +30,20 @@ export const ScheduleWeekContent = memo(function ScheduleWeekContent({
   onCellPress,
 }: ScheduleWeekContentProps) {
   const { data: scheduleEntries = [], isPending } = useScheduleByWeek(date);
+  const startOfWeek = date.startOf('isoWeek');
 
-  const startOfWeek = useMemo(() => date.startOf('isoWeek'), [date]);
-
-  const weeklyData: EmployeeRow[] = useMemo(() => {
-    return activeEmployees.map((employee) => {
-      const values: (DayCell | null)[] = [];
-      for (let i = 0; i < 7; i += 1) {
-        const day = startOfWeek.add(i, 'day');
-        const dateStr = day.format('YYYY-MM-DD');
-
-        const entry = scheduleEntries.find(
-          (e) => e.employee_id === employee.id && e.work_date === dateStr,
-        );
-
-        if (entry) {
-          values.push({
-            scheduleMark: entry.status.schedule_mark,
-            isLocked: entry.status.is_locked,
-            color: entry.status.color,
-          });
-        } else {
-          values.push(null);
-        }
-      }
-
-      return {
-        id: employee.id,
-        name: employee.last_name,
-        values,
-      };
+  const weeklyData = useMemo(() => {
+    return buildScheduleWeeklyData({
+      activeEmployees,
+      scheduleEntries,
+      startOfWeek,
     });
   }, [activeEmployees, scheduleEntries, startOfWeek]);
+
+  const { mismatchKeys } = useScheduleWeekMismatches({
+    scheduleEntries,
+    startOfWeek,
+  });
 
   if (isPending && scheduleEntries.length === 0) {
     return (
@@ -69,12 +53,12 @@ export const ScheduleWeekContent = memo(function ScheduleWeekContent({
     );
   }
 
-
   return (
     <ScheduleGrid
       className='mb-5'
       startDate={date}
       data={weeklyData}
+      mismatchKeys={mismatchKeys}
       selectedCell={selectedCell}
       selectedDate={selectedDate}
       onCellPress={onCellPress}

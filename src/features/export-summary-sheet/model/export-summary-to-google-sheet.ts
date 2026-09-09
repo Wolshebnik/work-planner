@@ -13,10 +13,11 @@ import {
 function getColumnLetter(colIndex: number): string {
   let temp = colIndex;
   let letter = '';
-  while (temp >= 0) {
+
+  for (; temp >= 0; temp = Math.floor(temp / 26) - 1) {
     letter = String.fromCharCode((temp % 26) + 65) + letter;
-    temp = Math.floor(temp / 26) - 1;
   }
+
   return letter;
 }
 

@@ -11,6 +11,7 @@ import type { DayEmployeeStats } from '../model/types';
 
 interface CalendarCellProps {
   day: CalendarDay;
+  isMismatch?: boolean;
   isSelected: boolean;
   onPress?: (date: dayjs.Dayjs) => void;
   stats?: DayEmployeeStats;
@@ -18,6 +19,7 @@ interface CalendarCellProps {
 
 export const CalendarCell = memo(function CalendarCell({
   day,
+  isMismatch,
   isSelected,
   onPress,
   stats,
@@ -37,6 +39,8 @@ export const CalendarCell = memo(function CalendarCell({
           'border-button border-b-button bg-button/20',
 
         isSelected && 'border-primary/20 border-b-primary/20 bg-primary/20',
+
+        isMismatch && 'border-2 border-orange-500',
       )}
       onPress={handlePress}
     >

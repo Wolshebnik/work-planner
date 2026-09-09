@@ -44,7 +44,8 @@
     "react-native-web": "~0.21.0",
     "reanimated-color-picker": "^5.1.2",
     "tailwind-merge": "^3.6.0",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",

@@ -156,15 +156,20 @@ export function findSpreadsheetDateColumns(
   }
 
   const dateColumns = new Map<string, number>();
-  if (!bestRun) return dateColumns;
 
-  let current = startDate;
-  while (current.isBefore(endDate, 'day') || current.isSame(endDate, 'day')) {
+  if (!bestRun) {
+    return dateColumns;
+  }
+
+  const totalDays = endDate.diff(startDate, 'day');
+
+  for (let dayOffset = 0; dayOffset <= totalDays; dayOffset += 1) {
+    const current = startDate.add(dayOffset, 'day');
     const dayIndex = bestRun.days.indexOf(current.date());
+
     if (dayIndex >= 0) {
       dateColumns.set(current.format('YYYY-MM-DD'), bestRun.columns[dayIndex]);
     }
-    current = current.add(1, 'day');
   }
 
   return dateColumns;
