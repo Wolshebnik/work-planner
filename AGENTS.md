@@ -147,5 +147,12 @@ Do not assume the file content based on conversation history or cached context. 
 - **No Ternaries with Null**: NEVER write `{condition ? <Component /> : null}` when a simple boolean short-circuit suffices.
 - **Short-circuit Syntax**: Always write `{condition && <Component />}` or `{Boolean(condition) && <Component />}` for clean, concise, and readable conditional rendering.
 
+## 22. One Component Per File (No Multi-Component Files)
+
+- **Strict One Component Per File**: Every React component MUST be defined in its own dedicated file.
+- **NEVER** define multiple React components in the same file (including memoized sub-items, slot wrappers, list items, headers, child views, or internal helper components).
+- File name must strictly match the component name in `kebab-case` inside `ui/` (e.g. `ScheduleSummarySlotItem` in `schedule-summary-slot-item.tsx`).
+
+
 
 
