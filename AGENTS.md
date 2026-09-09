@@ -45,6 +45,9 @@ Do not replace established conventions with personal preferences unless explicit
 Keep code blocks readable: leave a blank line before `return`, visually separate
 `if` blocks with blank lines above and below, and leave blank lines between functions.
 
+- NEVER nest ternary operators inside other ternary operators.
+- NEVER use `else` or `else if`. Use separate `if` blocks with early returns where appropriate.
+
 ## 6. Plan multi-step work
 
 For non-trivial work, make a short, verifiable plan:

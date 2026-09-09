@@ -15,13 +15,15 @@ export function getMonthWeekKeys(date: dayjs.Dayjs | string): string[] {
   const end = monthDate.endOf('month');
   const weekKeys: string[] = [];
 
-  let current = start;
-  while (current.isBefore(end) || current.isSame(end, 'day')) {
+  const totalDays = end.diff(start, 'day');
+
+  for (let dayOffset = 0; dayOffset <= totalDays; dayOffset += 1) {
+    const current = start.add(dayOffset, 'day');
     const key = getWeekKey(current);
+
     if (!weekKeys.includes(key)) {
       weekKeys.push(key);
     }
-    current = current.add(1, 'day');
   }
 
   return weekKeys;

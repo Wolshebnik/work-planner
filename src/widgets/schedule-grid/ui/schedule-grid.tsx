@@ -17,6 +17,7 @@ interface ScheduleGridProps {
   className?: string;
   data?: EmployeeRow[];
   daysCount?: number;
+  mismatchKeys?: ReadonlySet<string>;
   onCellPress?: (employeeIndex: number, dayIndex: number) => void;
   selectedCell?: {
     dayIndex: number;
@@ -34,6 +35,7 @@ export function ScheduleGrid({
   weekStartDay = 0,
   onCellPress,
   data = [],
+  mismatchKeys,
   selectedCell,
   selectedDate,
 }: ScheduleGridProps) {
@@ -174,6 +176,12 @@ export function ScheduleGrid({
               >
                 <ScheduleCell
                   value={value}
+                  isMismatch={
+                    Boolean(row.id) &&
+                    mismatchKeys?.has(
+                      `${row.id}:${week[weekStartDay + dayIndex]?.date.format('YYYY-MM-DD')}`,
+                    )
+                  }
                   isSelected={
                     selectedCell?.employeeIndex === employeeIndex &&
                     selectedCell?.dayIndex === dayIndex

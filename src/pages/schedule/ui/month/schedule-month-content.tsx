@@ -7,11 +7,9 @@ import { generateCalendarDays } from '@/entities/calendar';
 import type { Employee } from '@/entities/employee';
 import { useScheduleMonths } from '@/entities/schedule';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
-import {
-  buildMonthEmployeeStats,
-  Calendar,
-  type DayEmployeeStats,
-} from '@/widgets/month-view';
+import { buildMonthEmployeeStats, Calendar, type DayEmployeeStats } from '@/widgets/month-view';
+
+import { useScheduleMonthMismatches } from '../../model/month/use-schedule-month-mismatches';
 
 interface ScheduleMonthContentProps {
   activeEmployees: Employee[];
@@ -31,14 +29,14 @@ export const ScheduleMonthContent = memo(function ScheduleMonthContent({
   onDayPress,
   isCurrentPage = true,
 }: ScheduleMonthContentProps) {
-  const gridMonthKeys = useMemo(() => {
-    const days = generateCalendarDays(date);
-    const set = new Set<string>();
-    for (const d of days) {
-      set.add(d.date.format('YYYY-MM'));
-    }
-    return Array.from(set);
-  }, [date]);
+  const days = generateCalendarDays(date);
+  const gridMonthSet = new Set<string>();
+
+  for (const d of days) {
+    gridMonthSet.add(d.date.format('YYYY-MM'));
+  }
+
+  const gridMonthKeys = Array.from(gridMonthSet);
 
   const { data: scheduleEntries = [], isPending } =
     useScheduleMonths(gridMonthKeys);
@@ -46,6 +44,12 @@ export const ScheduleMonthContent = memo(function ScheduleMonthContent({
   const statsByDate = useMemo(() => {
     return buildMonthEmployeeStats(activeEmployees, scheduleEntries);
   }, [activeEmployees, scheduleEntries]);
+
+  const { mismatchDates } = useScheduleMonthMismatches({
+    days,
+    gridMonthKeys,
+    scheduleEntries,
+  });
 
   const handleCalendarDayPress = useCallback(
     (day: dayjs.Dayjs) => {
@@ -67,6 +71,7 @@ export const ScheduleMonthContent = memo(function ScheduleMonthContent({
     <Calendar
       startDate={date}
       statsByDate={statsByDate}
+      mismatchDates={mismatchDates}
       selectedDate={selectedDate}
       onDayPress={handleCalendarDayPress}
     />
