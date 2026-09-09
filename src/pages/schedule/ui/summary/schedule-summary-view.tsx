@@ -1,4 +1,4 @@
-import { memo, useEffect } from 'react';
+import { useEffect } from 'react';
 
 import type dayjs from 'dayjs';
 import { View } from 'react-native';
@@ -11,7 +11,7 @@ import type { AvatarColor } from '@/shared/config/avatar-color';
 
 import { useScheduleSlotContext } from '../../model/context/schedule-slot-context';
 import { useScheduleSummaryPager } from '../../model/summary/use-schedule-summary-pager';
-import { ScheduleSummaryContent } from './schedule-summary-content';
+import { ScheduleSummarySlotItem } from './schedule-summary-slot-item';
 
 interface ScheduleSummaryViewProps {
   activeEmployees?: Employee[];
@@ -19,34 +19,6 @@ interface ScheduleSummaryViewProps {
   date?: dayjs.Dayjs;
   onDateChange?: (newDate: dayjs.Dayjs) => void;
 }
-
-interface ScheduleSummarySlotItemProps {
-  activeEmployees: Employee[];
-  colorMap: Map<string, AvatarColor>;
-  date: dayjs.Dayjs;
-}
-
-const ScheduleSummarySlotItem = memo(
-  function ScheduleSummarySlotItem({
-    date,
-    activeEmployees,
-    colorMap,
-  }: ScheduleSummarySlotItemProps) {
-    return (
-      <ScheduleSummaryContent
-        date={date}
-        activeEmployees={activeEmployees}
-        colorMap={colorMap}
-      />
-    );
-  },
-  (prev, next) => {
-    if (!prev.date.isSame(next.date, 'month')) return false;
-    if (prev.activeEmployees !== next.activeEmployees) return false;
-    if (prev.colorMap !== next.colorMap) return false;
-    return true;
-  },
-);
 
 export function ScheduleSummaryView(props: ScheduleSummaryViewProps) {
   const context = useScheduleSlotContext();
@@ -72,6 +44,7 @@ export function ScheduleSummaryView(props: ScheduleSummaryViewProps) {
 
   useEffect(() => {
     registerNavigateHandler(navigate);
+
     return () => {
       registerNavigateHandler(null);
     };
@@ -105,6 +78,7 @@ export function ScheduleSummaryView(props: ScheduleSummaryViewProps) {
                     date={slot.date}
                     activeEmployees={activeEmployees}
                     colorMap={colorMap}
+                    isCurrent={slot.isCurrent}
                   />
                 ) : null}
               </View>
@@ -116,6 +90,7 @@ export function ScheduleSummaryView(props: ScheduleSummaryViewProps) {
           date={currentSlot.date}
           activeEmployees={activeEmployees}
           colorMap={colorMap}
+          isCurrent
         />
       )}
 

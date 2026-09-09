@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import type dayjs from 'dayjs';
 import { View } from 'react-native';
@@ -11,8 +11,8 @@ import type { DayEmployeeStats } from '@/widgets/month-view';
 
 import { useScheduleSlotContext } from '../../model/context/schedule-slot-context';
 import { useScheduleMonthPager } from '../../model/month/use-schedule-month-pager';
-import { ScheduleMonthContent } from './schedule-month-content';
 import { ScheduleMonthDaySheet } from './schedule-month-day-sheet';
+import { ScheduleMonthSlotItem } from './schedule-month-slot-item';
 
 interface ScheduleMonthViewProps {
   activeEmployees?: Employee[];
@@ -20,44 +20,6 @@ interface ScheduleMonthViewProps {
   date?: dayjs.Dayjs;
   onDateChange?: (newDate: dayjs.Dayjs) => void;
 }
-
-interface ScheduleMonthSlotItemProps {
-  activeEmployees: Employee[];
-  date: dayjs.Dayjs;
-  isCurrentPage: boolean;
-  onDayPress?: (
-    day: dayjs.Dayjs,
-    statsByDate?: Map<string, DayEmployeeStats>,
-  ) => void;
-  selectedDate?: dayjs.Dayjs | null;
-}
-
-const ScheduleMonthSlotItem = memo(
-  function ScheduleMonthSlotItem({
-    date,
-    activeEmployees,
-    isCurrentPage,
-    selectedDate,
-    onDayPress,
-  }: ScheduleMonthSlotItemProps) {
-    return (
-      <ScheduleMonthContent
-        date={date}
-        activeEmployees={activeEmployees}
-        isCurrentPage={isCurrentPage}
-        selectedDate={selectedDate}
-        onDayPress={onDayPress}
-      />
-    );
-  },
-  (prev, next) => {
-    if (!prev.date.isSame(next.date, 'month')) return false;
-    if (prev.activeEmployees !== next.activeEmployees) return false;
-    if (prev.isCurrentPage !== next.isCurrentPage) return false;
-    if (prev.selectedDate !== next.selectedDate) return false;
-    return true;
-  },
-);
 
 export function ScheduleMonthView(props: ScheduleMonthViewProps) {
   const context = useScheduleSlotContext();

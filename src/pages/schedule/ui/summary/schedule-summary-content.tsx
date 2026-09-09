@@ -20,12 +20,14 @@ interface ScheduleSummaryContentProps {
   activeEmployees: Employee[];
   colorMap: Map<string, AvatarColor>;
   date: dayjs.Dayjs;
+  isCurrent?: boolean;
 }
 
 export const ScheduleSummaryContent = memo(function ScheduleSummaryContent({
   date,
   activeEmployees,
   colorMap,
+  isCurrent = true,
 }: ScheduleSummaryContentProps) {
   const {
     summaryEmployees,
@@ -50,16 +52,24 @@ export const ScheduleSummaryContent = memo(function ScheduleSummaryContent({
     useScheduleSlotContext();
 
   useEffect(() => {
+    if (!isCurrent) {
+      return;
+    }
+
     setIsExportingScreenshot(isExporting);
-  }, [isExporting, setIsExportingScreenshot]);
+  }, [isCurrent, isExporting, setIsExportingScreenshot]);
 
   useEffect(() => {
+    if (!isCurrent) {
+      return;
+    }
+
     registerScreenshotHandler(exportScreenshot);
 
     return () => {
       registerScreenshotHandler(null);
     };
-  }, [exportScreenshot, registerScreenshotHandler]);
+  }, [isCurrent, exportScreenshot, registerScreenshotHandler]);
 
   if (isLoading) {
     return (
@@ -85,21 +95,23 @@ export const ScheduleSummaryContent = memo(function ScheduleSummaryContent({
         initialAmount={selectedEmployee?.cashTotal}
         onSave={handleSaveCash}
       />
-      <View
-        pointerEvents='none'
-        style={{
-          position: 'absolute',
-          left: -9999,
-          top: 0,
-        }}
-      >
-        <SummaryScreenshotView
-          ref={exportRef}
-          employees={summaryEmployees}
-          monthLabel={monthLabel}
-          onLayout={handleScreenshotLayout}
-        />
-      </View>
+      {isCurrent && (
+        <View
+          pointerEvents='none'
+          style={{
+            position: 'absolute',
+            left: -9999,
+            top: 0,
+          }}
+        >
+          <SummaryScreenshotView
+            ref={exportRef}
+            employees={summaryEmployees}
+            monthLabel={monthLabel}
+            onLayout={handleScreenshotLayout}
+          />
+        </View>
+      )}
     </>
   );
 });
