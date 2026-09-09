@@ -1,14 +1,19 @@
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 
 import type dayjs from 'dayjs';
 import { View } from 'react-native';
 
 import type { Employee } from '@/entities/employee';
 import { CashSheet } from '@/features/cash-sheet';
+import {
+  SummaryScreenshotView,
+  useExportSummaryScreenshot,
+} from '@/features/export-summary-screenshot';
 import type { AvatarColor } from '@/shared/config/avatar-color';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import { SummaryList } from '@/widgets/summary-list';
 
+import { useScheduleSlotContext } from '../../model/context/schedule-slot-context';
 import { useScheduleSummaryData } from '../../model/summary/use-schedule-summary-data';
 
 interface ScheduleSummaryContentProps {
@@ -34,6 +39,28 @@ export const ScheduleSummaryContent = memo(function ScheduleSummaryContent({
     canResetCash,
   } = useScheduleSummaryData({ activeEmployees, colorMap, date });
 
+  const {
+    exportRef,
+    exportScreenshot,
+    handleLayout: handleScreenshotLayout,
+    isExporting,
+  } = useExportSummaryScreenshot(monthLabel);
+
+  const { registerScreenshotHandler, setIsExportingScreenshot } =
+    useScheduleSlotContext();
+
+  useEffect(() => {
+    setIsExportingScreenshot(isExporting);
+  }, [isExporting, setIsExportingScreenshot]);
+
+  useEffect(() => {
+    registerScreenshotHandler(exportScreenshot);
+
+    return () => {
+      registerScreenshotHandler(null);
+    };
+  }, [exportScreenshot, registerScreenshotHandler]);
+
   if (isLoading) {
     return (
       <View className='h-96 items-center justify-center'>
@@ -58,7 +85,21 @@ export const ScheduleSummaryContent = memo(function ScheduleSummaryContent({
         initialAmount={selectedEmployee?.cashTotal}
         onSave={handleSaveCash}
       />
+      <View
+        pointerEvents='none'
+        style={{
+          position: 'absolute',
+          left: -9999,
+          top: 0,
+        }}
+      >
+        <SummaryScreenshotView
+          ref={exportRef}
+          employees={summaryEmployees}
+          monthLabel={monthLabel}
+          onLayout={handleScreenshotLayout}
+        />
+      </View>
     </>
   );
 });
-
