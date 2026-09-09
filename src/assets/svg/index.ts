@@ -18,6 +18,7 @@ import UploadCloudIcon from './upload-cloud.svg';
 import UserIcon from './user.svg';
 import WorkPeopleIcon from './work-people.svg';
 import XIcon from './x.svg';
+import ScreenshotIcon from './screenshot.svg';
 
 export const Archive = styledSvg(ArchiveIcon);
 
@@ -38,6 +39,8 @@ export const Lock = styledSvg(LockIcon);
 export const OffPeople = styledSvg(OffPeopleIcon);
 
 export const Paint = styledSvg(PaintIcon);
+
+export const Screenshot = styledSvg(ScreenshotIcon);
 
 export const Table = styledSvg(TableIcon);
 

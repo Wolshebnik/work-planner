@@ -1,14 +1,15 @@
+
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import dayjs from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 
+import { useGetEmployees } from '@/entities/employee';
 import {
   useClearScheduleEntry,
   useSetScheduleEntry,
 } from '@/entities/schedule';
 import { type ScheduleStatus } from '@/entities/schedule-status';
-import { useGetEmployees } from '@/entities/employee';
 import { createEmployeeColorMap } from '@/shared/config/get-avatar-color';
 
 import {
@@ -52,6 +53,22 @@ export function useScheduleSlot() {
     },
     [],
   );
+
+  const screenshotHandlerRef = useRef<(() => void | Promise<void>) | null>(null);
+  const [isExportingScreenshot, setIsExportingScreenshot] = useState(false);
+
+  const registerScreenshotHandler = useCallback(
+    (handler: (() => void | Promise<void>) | null) => {
+      screenshotHandlerRef.current = handler;
+    },
+    [],
+  );
+
+  const handleExportScreenshot = useCallback(async () => {
+    if (screenshotHandlerRef.current) {
+      await screenshotHandlerRef.current();
+    }
+  }, []);
 
   const { data: employees = [], isLoading: isLoadingEmployees } =
     useGetEmployees();
@@ -215,6 +232,10 @@ export function useScheduleSlot() {
     isBottomSheetOpen,
     isFillingDay,
     isExportOpen,
+    isExportingScreenshot,
+    setIsExportingScreenshot,
+    registerScreenshotHandler,
+    handleExportScreenshot,
     selectedCell: editingCell,
     selectedDate,
     activeEmployees,

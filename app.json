@@ -5,8 +5,9 @@
     "scheme": "workplanner",
     "version": "1.0.0",
     "userInterfaceStyle": "light",
-    "platforms": ["android"],
-
+    "platforms": [
+      "android"
+    ],
     "plugins": [
       "expo-router",
       [
@@ -16,9 +17,9 @@
           "hidden": false,
           "style": "dark"
         }
-      ]
+      ],
+      "expo-sharing"
     ],
-
     "android": {
       "package": "com.workplanner.app",
       "adaptiveIcon": {
