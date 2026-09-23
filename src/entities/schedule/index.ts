@@ -7,6 +7,7 @@ export {
   setScheduleEntry,
   type SetScheduleEntryDto,
 } from './api/set-schedule-entry';
+export { getWorkHours } from './lib/get-work-hours';
 export { isWorkStatus } from './lib/is-work-status';
 export {
   getRequiredMonthKeys,

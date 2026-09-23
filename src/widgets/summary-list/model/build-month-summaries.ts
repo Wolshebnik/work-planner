@@ -1,10 +1,9 @@
 import dayjs from 'dayjs';
 
 import type { Employee } from '@/entities/employee';
-import type { ScheduleEntry } from '@/entities/schedule';
+import { getWorkHours, type ScheduleEntry } from '@/entities/schedule';
 
 import { getMonthWeekKeys, getWeekKey } from './get-month-week-keys';
-import { getWorkHours } from './get-work-hours';
 import type { EmployeeMonthSummary } from './types';
 
 export function buildMonthSummaries(
