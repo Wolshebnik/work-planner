@@ -107,6 +107,10 @@ export function findSpreadsheetSheetTitle(
   );
 }
 
+export function normalizeSpreadsheetHeader(value: string): string {
+  return value.replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
 function getSpreadsheetDayNumber(value: string): number | null {
   const cell = value.trim().toLowerCase().replace(/\s+/g, ' ');
   const match = cell.match(/^(\d{1,2})(?:\.\d{1,2}(?:\.\d{2,4})?|\s|$)/);

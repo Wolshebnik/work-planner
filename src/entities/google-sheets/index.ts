@@ -14,6 +14,7 @@ export {
   findSpreadsheetSheetTitle,
   fetchSpreadsheetSheetTitles,
   fetchSpreadsheetValues,
+  normalizeSpreadsheetHeader,
 } from './api/google-sheets-api';
 export type { GoogleSheetItem } from './model/types';
 
