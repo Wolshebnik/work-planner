@@ -7,8 +7,15 @@ import {
   fetchSpreadsheetSheetTitles,
   fetchSpreadsheetValues,
   findSpreadsheetSheetTitle,
+  normalizeSpreadsheetHeader,
 } from '@/entities/google-sheets';
 
+export interface ExportSummaryParams {
+  accessToken: string;
+  columnTitle: string;
+  date: dayjs.Dayjs;
+  spreadsheetId: string;
+}
 
 function getColumnLetter(colIndex: number): string {
   let temp = colIndex;
@@ -19,13 +26,6 @@ function getColumnLetter(colIndex: number): string {
   }
 
   return letter;
-}
-
-export interface ExportSummaryParams {
-  accessToken: string;
-  columnTitle: string;
-  date: dayjs.Dayjs;
-  spreadsheetId: string;
 }
 
 export async function exportSummaryToGoogleSheet({
@@ -55,7 +55,7 @@ export async function exportSummaryToGoogleSheet({
 
   const sheetRows = await fetchSpreadsheetValues({
     accessToken,
-    range: `'${sheetTitle}'!A1:AZ100`,
+    range: `'${sheetTitle}'`,
     spreadsheetId,
   });
 
@@ -74,12 +74,13 @@ export async function exportSummaryToGoogleSheet({
   }
 
   let cashColIndex: number | null = null;
-  const targetTitleClean = columnTitle.trim().toLowerCase();
+  const targetTitleClean = normalizeSpreadsheetHeader(columnTitle);
 
-  for (let r = 0; r < Math.min(5, sheetRows.length); r++) {
+  for (let r = 0; r < sheetRows.length; r++) {
     const row = sheetRows[r] ?? [];
+
     for (let c = 0; c < row.length; c++) {
-      const cell = String(row[c] ?? '').trim().toLowerCase();
+      const cell = normalizeSpreadsheetHeader(String(row[c] ?? ''));
       if (
         cell.length > 0 &&
         (cell === targetTitleClean || cell.includes(targetTitleClean))

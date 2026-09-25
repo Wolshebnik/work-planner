@@ -9,6 +9,7 @@ import {
   fetchSpreadsheetSheetTitles,
   fetchSpreadsheetValues,
   findSpreadsheetSheetTitle,
+  normalizeSpreadsheetHeader,
   useGoogleSheets,
 } from '@/entities/google-sheets';
 
@@ -67,7 +68,7 @@ export function useCheckSummarySheet({
       const [rows, employees, cashierEntries] = await Promise.all([
         fetchSpreadsheetValues({
           spreadsheetId,
-          range: `'${sheetTitle}'!A1:AZ100`,
+          range: `'${sheetTitle}'`,
           accessToken,
         }),
         getEmployees(),
@@ -107,10 +108,9 @@ export function useCheckSummarySheet({
       const { rows, employees, cashierEntries } = queryResult;
 
       const headerCells = rows
-        .slice(0, 5)
         .flat()
-        .map((c) => String(c).trim().toLowerCase());
-      const targetTitleClean = columnTitle.trim().toLowerCase();
+        .map((c) => normalizeSpreadsheetHeader(String(c)));
+      const targetTitleClean = normalizeSpreadsheetHeader(columnTitle);
 
       const hasColumn = headerCells.some(
         (cell) =>
