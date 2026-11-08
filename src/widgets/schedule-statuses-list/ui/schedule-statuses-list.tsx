@@ -92,7 +92,7 @@ export const ScheduleStatusesList = ({
   }
 
   const effectiveRefreshControl =
-    externalRefreshControl ?? (
+    externalRefreshControl !== undefined ? externalRefreshControl : (
       <RefreshControl
         refreshing={refreshing}
         onRefresh={handleRefresh}

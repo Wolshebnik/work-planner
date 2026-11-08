@@ -6,7 +6,15 @@ import { Header } from '@/shared/ui/header';
 
 import { useScheduleSlotContext } from '../../model/context/schedule-slot-context';
 
-export function ScheduleSlotHeader() {
+interface ScheduleSlotHeaderProps {
+  isRefreshing: boolean;
+  onPullToRefresh: () => void;
+}
+
+export function ScheduleSlotHeader({
+  isRefreshing,
+  onPullToRefresh,
+}: ScheduleSlotHeaderProps) {
   const {
     currentDate,
     handleExportScreenshot,
@@ -23,11 +31,30 @@ export function ScheduleSlotHeader() {
   const isCheckVisible = viewMode === 'week';
   const isExportVisible = viewMode !== 'month';
   const isScreenshotVisible = viewMode === 'summary';
+  const screenshotAction = (
+    <Pressable
+      accessibilityLabel='Створити скриншот'
+      accessibilityRole='button'
+      className='h-10 w-10 items-center justify-center rounded-full bg-button shadow-button active:scale-[0.98]'
+      disabled={isExportingScreenshot}
+      hitSlop={8}
+      onPress={handleExportScreenshot}
+    >
+      {isExportingScreenshot ? (
+        <ActivityIndicator color='#ffffff' size='small' />
+      ) : (
+        <Screenshot className='text-white' height={20} width={20} />
+      )}
+    </Pressable>
+  );
 
   return (
     <Header
       title='Графік роботи'
       className='mb-2'
+      isRefreshing={isRefreshing}
+      leftAction={viewMode === 'week' ? screenshotAction : undefined}
+      onPullToRefresh={onPullToRefresh}
       rightAction={
         <View className='flex-row gap-2'>
           {isCheckVisible && (
@@ -48,20 +75,7 @@ export function ScheduleSlotHeader() {
           )}
 
           {isScreenshotVisible && (
-            <Pressable
-              accessibilityLabel='Створити скриншот'
-              accessibilityRole='button'
-              className='h-10 w-10 items-center justify-center rounded-full bg-button shadow-button active:scale-[0.98]'
-              disabled={isExportingScreenshot}
-              hitSlop={8}
-              onPress={handleExportScreenshot}
-            >
-              {isExportingScreenshot ? (
-                <ActivityIndicator color='#ffffff' size='small' />
-              ) : (
-                <Screenshot className='text-white' height={20} width={20} />
-              )}
-            </Pressable>
+            screenshotAction
           )}
 
           {isExportVisible && (

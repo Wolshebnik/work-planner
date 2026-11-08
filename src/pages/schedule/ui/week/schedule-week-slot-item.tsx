@@ -30,6 +30,7 @@ export const ScheduleWeekSlotItem = memo(
     return (
       <ScheduleWeekContent
         date={date}
+        isCurrent={isCurrent}
         activeEmployees={activeEmployees}
         selectedCell={isCurrent ? selectedCell : null}
         selectedDate={isCurrent ? selectedDate : null}

@@ -1,10 +1,11 @@
 import { type ReactNode, useCallback, useEffect, useState } from 'react';
 
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { preparePagerMonths } from '@/entities/schedule';
 import { ResponsiveContainer } from '@/shared/ui/responsive-container';
+import { RefreshOverlay } from '@/shared/ui/refresh-overlay';
 
 import {
   ScheduleSlotProvider,
@@ -39,22 +40,18 @@ function ScheduleSlotLayoutContent({ children }: { children: ReactNode }) {
         contentContainerStyle={{ flexGrow: 1 }}
         contentContainerClassName='pb-6'
         showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            colors={['#02658B']}
-            tintColor='#02658B'
-          />
-        }
       >
-        <ScheduleSlotHeader />
+        <ScheduleSlotHeader
+          isRefreshing={refreshing}
+          onPullToRefresh={handleRefresh}
+        />
 
         <ResponsiveContainer>
           <ScheduleSlotControls />
           {children}
         </ResponsiveContainer>
       </ScrollView>
+      <RefreshOverlay isRefreshing={refreshing} />
     </View>
   );
 }

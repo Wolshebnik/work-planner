@@ -2,13 +2,14 @@ import { useCallback, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { EmployeeCard, employeeKeys } from '@/entities/employee';
 import { ROUTES } from '@/shared/config/routes';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import { DeleteConfirmationSheet } from '@/shared/ui/delete-confirmation-sheet';
 import { Header } from '@/shared/ui/header';
+import { RefreshOverlay } from '@/shared/ui/refresh-overlay';
 import { ResponsiveContainer } from '@/shared/ui/responsive-container';
 import { SectionTitle } from '@/shared/ui/section-title';
 import { Text } from '@/shared/ui/text';
@@ -45,6 +46,8 @@ export function TeamArchivedPage() {
         title='Архів'
         onBackPress={() => router.push(ROUTES.TEAM)}
         className='mb-3'
+        isRefreshing={refreshing}
+        onPullToRefresh={handleRefresh}
       />
 
       {isLoading ? (
@@ -55,14 +58,6 @@ export function TeamArchivedPage() {
         <ScrollView
           className='flex-1'
           contentContainerClassName='px-4'
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={handleRefresh}
-              colors={['#02658B']}
-              tintColor='#02658B'
-            />
-          }
         >
           <ResponsiveContainer>
             <SectionTitle
@@ -109,6 +104,7 @@ export function TeamArchivedPage() {
           }
         />
       )}
+      <RefreshOverlay isRefreshing={refreshing} />
     </View>
   );
 }

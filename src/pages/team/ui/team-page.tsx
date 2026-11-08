@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import {
   SortableItem,
   type SortableRenderItemProps,
@@ -20,6 +20,7 @@ import {
 import { ButtonBase } from '@/shared/ui/button-base';
 import { CircularProgressLoader } from '@/shared/ui/circular-progress-loader';
 import { Header } from '@/shared/ui/header';
+import { RefreshOverlay } from '@/shared/ui/refresh-overlay';
 import { ResponsiveContainer } from '@/shared/ui/responsive-container';
 import { SectionTitle } from '@/shared/ui/section-title';
 import { SortableList } from '@/shared/ui/sortable-list';
@@ -84,16 +85,13 @@ export function TeamPage() {
         className='flex-1'
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            colors={['#02658B']}
-            tintColor='#02658B'
-          />
-        }
       >
-        <Header title='Команда' className='mb-4' />
+        <Header
+          title='Команда'
+          className='mb-4'
+          isRefreshing={refreshing}
+          onPullToRefresh={handleRefresh}
+        />
 
         <ResponsiveContainer className='flex-row items-center justify-between px-6 mb-5'>
           <SectionTitle
@@ -150,6 +148,7 @@ export function TeamPage() {
         onClose={() => setIsAddOpen(false)}
         onSave={handleAddEmployee}
       />
+      <RefreshOverlay isRefreshing={refreshing} />
     </View>
   );
 }
