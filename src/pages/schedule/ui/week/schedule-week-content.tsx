@@ -85,7 +85,7 @@ export const ScheduleWeekContent = memo(function ScheduleWeekContent({
   }
 
   return (
-    <View ref={exportRef} collapsable={false}>
+    <View ref={exportRef} collapsable={false} className='bg-background'>
       <ScheduleGrid
         className='mb-5'
         startDate={date}
