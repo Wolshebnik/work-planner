@@ -7,7 +7,9 @@ import { captureRef } from 'react-native-view-shot';
 
 import { showToast } from '@/shared/ui/toast';
 
-export function useExportSummaryScreenshot(monthLabel?: string) {
+export function useExportSummaryScreenshot(
+  dialogTitle = 'Поділитися підсумками',
+) {
   const [isExporting, setIsExporting] = useState(false);
   const exportRef = useRef<View>(null);
   const layoutResolverRef = useRef<(() => void) | null>(null);
@@ -56,10 +58,6 @@ export function useExportSummaryScreenshot(monthLabel?: string) {
       const isSharingAvailable = await Sharing.isAvailableAsync();
 
       if (isSharingAvailable) {
-        const dialogTitle = monthLabel
-          ? `Поділитися підсумками за ${monthLabel}`
-          : 'Поділитися підсумками';
-
         await Sharing.shareAsync(fileUri, {
           mimeType: 'image/png',
           dialogTitle,
@@ -76,7 +74,7 @@ export function useExportSummaryScreenshot(monthLabel?: string) {
       layoutResolverRef.current = null;
       setIsExporting(false);
     }
-  }, [isExporting, monthLabel]);
+  }, [dialogTitle, isExporting]);
 
   return {
     exportRef,

@@ -1,5 +1,7 @@
-import type { ReactNode } from 'react';
+import { useCallback, useMemo, type ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { runOnJS } from 'react-native-reanimated';
 
 import { ArrowLeft } from '@/assets/svg';
 import { useGoogleAuth } from '@/entities/google-auth';
@@ -9,10 +11,13 @@ import { Text } from '@/shared/ui/text';
 
 interface HeaderProps {
   className?: string;
+  leftAction?: ReactNode;
   onBackPress?: () => void;
+  onPullToRefresh?: () => void;
   title: string;
   rightAction?: ReactNode;
   showUnauthorizedShadow?: boolean;
+  isRefreshing?: boolean;
 }
 
 const SHADOW_STEPS = [
@@ -35,50 +40,77 @@ const SHADOW_STEPS = [
 export function Header({
   title,
   onBackPress,
+  leftAction,
+  onPullToRefresh,
   rightAction,
   className,
   showUnauthorizedShadow,
+  isRefreshing = false,
 }: HeaderProps) {
   const { user, isLoading } = useGoogleAuth();
   const shouldShowShadow = showUnauthorizedShadow ?? (!user && !isLoading);
+  const handlePullToRefresh = useCallback(() => {
+    onPullToRefresh?.();
+  }, [onPullToRefresh]);
+  const pullGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .enabled(Boolean(onPullToRefresh) && !isRefreshing)
+        .activeOffsetY(12)
+        .onEnd((event, success) => {
+          if (success && event.translationY >= 64) {
+            runOnJS(handlePullToRefresh)();
+          }
+        }),
+    [handlePullToRefresh, isRefreshing, onPullToRefresh],
+  );
 
   return (
     <View className='relative z-20'>
-      <View
-        className={cn(
-          'h-14 items-center justify-center border-b border-border bg-neutral',
-          className,
-        )}
-      >
-        <ResponsiveContainer className='relative h-full flex-row items-center justify-center px-4'>
-          {onBackPress ? (
-            <Pressable
-              accessibilityLabel='Назад'
-              accessibilityRole='button'
-              className='absolute left-4 items-center justify-center h-11 w-11 rounded-6 active:scale-[1.1]'
-              hitSlop={8}
-              onPress={onBackPress}
+      <GestureDetector gesture={pullGesture}>
+        <View
+          collapsable={false}
+          className={cn(
+            'h-14 items-center justify-center border-b border-border bg-neutral',
+            className,
+          )}
+        >
+          <ResponsiveContainer className='relative h-full flex-row items-center justify-center px-4'>
+            {leftAction ? (
+              <View className='absolute left-4 items-center justify-center'>
+                {leftAction}
+              </View>
+            ) : null}
+
+            {onBackPress ? (
+              <Pressable
+                accessibilityLabel='Назад'
+                accessibilityRole='button'
+                className='absolute left-4 items-center justify-center h-11 w-11 rounded-6 active:scale-[1.1]'
+                hitSlop={8}
+                onPress={onBackPress}
+              >
+                <ArrowLeft className='text-primary' height={24} width={24} />
+              </Pressable>
+            ) : null}
+
+            <Text
+              adjustsFontSizeToFit
+              className='font-bold text-[22px] text-primary'
+              minimumFontScale={0.65}
+              numberOfLines={1}
             >
-              <ArrowLeft className='text-primary' height={24} width={24} />
-            </Pressable>
-          ) : null}
+              {title}
+            </Text>
 
-          <Text
-            adjustsFontSizeToFit
-            className='font-bold text-[22px] text-primary'
-            minimumFontScale={0.65}
-            numberOfLines={1}
-          >
-            {title}
-          </Text>
-
-          {rightAction ? (
-            <View className='absolute right-4 items-center justify-center'>
-              {rightAction}
-            </View>
-          ) : null}
-        </ResponsiveContainer>
-      </View>
+            {rightAction ? (
+              <View className='absolute right-4 items-center justify-center'>
+                {rightAction}
+              </View>
+            ) : null}
+          </ResponsiveContainer>
+        </View>
+      </GestureDetector>
 
       {shouldShowShadow && (
         <View pointerEvents='none' className='absolute top-14 left-0 right-0 z-10'>

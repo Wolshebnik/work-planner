@@ -46,7 +46,7 @@ export const ScheduleSummaryContent = memo(function ScheduleSummaryContent({
     exportScreenshot,
     handleLayout: handleScreenshotLayout,
     isExporting,
-  } = useExportSummaryScreenshot(monthLabel);
+  } = useExportSummaryScreenshot(`Поділитися підсумками за ${monthLabel}`);
 
   const { registerScreenshotHandler, setIsExportingScreenshot } =
     useScheduleSlotContext();

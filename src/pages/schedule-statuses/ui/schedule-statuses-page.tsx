@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { scheduleStatusesQueryKey } from '@/entities/schedule-status';
 import { EditScheduleStatusSheet } from '@/features/edit-schedule-status';
@@ -10,6 +10,7 @@ import { ROUTES } from '@/shared/config/routes';
 import { ButtonBase } from '@/shared/ui/button-base';
 import { DeleteConfirmationSheet } from '@/shared/ui/delete-confirmation-sheet';
 import { Header } from '@/shared/ui/header';
+import { RefreshOverlay } from '@/shared/ui/refresh-overlay';
 import { ResponsiveContainer } from '@/shared/ui/responsive-container';
 import { SectionTitle } from '@/shared/ui/section-title';
 import { Text } from '@/shared/ui/text';
@@ -54,19 +55,13 @@ export function ScheduleStatusesPage() {
         className='flex-1'
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            colors={['#02658B']}
-            tintColor='#02658B'
-          />
-        }
       >
         <Header
           title='Статуси графіка'
           onBackPress={() => router.push(ROUTES.MORE)}
           className='mb-4'
+          isRefreshing={refreshing}
+          onPullToRefresh={handleRefresh}
         />
 
         <ResponsiveContainer className='flex-row items-center justify-between px-6 mb-5'>
@@ -84,6 +79,7 @@ export function ScheduleStatusesPage() {
         <ScheduleStatusesList
           onStatusPress={handleStatusPress}
           onDeleteStatus={setDeletingStatus}
+          refreshControl={null}
           scrollEnabled={false}
         />
       </ScrollView>
@@ -122,6 +118,7 @@ export function ScheduleStatusesPage() {
           }
         />
       )}
+      <RefreshOverlay isRefreshing={refreshing} />
     </View>
   );
 }
