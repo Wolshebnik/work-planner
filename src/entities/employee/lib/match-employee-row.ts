@@ -5,11 +5,33 @@ interface EmployeeRowMatch {
   rowIndex: number | null;
 }
 
+function findEmployeeNameColumnIndex(
+  sheetRows: (string | number)[][],
+): number | null {
+  for (const row of sheetRows) {
+    const columnIndex = row.findIndex(
+      (value) =>
+        String(value ?? '')
+          .replace(/[.\s]/g, '')
+          .toLowerCase() === 'фио',
+    );
+
+    if (columnIndex !== -1) return columnIndex;
+  }
+
+  return null;
+}
+
 function resolveEmployeeRow(
   employee: Employee,
   sheetRows: (string | number)[][],
   usedRows: Set<number>,
+  nameColumnIndex: number | null,
 ): EmployeeRowMatch {
+  if (nameColumnIndex === null) {
+    return { ambiguous: false, rowIndex: null };
+  }
+
   const lastName = employee.last_name.trim().toLowerCase();
   const firstName = employee.first_name.trim().toLowerCase();
   const firstInitial = firstName.charAt(0);
@@ -19,26 +41,28 @@ function resolveEmployeeRow(
     if (usedRows.has(rowIndex)) continue;
 
     const row = sheetRows[rowIndex] ?? [];
-    const score = row.slice(0, 5).reduce<number>((bestScore, value) => {
-      const cell = String(value ?? '')
-        .trim()
-        .toLowerCase();
-      const cellWords = cell.split(/[\s.,;:]+/).filter(Boolean);
+    const cell = String(row[nameColumnIndex] ?? '')
+      .trim()
+      .toLowerCase();
+    const cellWords = cell.split(/[\s.,;:]+/).filter(Boolean);
+    let score = 0;
 
-      if (!cell || !cellWords.includes(lastName)) return bestScore;
-      if (!firstName) return Math.max(bestScore, 50);
-      if (cellWords.includes(firstName)) return Math.max(bestScore, 100);
+    if (cellWords.includes(lastName) && !firstName) {
+      score = 50;
+    }
 
-      if (
-        firstInitial &&
-        (cellWords.includes(firstInitial) ||
-          cellWords.includes(`${firstInitial}.`))
-      ) {
-        return Math.max(bestScore, 80);
-      }
+    if (cellWords.includes(lastName) && cellWords.includes(firstName)) {
+      score = 100;
+    }
 
-      return bestScore;
-    }, 0);
+    if (
+      cellWords.includes(lastName) &&
+      firstInitial &&
+      (cellWords.includes(firstInitial) ||
+        cellWords.includes(`${firstInitial}.`))
+    ) {
+      score = Math.max(score, 80);
+    }
 
     if (score > 0) candidates.set(rowIndex, score);
   }
@@ -61,7 +85,13 @@ export function findEmployeeRowIndex(
   sheetRows: (string | number)[][],
   usedRows: Set<number>,
 ): number | null {
-  const match = resolveEmployeeRow(employee, sheetRows, usedRows);
+  const nameColumnIndex = findEmployeeNameColumnIndex(sheetRows);
+  const match = resolveEmployeeRow(
+    employee,
+    sheetRows,
+    usedRows,
+    nameColumnIndex,
+  );
   return match.ambiguous ? null : match.rowIndex;
 }
 
@@ -73,9 +103,15 @@ export function matchEmployeesWithSheet(
   const missingEmployees: Employee[] = [];
   const ambiguousEmployees: Employee[] = [];
   const matchedMap = new Map<string, number>();
+  const nameColumnIndex = findEmployeeNameColumnIndex(sheetRows);
 
   for (const emp of employees) {
-    const match = resolveEmployeeRow(emp, sheetRows, usedRows);
+    const match = resolveEmployeeRow(
+      emp,
+      sheetRows,
+      usedRows,
+      nameColumnIndex,
+    );
     const rowIndex = match.rowIndex;
 
     if (match.ambiguous) {
