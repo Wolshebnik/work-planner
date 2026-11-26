@@ -18,7 +18,11 @@ interface ScheduleGridProps {
   data?: EmployeeRow[];
   daysCount?: number;
   mismatchKeys?: ReadonlySet<string>;
-  onCellPress?: (employeeIndex: number, dayIndex: number) => void;
+  onCellPress?: (
+    employeeId: string | undefined,
+    employeeIndex: number,
+    dayIndex: number,
+  ) => void;
   selectedCell?: {
     dayIndex: number;
     employeeIndex: number;
@@ -187,7 +191,7 @@ export function ScheduleGrid({
                     selectedCell?.dayIndex === dayIndex
                   }
                   onPress={() => {
-                    onCellPress?.(employeeIndex, dayIndex);
+                    onCellPress?.(row.id, employeeIndex, dayIndex);
                   }}
                 />
               </View>

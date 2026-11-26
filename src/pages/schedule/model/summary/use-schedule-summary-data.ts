@@ -3,7 +3,11 @@ import { useCallback, useMemo, useState } from 'react';
 import type dayjs from 'dayjs';
 
 import { useCashierHours, useSaveCashierHours } from '@/entities/cashier-hours';
-import type { Employee } from '@/entities/employee';
+import {
+  isEmployeeBeforeRestoreInMonth,
+  isEmployeeVisibleOnDate,
+  type Employee,
+} from '@/entities/employee';
 import { useScheduleByMonth } from '@/entities/schedule';
 import type { AvatarColor } from '@/shared/config/avatar-color';
 import { getEmployeeAvatarColor } from '@/shared/config/get-avatar-color';
@@ -14,13 +18,13 @@ import {
 } from '@/widgets/summary-list';
 
 interface UseScheduleSummaryDataParams {
-  activeEmployees: Employee[];
+  employees: Employee[];
   colorMap: Map<string, AvatarColor>;
   date: dayjs.Dayjs;
 }
 
 export function useScheduleSummaryData({
-  activeEmployees,
+  employees,
   colorMap,
   date,
 }: UseScheduleSummaryDataParams) {
@@ -52,14 +56,32 @@ export function useScheduleSummaryData({
     return map;
   }, [cashierHoursEntries]);
 
+  const visibleEmployees = useMemo(
+    () =>
+      employees.filter((employee) =>
+        isEmployeeVisibleOnDate(employee, date.startOf('month').format('YYYY-MM-DD')),
+      ),
+    [employees, date],
+  );
+  const entriesForSummary = useMemo(
+    () =>
+      (scheduleEntries ?? []).filter((entry) => {
+        const employee = employees.find(
+          (item) => item.id === entry.employee_id,
+        );
+
+        return !employee || !isEmployeeBeforeRestoreInMonth(employee, entry.work_date);
+      }),
+    [employees, scheduleEntries],
+  );
   const summaries = useMemo(
-    () => buildMonthSummaries(activeEmployees, scheduleEntries ?? [], date),
-    [activeEmployees, scheduleEntries, date],
+    () => buildMonthSummaries(visibleEmployees, entriesForSummary, date),
+    [visibleEmployees, entriesForSummary, date],
   );
 
   const summaryEmployees: EmployeeSummaryItem[] = useMemo(() => {
     return summaries.map((summary) => {
-      const employee = activeEmployees.find(
+      const employee = visibleEmployees.find(
         (e) => e.id === summary.employeeId,
       );
       const name = employee
@@ -92,7 +114,7 @@ export function useScheduleSummaryData({
         cashTotal,
       };
     });
-  }, [summaries, activeEmployees, colorMap, cashierHoursMap]);
+  }, [summaries, visibleEmployees, colorMap, cashierHoursMap]);
 
   const monthLabel = useMemo(() => {
     return (

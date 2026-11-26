@@ -12,7 +12,7 @@ import { buildMonthEmployeeStats, Calendar, type DayEmployeeStats } from '@/widg
 import { useScheduleMonthMismatches } from '../../model/month/use-schedule-month-mismatches';
 
 interface ScheduleMonthContentProps {
-  activeEmployees: Employee[];
+  employees: Employee[];
   date: dayjs.Dayjs;
   isCurrentPage?: boolean;
   onDayPress?: (
@@ -24,7 +24,7 @@ interface ScheduleMonthContentProps {
 
 export const ScheduleMonthContent = memo(function ScheduleMonthContent({
   date,
-  activeEmployees,
+  employees,
   selectedDate,
   onDayPress,
   isCurrentPage = true,
@@ -42,8 +42,8 @@ export const ScheduleMonthContent = memo(function ScheduleMonthContent({
     useScheduleMonths(gridMonthKeys);
 
   const statsByDate = useMemo(() => {
-    return buildMonthEmployeeStats(activeEmployees, scheduleEntries);
-  }, [activeEmployees, scheduleEntries]);
+    return buildMonthEmployeeStats(employees, scheduleEntries);
+  }, [employees, scheduleEntries]);
 
   const { mismatchDates } = useScheduleMonthMismatches({
     days,

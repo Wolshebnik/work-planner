@@ -25,6 +25,7 @@ export function useAddEmployee() {
           first_name: variables.firstName,
           patronymic: variables.patronymic ?? null,
           is_active: true,
+          archive_periods: [],
           sort_order: Math.max(0, ...old.map((employee) => employee.sort_order)) + 10,
         };
 

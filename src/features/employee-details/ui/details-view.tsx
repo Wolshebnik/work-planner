@@ -1,5 +1,7 @@
 import { View } from 'react-native';
 
+import dayjs from 'dayjs';
+
 import { Archive } from '@/assets/svg';
 import { useArchiveEmployee } from '@/entities/employee';
 import { cn } from '@/shared/lib/cn';
@@ -32,7 +34,7 @@ export function DetailsView({
 
   const handleArchive = () => {
     onClose();
-    mutate(employee.id);
+    mutate({ id: employee.id, archiveDate: dayjs().format('YYYY-MM-DD') });
   };
 
   return (

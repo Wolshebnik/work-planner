@@ -23,7 +23,7 @@ export const ScheduleCell = memo(function ScheduleCell({
   isSelected,
 }: ScheduleCellProps) {
   const isEmpty = !value || !value.color;
-  const isLocked = !isEmpty && !!value.isLocked;
+  const isLocked = Boolean(value?.isLocked);
 
   return (
     <HexStatusBadge

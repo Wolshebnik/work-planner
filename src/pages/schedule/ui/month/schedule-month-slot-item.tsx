@@ -8,7 +8,7 @@ import type { DayEmployeeStats } from '@/widgets/month-view';
 import { ScheduleMonthContent } from './schedule-month-content';
 
 export interface ScheduleMonthSlotItemProps {
-  activeEmployees: Employee[];
+  employees: Employee[];
   date: dayjs.Dayjs;
   isCurrentPage: boolean;
   onDayPress?: (
@@ -21,7 +21,7 @@ export interface ScheduleMonthSlotItemProps {
 export const ScheduleMonthSlotItem = memo(
   function ScheduleMonthSlotItem({
     date,
-    activeEmployees,
+    employees,
     isCurrentPage,
     selectedDate,
     onDayPress,
@@ -29,7 +29,7 @@ export const ScheduleMonthSlotItem = memo(
     return (
       <ScheduleMonthContent
         date={date}
-        activeEmployees={activeEmployees}
+        employees={employees}
         isCurrentPage={isCurrentPage}
         selectedDate={selectedDate}
         onDayPress={onDayPress}
@@ -38,7 +38,7 @@ export const ScheduleMonthSlotItem = memo(
   },
   (prev, next) => {
     if (!prev.date.isSame(next.date, 'month')) return false;
-    if (prev.activeEmployees !== next.activeEmployees) return false;
+    if (prev.employees !== next.employees) return false;
     if (prev.isCurrentPage !== next.isCurrentPage) return false;
     if (prev.selectedDate !== next.selectedDate) return false;
 

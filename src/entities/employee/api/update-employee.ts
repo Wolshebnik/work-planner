@@ -22,6 +22,7 @@ export async function updateEmployee(dto: UpdateEmployeeDto) {
       ...(fields.isActive !== undefined && { is_active: fields.isActive }),
     })
     .eq('id', id)
+    .eq('is_active', true)
     .select();
 
   if (error) {

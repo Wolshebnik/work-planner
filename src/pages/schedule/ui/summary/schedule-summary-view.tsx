@@ -14,7 +14,7 @@ import { useScheduleSummaryPager } from '../../model/summary/use-schedule-summar
 import { ScheduleSummarySlotItem } from './schedule-summary-slot-item';
 
 interface ScheduleSummaryViewProps {
-  activeEmployees?: Employee[];
+  employees?: Employee[];
   colorMap?: Map<string, AvatarColor>;
   date?: dayjs.Dayjs;
   onDateChange?: (newDate: dayjs.Dayjs) => void;
@@ -25,7 +25,7 @@ export function ScheduleSummaryView(props: ScheduleSummaryViewProps) {
 
   const currentDate = props.date ?? context.currentDate;
   const onDateChange = props.onDateChange ?? context.setCurrentDate;
-  const activeEmployees = props.activeEmployees ?? context.activeEmployees;
+  const employees = props.employees ?? context.employees;
   const colorMap = props.colorMap ?? context.colorMap;
 
   const {
@@ -76,7 +76,7 @@ export function ScheduleSummaryView(props: ScheduleSummaryViewProps) {
                 {slot.isCurrent || slot.isReady ? (
                   <ScheduleSummarySlotItem
                     date={slot.date}
-                    activeEmployees={activeEmployees}
+                    employees={employees}
                     colorMap={colorMap}
                     isCurrent={slot.isCurrent}
                   />
@@ -88,7 +88,7 @@ export function ScheduleSummaryView(props: ScheduleSummaryViewProps) {
       ) : (
         <ScheduleSummarySlotItem
           date={currentSlot.date}
-          activeEmployees={activeEmployees}
+          employees={employees}
           colorMap={colorMap}
           isCurrent
         />

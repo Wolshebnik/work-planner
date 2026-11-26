@@ -15,10 +15,14 @@ import { buildScheduleWeeklyData } from '../../model/week/build-schedule-weekly-
 import { useScheduleWeekMismatches } from '../../model/week/use-schedule-week-mismatches';
 
 interface ScheduleWeekContentProps {
-  activeEmployees: Employee[];
+  employees: Employee[];
   date: dayjs.Dayjs;
   isCurrent: boolean;
-  onCellPress: (employeeIndex: number, dayIndex: number) => void;
+  onCellPress: (
+    employeeId: string | undefined,
+    employeeIndex: number,
+    dayIndex: number,
+  ) => void;
   selectedCell: {
     dayIndex: number;
     employeeIndex: number;
@@ -29,7 +33,7 @@ interface ScheduleWeekContentProps {
 export const ScheduleWeekContent = memo(function ScheduleWeekContent({
   date,
   isCurrent,
-  activeEmployees,
+  employees,
   selectedCell,
   selectedDate,
   onCellPress,
@@ -65,11 +69,11 @@ export const ScheduleWeekContent = memo(function ScheduleWeekContent({
 
   const weeklyData = useMemo(() => {
     return buildScheduleWeeklyData({
-      activeEmployees,
+      employees,
       scheduleEntries,
       startOfWeek,
     });
-  }, [activeEmployees, scheduleEntries, startOfWeek]);
+  }, [employees, scheduleEntries, startOfWeek]);
 
   const { mismatchKeys } = useScheduleWeekMismatches({
     scheduleEntries,
