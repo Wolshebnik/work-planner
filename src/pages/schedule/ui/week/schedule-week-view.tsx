@@ -14,9 +14,13 @@ import { ScheduleWeekEditSheet } from './schedule-week-edit-sheet';
 import { ScheduleWeekSlotItem } from './schedule-week-slot-item';
 
 interface ScheduleWeekViewProps {
-  activeEmployees?: Employee[];
+  employees?: Employee[];
   currentDate?: dayjs.Dayjs;
-  onCellPress?: (employeeIndex: number, dayIndex: number) => void;
+  onCellPress?: (
+    employeeId: string | undefined,
+    employeeIndex: number,
+    dayIndex: number,
+  ) => void;
   onDateChange?: (newDate: dayjs.Dayjs) => void;
   selectedCell?: {
     dayIndex: number;
@@ -30,7 +34,7 @@ export function ScheduleWeekView(props: ScheduleWeekViewProps) {
 
   const currentDate = props.currentDate ?? context.currentDate;
   const onDateChange = props.onDateChange ?? context.setCurrentDate;
-  const activeEmployees = props.activeEmployees ?? context.activeEmployees;
+  const employees = props.employees ?? context.employees;
   const selectedCell = props.selectedCell ?? context.selectedCell;
   const selectedDate = props.selectedDate ?? context.selectedDate;
   const onCellPress = props.onCellPress ?? context.handleCellPress;
@@ -83,7 +87,7 @@ export function ScheduleWeekView(props: ScheduleWeekViewProps) {
                 {slot.isCurrent || slot.isReady ? (
                   <ScheduleWeekSlotItem
                     date={slot.date}
-                    activeEmployees={activeEmployees}
+                    employees={employees}
                     isCurrent={slot.isCurrent}
                     selectedCell={selectedCell}
                     selectedDate={selectedDate}
@@ -97,7 +101,7 @@ export function ScheduleWeekView(props: ScheduleWeekViewProps) {
       ) : (
         <ScheduleWeekSlotItem
           date={currentSlot.date}
-          activeEmployees={activeEmployees}
+          employees={employees}
           isCurrent
           selectedCell={selectedCell}
           selectedDate={selectedDate}

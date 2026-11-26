@@ -1,4 +1,10 @@
-import { getEmployees, matchEmployeesWithSheet } from '@/entities/employee';
+import {
+  getEmployees,
+  isEmployeeBeforeRestoreInMonth,
+  isEmployeeScheduleDateLocked,
+  isEmployeeVisibleOnDate,
+  matchEmployeesWithSheet,
+} from '@/entities/employee';
 import {
   batchUpdateSpreadsheetValues,
   fetchSpreadsheetSheetTitles,
@@ -54,8 +60,16 @@ export async function exportScheduleToGoogleSheet({
 
   const dateColMap = findSpreadsheetDateColumns(sheetRows, startDate, endDate);
 
+  const exportEmployees = employees.filter((employee) =>
+    Array.from({ length: endDate.diff(startDate, 'day') + 1 }, (_, index) =>
+      isEmployeeVisibleOnDate(
+        employee,
+        startDate.add(index, 'day').format('YYYY-MM-DD'),
+      ),
+    ).some(Boolean),
+  );
   const { ambiguousEmployees, matchedMap } = matchEmployeesWithSheet(
-    employees,
+    exportEmployees,
     sheetRows,
   );
 
@@ -72,7 +86,7 @@ export async function exportScheduleToGoogleSheet({
   const updates: { range: string; values: string[][] }[] = [];
   const totalDays = endDate.diff(startDate, 'day');
 
-  for (const employee of employees) {
+  for (const employee of exportEmployees) {
     const targetRowIndex = matchedMap.get(employee.id);
 
     if (targetRowIndex === undefined) {
@@ -84,12 +98,20 @@ export async function exportScheduleToGoogleSheet({
       const dateKey = currentDay.format('YYYY-MM-DD');
       const colIndex = dateColMap.get(dateKey);
 
+      if (!isEmployeeVisibleOnDate(employee, dateKey)) continue;
+      if (
+        isEmployeeScheduleDateLocked(employee, dateKey) &&
+        !isEmployeeBeforeRestoreInMonth(employee, dateKey)
+      ) continue;
+
       if (colIndex !== undefined) {
         const entry = scheduleEntries.find(
           (e) => e.employee_id === employee.id && e.work_date === dateKey,
         );
 
-        const mark = entry?.status?.excel_mark ?? '';
+        const mark = isEmployeeBeforeRestoreInMonth(employee, dateKey)
+          ? ''
+          : (entry?.status?.excel_mark ?? '');
         const colLetter = getColumnLetter(colIndex);
         const cellAddress = `'${sheetTitle}'!${colLetter}${targetRowIndex + 1}`;
 

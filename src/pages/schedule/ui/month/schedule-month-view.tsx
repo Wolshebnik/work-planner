@@ -15,7 +15,7 @@ import { ScheduleMonthDaySheet } from './schedule-month-day-sheet';
 import { ScheduleMonthSlotItem } from './schedule-month-slot-item';
 
 interface ScheduleMonthViewProps {
-  activeEmployees?: Employee[];
+  employees?: Employee[];
   colorMap?: Map<string, AvatarColor>;
   date?: dayjs.Dayjs;
   onDateChange?: (newDate: dayjs.Dayjs) => void;
@@ -26,7 +26,7 @@ export function ScheduleMonthView(props: ScheduleMonthViewProps) {
 
   const currentDate = props.date ?? context.currentDate;
   const onDateChange = props.onDateChange ?? context.setCurrentDate;
-  const activeEmployees = props.activeEmployees ?? context.activeEmployees;
+  const employees = props.employees ?? context.employees;
   const colorMap = props.colorMap ?? context.colorMap;
 
   const [selectedDay, setSelectedDay] = useState<dayjs.Dayjs | null>(null);
@@ -98,7 +98,7 @@ export function ScheduleMonthView(props: ScheduleMonthViewProps) {
                 {slot.isCurrent || slot.isReady ? (
                   <ScheduleMonthSlotItem
                     date={slot.date}
-                    activeEmployees={activeEmployees}
+                    employees={employees}
                     isCurrentPage={slot.isCurrent}
                     selectedDate={slot.isCurrent ? selectedDay : null}
                     onDayPress={slot.isCurrent ? handleDayPress : undefined}
@@ -111,7 +111,7 @@ export function ScheduleMonthView(props: ScheduleMonthViewProps) {
       ) : (
         <ScheduleMonthSlotItem
           date={currentSlot.date}
-          activeEmployees={activeEmployees}
+          employees={employees}
           isCurrentPage
           selectedDate={selectedDay}
           onDayPress={handleDayPress}

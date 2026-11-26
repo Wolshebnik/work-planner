@@ -4,7 +4,11 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 
-import { useGetEmployees } from '@/entities/employee';
+import {
+  isEmployeeScheduleDateLocked,
+  isEmployeeVisibleOnDate,
+  useGetEmployees,
+} from '@/entities/employee';
 import {
   useClearScheduleEntry,
   useSetScheduleEntry,
@@ -32,7 +36,9 @@ export function useScheduleSlot() {
   const [editingCell, setEditingCell] = useState<{
     dayIndex: number;
     employeeIndex: number;
+    employeeId: string;
   } | null>(null);
+  const [blockedMessage, setBlockedMessage] = useState<string | null>(null);
   const [isFillingDay, setIsFillingDay] = useState(false);
 
   const [isExportOpen, setIsExportOpen] = useState(false);
@@ -79,20 +85,36 @@ export function useScheduleSlot() {
   const startOfWeek = currentDate.startOf('isoWeek');
 
   const handleCellPress = useCallback(
-    (employeeIndex: number, dayIndex: number) => {
+    (employeeId: string | undefined, employeeIndex: number, dayIndex: number) => {
+      if (!employeeId) return;
       const clickedDate = startOfWeek.add(dayIndex, 'day');
+      const employee = employees.find((item) => item.id === employeeId);
+
+      if (!employee) return;
+
       setSelectedDate(clickedDate);
-      setEditingCell({ employeeIndex, dayIndex });
+      setEditingCell({ employeeId, employeeIndex, dayIndex });
       setIsFillingDay(false);
+      setBlockedMessage(null);
+
+      if (!isEmployeeVisibleOnDate(employee, clickedDate.format('YYYY-MM-DD'))) {
+        setBlockedMessage('Працівник не відображається в цьому періоді.');
+      }
+
+      if (isEmployeeScheduleDateLocked(employee, clickedDate.format('YYYY-MM-DD'))) {
+        setBlockedMessage('Дані працівника за цей день не можна змінювати.');
+      }
+
       setIsBottomSheetOpen(true);
     },
-    [startOfWeek],
+    [employees, startOfWeek],
   );
 
   const handleClose = useCallback(() => {
     setIsBottomSheetOpen(false);
     setEditingCell(null);
     setIsFillingDay(false);
+    setBlockedMessage(null);
   }, []);
 
   const activeEmployees = useMemo(
@@ -155,12 +177,22 @@ export function useScheduleSlot() {
     const day = startOfWeek.add(editingCell.dayIndex, 'day');
     const dateStr = day.format('YYYY-MM-DD');
 
+    if (blockedMessage) return;
+
     setIsBottomSheetOpen(false);
     setEditingCell(null);
     setIsFillingDay(false);
 
     if (isFillingDay) {
-      activeEmployees.forEach((employee) => {
+      const eligibleEmployees = activeEmployees.filter(
+        (employee) => !isEmployeeScheduleDateLocked(employee, dateStr),
+      );
+
+      if (eligibleEmployees.length < activeEmployees.length) {
+        setBlockedMessage('Архівованих працівників не змінено.');
+      }
+
+      eligibleEmployees.forEach((employee) => {
         setScheduleEntryMutation.mutate({
           employeeId: employee.id,
           workDate: dateStr,
@@ -168,11 +200,17 @@ export function useScheduleSlot() {
           status,
         });
       });
+
+      if (eligibleEmployees.length < activeEmployees.length) {
+        setIsBottomSheetOpen(true);
+      }
+
       return;
     }
 
-    const employee = activeEmployees[editingCell.employeeIndex];
+    const employee = employees.find((item) => item.id === editingCell.employeeId);
     if (!employee) return;
+    if (isEmployeeScheduleDateLocked(employee, dateStr)) return;
 
     setScheduleEntryMutation.mutate({
       employeeId: employee.id,
@@ -187,22 +225,38 @@ export function useScheduleSlot() {
     const day = startOfWeek.add(editingCell.dayIndex, 'day');
     const dateStr = day.format('YYYY-MM-DD');
 
+    if (blockedMessage) return;
+
     setIsBottomSheetOpen(false);
     setEditingCell(null);
     setIsFillingDay(false);
 
     if (isFillingDay) {
-      activeEmployees.forEach((employee) => {
+      const eligibleEmployees = activeEmployees.filter(
+        (employee) => !isEmployeeScheduleDateLocked(employee, dateStr),
+      );
+
+      if (eligibleEmployees.length < activeEmployees.length) {
+        setBlockedMessage('Архівованих працівників не змінено.');
+      }
+
+      eligibleEmployees.forEach((employee) => {
         clearScheduleEntryMutation.mutate({
           employeeId: employee.id,
           workDate: dateStr,
         });
       });
+
+      if (eligibleEmployees.length < activeEmployees.length) {
+        setIsBottomSheetOpen(true);
+      }
+
       return;
     }
 
-    const employee = activeEmployees[editingCell.employeeIndex];
+    const employee = employees.find((item) => item.id === editingCell.employeeId);
     if (!employee) return;
+    if (isEmployeeScheduleDateLocked(employee, dateStr)) return;
 
     clearScheduleEntryMutation.mutate({
       employeeId: employee.id,
@@ -216,7 +270,8 @@ export function useScheduleSlot() {
 
   const bottomSheetTitle = (() => {
     if (!editingCell) return 'Деталі зміни';
-    const employee = activeEmployees[editingCell.employeeIndex];
+    if (blockedMessage) return 'Дані недоступні для змін';
+    const employee = employees.find((item) => item.id === editingCell.employeeId);
     if (!employee) return 'Деталі зміни';
     const employeeName = [employee.last_name, employee.first_name]
       .filter(Boolean)
@@ -239,12 +294,14 @@ export function useScheduleSlot() {
     selectedCell: editingCell,
     selectedDate,
     activeEmployees,
+    employees,
     colorMap,
     weekPeriod,
     weekLabel,
     monthLabel,
     isLoading: isLoadingEmployees,
     bottomSheetTitle,
+    blockedMessage,
     registerNavigateHandler,
     handleOpenExport,
     handleCloseExport,

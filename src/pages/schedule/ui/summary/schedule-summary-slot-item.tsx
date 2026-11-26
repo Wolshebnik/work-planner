@@ -8,7 +8,7 @@ import type { AvatarColor } from '@/shared/config/avatar-color';
 import { ScheduleSummaryContent } from './schedule-summary-content';
 
 export interface ScheduleSummarySlotItemProps {
-  activeEmployees: Employee[];
+  employees: Employee[];
   colorMap: Map<string, AvatarColor>;
   date: dayjs.Dayjs;
   isCurrent: boolean;
@@ -17,14 +17,14 @@ export interface ScheduleSummarySlotItemProps {
 export const ScheduleSummarySlotItem = memo(
   function ScheduleSummarySlotItem({
     date,
-    activeEmployees,
+    employees,
     colorMap,
     isCurrent,
   }: ScheduleSummarySlotItemProps) {
     return (
       <ScheduleSummaryContent
         date={date}
-        activeEmployees={activeEmployees}
+        employees={employees}
         colorMap={colorMap}
         isCurrent={isCurrent}
       />
@@ -33,7 +33,7 @@ export const ScheduleSummarySlotItem = memo(
   (prev, next) => {
     if (prev.isCurrent !== next.isCurrent) return false;
     if (!prev.date.isSame(next.date, 'month')) return false;
-    if (prev.activeEmployees !== next.activeEmployees) return false;
+    if (prev.employees !== next.employees) return false;
     if (prev.colorMap !== next.colorMap) return false;
 
     return true;

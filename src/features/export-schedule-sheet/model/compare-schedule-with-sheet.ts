@@ -1,4 +1,9 @@
-import { type Employee, matchEmployeesWithSheet } from '@/entities/employee';
+import {
+  isEmployeeScheduleDateLocked,
+  isEmployeeVisibleOnDate,
+  type Employee,
+  matchEmployeesWithSheet,
+} from '@/entities/employee';
 import { findSpreadsheetDateColumns } from '@/entities/google-sheets';
 
 import type {
@@ -12,9 +17,12 @@ export function getScheduleSheetEmployeeSignature(
 ): string {
   return employees
     .map((employee) =>
-      [employee.id, employee.last_name.trim(), employee.first_name.trim()].join(
-        ':',
-      ),
+      [
+        employee.id,
+        employee.last_name.trim(),
+        employee.first_name.trim(),
+        JSON.stringify(employee.archive_periods),
+      ].join(':'),
     )
     .sort()
     .join('|');
@@ -48,8 +56,11 @@ export function compareScheduleWithSheet({
     }
   }
 
+  const visibleEmployees = employees.filter((employee) =>
+    dates.some((date) => isEmployeeVisibleOnDate(employee, date)),
+  );
   const { ambiguousEmployees, matchedMap, missingEmployees } =
-    matchEmployeesWithSheet(employees, rows);
+    matchEmployeesWithSheet(visibleEmployees, rows);
   const scheduleMarks = new Map(
     scheduleEntries.map((entry) => [
       `${entry.employee_id}:${entry.work_date}`,
@@ -58,11 +69,13 @@ export function compareScheduleWithSheet({
   );
   const differences: ScheduleSheetDifference[] = [];
 
-  for (const employee of employees) {
+  for (const employee of visibleEmployees) {
     const rowIndex = matchedMap.get(employee.id);
     if (rowIndex === undefined) continue;
 
     for (const date of dates) {
+      if (isEmployeeScheduleDateLocked(employee, date)) continue;
+
       const columnIndex = dateColumns.get(date);
       if (columnIndex === undefined) continue;
 

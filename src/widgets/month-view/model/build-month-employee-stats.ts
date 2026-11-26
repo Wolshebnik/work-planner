@@ -1,4 +1,8 @@
-import type { Employee } from '@/entities/employee';
+import {
+  isEmployeeBeforeRestoreInMonth,
+  isEmployeeVisibleOnDate,
+  type Employee,
+} from '@/entities/employee';
 import { isWorkStatus, type ScheduleEntry } from '@/entities/schedule';
 
 import type { DayEmployeeStats, EmployeeDayInfo } from './types';
@@ -7,13 +11,18 @@ export function buildMonthEmployeeStats(
   employees: Employee[],
   scheduleEntries: ScheduleEntry[],
 ): Map<string, DayEmployeeStats> {
-  const activeEmployees = employees.filter((e) => e.is_active);
-  const activeEmployeeIds = new Set(activeEmployees.map((e) => e.id));
+  const employeesById = new Map(employees.map((employee) => [employee.id, employee]));
 
   const entriesByDate = new Map<string, Map<string, ScheduleEntry>>();
 
   for (const entry of scheduleEntries) {
-    if (!activeEmployeeIds.has(entry.employee_id)) {
+    const employee = employeesById.get(entry.employee_id);
+
+    if (
+      !employee ||
+      !isEmployeeVisibleOnDate(employee, entry.work_date) ||
+      isEmployeeBeforeRestoreInMonth(employee, entry.work_date)
+    ) {
       continue;
     }
 
@@ -31,7 +40,9 @@ export function buildMonthEmployeeStats(
     const working: EmployeeDayInfo[] = [];
     const absent: EmployeeDayInfo[] = [];
 
-    for (const employee of activeEmployees) {
+    for (const employee of employees) {
+      if (!isEmployeeVisibleOnDate(employee, workDate)) continue;
+
       const entry = dateEntries.get(employee.id);
       if (!entry || !entry.status) {
         continue;

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 
 import { useRouter } from 'expo-router';
+import dayjs from 'dayjs';
 
 import {
   useGetEmployees,
@@ -40,7 +41,10 @@ export function useTeamArchivedPage() {
     const employeeId = restoringEmployee.id;
     const isLastEmployee = archivedEmployees.length <= 1;
     setRestoringEmployee(null);
-    restoreEmployeeMutation.mutate(employeeId);
+    restoreEmployeeMutation.mutate({
+      id: employeeId,
+      restoreDate: dayjs().format('YYYY-MM-DD'),
+    });
     if (isLastEmployee) {
       router.push(ROUTES.TEAM);
     }

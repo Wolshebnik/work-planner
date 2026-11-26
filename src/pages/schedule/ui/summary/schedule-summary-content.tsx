@@ -17,7 +17,7 @@ import { useScheduleSlotContext } from '../../model/context/schedule-slot-contex
 import { useScheduleSummaryData } from '../../model/summary/use-schedule-summary-data';
 
 interface ScheduleSummaryContentProps {
-  activeEmployees: Employee[];
+  employees: Employee[];
   colorMap: Map<string, AvatarColor>;
   date: dayjs.Dayjs;
   isCurrent?: boolean;
@@ -25,7 +25,7 @@ interface ScheduleSummaryContentProps {
 
 export const ScheduleSummaryContent = memo(function ScheduleSummaryContent({
   date,
-  activeEmployees,
+  employees,
   colorMap,
   isCurrent = true,
 }: ScheduleSummaryContentProps) {
@@ -39,7 +39,7 @@ export const ScheduleSummaryContent = memo(function ScheduleSummaryContent({
     handleCloseCashSheet,
     handleSaveCash,
     canResetCash,
-  } = useScheduleSummaryData({ activeEmployees, colorMap, date });
+  } = useScheduleSummaryData({ employees, colorMap, date });
 
   const {
     exportRef,

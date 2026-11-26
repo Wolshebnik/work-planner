@@ -7,10 +7,14 @@ import type { Employee } from '@/entities/employee';
 import { ScheduleWeekContent } from './schedule-week-content';
 
 export interface ScheduleWeekSlotItemProps {
-  activeEmployees: Employee[];
+  employees: Employee[];
   date: dayjs.Dayjs;
   isCurrent: boolean;
-  onCellPress: (employeeIndex: number, dayIndex: number) => void;
+  onCellPress: (
+    employeeId: string | undefined,
+    employeeIndex: number,
+    dayIndex: number,
+  ) => void;
   selectedCell: {
     dayIndex: number;
     employeeIndex: number;
@@ -21,7 +25,7 @@ export interface ScheduleWeekSlotItemProps {
 export const ScheduleWeekSlotItem = memo(
   function ScheduleWeekSlotItem({
     date,
-    activeEmployees,
+    employees,
     isCurrent,
     selectedCell,
     selectedDate,
@@ -31,7 +35,7 @@ export const ScheduleWeekSlotItem = memo(
       <ScheduleWeekContent
         date={date}
         isCurrent={isCurrent}
-        activeEmployees={activeEmployees}
+        employees={employees}
         selectedCell={isCurrent ? selectedCell : null}
         selectedDate={isCurrent ? selectedDate : null}
         onCellPress={onCellPress}
@@ -40,7 +44,7 @@ export const ScheduleWeekSlotItem = memo(
   },
   (prev, next) => {
     if (!prev.date.isSame(next.date, 'day')) return false;
-    if (prev.activeEmployees !== next.activeEmployees) return false;
+    if (prev.employees !== next.employees) return false;
     if (prev.isCurrent !== next.isCurrent) return false;
     if (prev.selectedCell !== next.selectedCell) return false;
     if (prev.selectedDate !== next.selectedDate) return false;

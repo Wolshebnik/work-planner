@@ -20,9 +20,17 @@ export {
 } from './model/query-keys';
 export {
   type Employee,
+  type EmployeeArchivePeriod,
+  employeeArchivePeriodSchema,
+  employeeArchivePeriodsSchema,
   employeeSchema,
   employeesSchema,
 } from './model/schema';
+export {
+  isEmployeeBeforeRestoreInMonth,
+  isEmployeeScheduleDateLocked,
+  isEmployeeVisibleOnDate,
+} from './lib/employee-archive';
 export { useAddEmployee } from './model/use-add-employee';
 export { useArchiveEmployee } from './model/use-archive-employee';
 export { useGetEmployees } from './model/use-get-employees';

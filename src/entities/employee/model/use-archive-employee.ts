@@ -3,24 +3,40 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Employee } from './schema';
 
 import { archiveEmployee } from '../api/archive-employee';
+import { appendEmployeeArchivePeriod } from '../lib/employee-archive';
+
+interface ArchiveEmployeeVariables {
+  archiveDate: string;
+  id: string;
+}
 
 export function useArchiveEmployee() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => archiveEmployee(id),
-    onMutate: async (id: string) => {
+    mutationFn: ({ id, archiveDate }: ArchiveEmployeeVariables) =>
+      archiveEmployee(id, archiveDate),
+    onMutate: async ({ id, archiveDate }: ArchiveEmployeeVariables) => {
       const queryKey = ['employees'];
+
+      await queryClient.cancelQueries({ queryKey });
 
       const previousEmployees = queryClient.getQueryData<Employee[]>(queryKey);
 
       queryClient.setQueryData<Employee[]>(queryKey, (old = []) => {
         return old.map((emp) =>
-          emp.id === id ? { ...emp, is_active: false } : emp,
+          emp.id === id
+            ? {
+                ...emp,
+                is_active: false,
+                archive_periods: appendEmployeeArchivePeriod(
+                  emp.archive_periods,
+                  archiveDate,
+                ),
+              }
+            : emp,
         );
       });
-
-      await queryClient.cancelQueries({ queryKey });
 
       return { previousEmployees, queryKey };
     },

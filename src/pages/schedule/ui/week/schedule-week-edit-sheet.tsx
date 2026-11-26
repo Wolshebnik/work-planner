@@ -1,5 +1,6 @@
 import { EditSchedule } from '@/features/edit-schedule';
 import { BottomSheet } from '@/shared/ui/bottom-sheet';
+import { Text } from 'react-native';
 
 import { useScheduleSlotContext } from '../../model/context/schedule-slot-context';
 
@@ -12,6 +13,7 @@ export function ScheduleWeekEditSheet() {
     handleFillDayForAll,
     handleStatusSelect,
     isFillingDay,
+    blockedMessage,
   } = useScheduleSlotContext();
 
   return (
@@ -20,12 +22,18 @@ export function ScheduleWeekEditSheet() {
       isOpen={isBottomSheetOpen}
       onClose={handleClose}
     >
-      <EditSchedule
-        isFillingDay={isFillingDay}
-        onClear={handleClearCell}
-        onFillDayForAll={handleFillDayForAll}
-        onSelectStatus={handleStatusSelect}
-      />
+      {blockedMessage ? (
+        <Text className='px-5 py-4 text-base text-foreground'>
+          {blockedMessage}
+        </Text>
+      ) : (
+        <EditSchedule
+          isFillingDay={isFillingDay}
+          onClear={handleClearCell}
+          onFillDayForAll={handleFillDayForAll}
+          onSelectStatus={handleStatusSelect}
+        />
+      )}
     </BottomSheet>
   );
 }
